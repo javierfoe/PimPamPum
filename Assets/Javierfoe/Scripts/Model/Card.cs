@@ -28,7 +28,7 @@ namespace Bang
         }
 
         public virtual void BeginCardDrag(PlayerController pc) {
-            pc.StopTargeting();
+            pc.CmdStopTargeting();
         }
 
     }
@@ -97,7 +97,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.BangBeginCardDrag();
+            pc.CmdBangBeginCardDrag();
         }
 
         public override string ToString()
@@ -195,7 +195,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.TargetOthers();
+            pc.CmdTargetOthers();
         }
 
         public override string ToString()
@@ -226,7 +226,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CatBalouBeginCardDrag();
+            pc.CmdCatBalouBeginCardDrag();
         }
 
         public override string ToString()
@@ -257,7 +257,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.PanicBeginCardDrag();
+            pc.CmdPanicBeginCardDrag();
         }
 
         public override string ToString()
@@ -432,7 +432,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.JailBeginCardDrag();
+            pc.CmdJailBeginCardDrag();
         }
 
         public override string ToString()

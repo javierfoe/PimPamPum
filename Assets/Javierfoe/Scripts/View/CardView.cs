@@ -95,7 +95,7 @@ namespace Bang
                 currentDropView.Highlight(false);
                 currentDropView = null;
             }
-            PlayerController.LocalPlayer.StopTargeting();
+            PlayerController.LocalPlayer.CmdStopTargeting();
         }
     }
 }

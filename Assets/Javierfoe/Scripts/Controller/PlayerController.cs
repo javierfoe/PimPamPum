@@ -135,31 +135,6 @@ namespace Bang
             CmdBeginCardDrag(index);
         }
 
-        public void BangBeginCardDrag()
-        {
-            GameController.Instance.CmdTargetPlayersRange(playerNum, weapon.Range);
-        }
-
-        public void JailBeginCardDrag()
-        {
-            GameController.Instance.CmdTargetAllButSheriff(playerNum);
-        }
-
-        public void CatBalouBeginCardDrag()
-        {
-            GameController.Instance.CmdTargetAllCards(playerNum);
-        }
-
-        public void PanicBeginCardDrag()
-        {
-            GameController.Instance.CmdTargetAllRangeCards(playerNum, 1);
-        }
-
-        public void TargetOthers()
-        {
-            GameController.Instance.CmdTargetOthers(playerNum);
-        }
-
         public void Bang()
         {
             bangsUsed++;
@@ -170,9 +145,40 @@ namespace Bang
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
-        public void StopTargeting()
+        [Command]
+        public void CmdBangBeginCardDrag()
         {
-            GameController.Instance.CmdStopTargeting(playerNum);
+            GameController.Instance.TargetPlayersRange(playerNum, weapon.Range);
+        }
+
+        [Command]
+        public void CmdJailBeginCardDrag()
+        {
+            GameController.Instance.TargetAllButSheriff(playerNum);
+        }
+
+        [Command]
+        public void CmdCatBalouBeginCardDrag()
+        {
+            GameController.Instance.TargetAllCards(playerNum);
+        }
+
+        [Command]
+        public void CmdPanicBeginCardDrag()
+        {
+            GameController.Instance.TargetAllRangeCards(playerNum, 1);
+        }
+
+        [Command]
+        public void CmdTargetOthers()
+        {
+            GameController.Instance.TargetOthers(playerNum);
+        }
+
+        [Command]
+        public void CmdStopTargeting()
+        {
+            GameController.Instance.StopTargeting(playerNum);
         }
 
         [Command]

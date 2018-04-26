@@ -109,28 +109,14 @@ namespace Bang
             return res;
         }
 
-        [ClientRpc]
-        private void RpcAddPlayerControllers(GameObject[] gos)
-        {
-
-            if (isServer) return;
-            Debug.Log("AddPlayerControllers RPC: " + gos.Length);
-            int i = 0;
-            foreach (GameObject go in gos)
-                playerControllers[i++] = go.GetComponent<PlayerController>();
-
-        }
-
-        [Command]
-        public void CmdStopTargeting(int player)
+        public void StopTargeting(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 pc.TargetStopTargeting(conn);
         }
 
-        [Command]
-        public void CmdTargetAllButSheriff(int player)
+        public void TargetAllButSheriff(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
@@ -138,16 +124,14 @@ namespace Bang
                     pc.TargetSetTargetable(conn, ECardDropArea.PLAY);
         }
 
-        [Command]
-        public void CmdTargetAllCards(int player)
+        public void TargetAllCards(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 pc.TargetSetStealable(conn, ECardDropArea.PLAY);
         }
 
-        [Command]
-        public void CmdTargetOthers(int player)
+        public void TargetOthers(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
@@ -155,8 +139,7 @@ namespace Bang
                     pc.TargetSetTargetable(conn, ECardDropArea.PLAY);
         }
 
-        [Command]
-        public void CmdTargetAllRangeCards(int player, int range)
+        public void TargetAllRangeCards(int player, int range)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             List<int> playersInRange = PlayersInRange(player, range);
@@ -167,8 +150,7 @@ namespace Bang
             playerControllers[player].TargetSetStealable(conn, ECardDropArea.PLAY);
         }
 
-        [Command]
-        public void CmdTargetPlayersRange(int player, int range)
+        public void TargetPlayersRange(int player, int range)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             List<int> playersInRange = PlayersInRange(player, range);
@@ -176,6 +158,18 @@ namespace Bang
             {
                 playerControllers[i].TargetSetTargetable(conn, ECardDropArea.PLAY);
             }
+        }
+
+        [ClientRpc]
+        private void RpcAddPlayerControllers(GameObject[] gos)
+        {
+
+            if (isServer) return;
+            Debug.Log("AddPlayerControllers RPC: " + gos.Length);
+            int i = 0;
+            foreach (GameObject go in gos)
+                playerControllers[i++] = go.GetComponent<PlayerController>();
+
         }
     }
 }
