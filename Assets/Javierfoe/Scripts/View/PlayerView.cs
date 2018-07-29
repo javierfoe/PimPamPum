@@ -97,8 +97,8 @@ namespace Bang
 
         public void SetStealable(ECardDropArea cda)
         {
+            if (handHidden) handHidden.SetDroppable(cda);
             weaponCard.SetDroppable(cda);
-            handHidden.SetDroppable(cda);
             foreach (ICardView cv in propertyCards)
                 cv.SetDroppable(cda);
         }
