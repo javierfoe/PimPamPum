@@ -26,6 +26,7 @@ namespace Bang
     public interface IPlayerView : IDropView
     {
         void SetStealable(ECardDropArea cda);
+        void SetWeaponStealable(ECardDropArea cda);
         void SetPlayerIndex(int index);
         void UpdateHP(int hp);
         void SetSheriff();

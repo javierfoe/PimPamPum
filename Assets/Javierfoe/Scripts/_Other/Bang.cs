@@ -94,7 +94,11 @@ namespace Bang
                     goto case 4;
                 case 4:
                     result[3] = ERole.OUTLAW;
+                    goto case 3;
+                case 3:
                     result[2] = ERole.OUTLAW;
+                    goto case 2;
+                case 2:
                     result[1] = ERole.RENEGADE;
                     result[0] = ERole.SHERIFF;
                     break;

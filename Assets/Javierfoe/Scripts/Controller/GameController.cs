@@ -15,6 +15,7 @@ namespace Bang
 
         [SyncVar] private int maxPlayers;
 
+        private int currentPlayer;
         private PlayerController[] playerControllers;
 
         public int MaxPlayers
@@ -85,11 +86,23 @@ namespace Bang
             {
                 range = players.Count;
                 random = Random.Range(0, range);
-                if (sheriff == null) sheriff = players[random];
+                if (sheriff == null)
+                {
+                    sheriff = players[random];
+                    currentPlayer = random;
+                }
                 players[random].SetRole(r);
                 players.RemoveAt(random);
             }
+            Debug.Log("CurrentPlayer: " + currentPlayer);
             sheriff.StartTurn();
+        }
+
+        public void EndTurn()
+        {
+            currentPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
+            Debug.Log("CurrentPlayer: " + currentPlayer);
+            playerControllers[currentPlayer].StartTurn();
         }
 
         public List<int> PlayersInRange(int player, int range)

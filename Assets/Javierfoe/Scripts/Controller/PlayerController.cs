@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -15,6 +14,7 @@ namespace Bang
 
         private int bangsUsed;
         private int hp;
+        private EndTurnButton endTurn;
         private Weapon weapon;
         private GameController gameController;
         private List<Card> hand, properties;
@@ -73,6 +73,8 @@ namespace Bang
 
         public override void OnStartLocalPlayer()
         {
+            endTurn = FindObjectOfType<EndTurnButton>();
+            endTurn.Active = false;
             LocalPlayer = this;
         }
 
@@ -119,6 +121,12 @@ namespace Bang
             Draw(2);
             bangsUsed = 0;
             EnableCards(true);
+            TargetEndTurnButton(connectionToClient);
+        }
+
+        public void EndTurn() {
+            endTurn.Active = false;
+            CmdEndTurn();
         }
 
         private void EnableCards(bool value)
@@ -187,6 +195,12 @@ namespace Bang
             hand[index].BeginCardDrag(this);
         }
 
+        [Command]
+        public void CmdEndTurn()
+        {
+            GameController.Instance.EndTurn();
+        }
+
         [ClientRpc]
         private void RpcEquipWeapon(string name, ESuit suit, ERank rank, Color color)
         {
@@ -230,6 +244,7 @@ namespace Bang
         public void TargetSetStealable(NetworkConnection conn, ECardDropArea cda)
         {
             PlayerView.SetStealable(cda);
+            if (weapon != colt45) PlayerView.SetWeaponStealable(cda);
         }
 
         [TargetRpc]
@@ -264,6 +279,12 @@ namespace Bang
                 ipv = gameController.GetPlayerView(playerNumber, this.PlayerNumber);
             }
             PlayerView = ipv;
+        }
+
+        [TargetRpc]
+        public void TargetEndTurnButton(NetworkConnection conn)
+        {
+            endTurn.Active = true;
         }
 
     }
