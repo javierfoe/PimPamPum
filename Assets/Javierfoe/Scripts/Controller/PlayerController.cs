@@ -124,9 +124,27 @@ namespace Bang
             TargetEndTurnButton(connectionToClient);
         }
 
-        public void EndTurn() {
+        public void EndTurn()
+        {
             endTurn.Active = false;
-            CmdEndTurn();
+            EnableCards(false);
+            if (hand.Count < hp + 1)
+            {
+                CmdEndTurn();
+            }
+            else
+            {
+                DiscardEndTurn(true);
+            }
+        }
+
+        private void DiscardEndTurn(bool value)
+        {
+            int length = hand.Count;
+            for(int i = 0; i < length; i++)
+            {
+                TargetEnableDiscardCard(connectionToClient, i, true);
+            }
         }
 
         private void EnableCards(bool value)
@@ -245,6 +263,12 @@ namespace Bang
         {
             PlayerView.SetStealable(cda);
             if (weapon != colt45) PlayerView.SetWeaponStealable(cda);
+        }
+
+        [TargetRpc]
+        private void TargetEnableDiscardCard(NetworkConnection conn, int card, bool value)
+        {
+            PlayerView.EnableDiscardCard(card, value);
         }
 
         [TargetRpc]

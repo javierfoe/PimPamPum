@@ -16,6 +16,7 @@ namespace Bang
     public interface ICardView : IDropView
     {
         void Playable(bool value);
+        void Discardable(bool value);
         void SetIndex(int index);
         void SetRank(ERank rank);
         void SetSuit(ESuit suit);
@@ -32,6 +33,7 @@ namespace Bang
         void SetSheriff();
         void SetRole(ERole role);
         void EnableCard(int index, bool enable);
+        void EnableDiscardCard(int index, bool enable);
         void AddCard();
         void AddCard(int index, string name, ESuit suit, ERank rank, Color color);
         void EquipWeapon(string name, ESuit suit, ERank rank, Color color);

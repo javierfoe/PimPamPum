@@ -95,6 +95,11 @@ namespace Bang
             handCards[index].Playable(enable);
         }
 
+        public void EnableDiscardCard(int index, bool enable)
+        {
+            handCards[index].Discardable(enable);
+        }
+
         public void SetStealable(ECardDropArea cda)
         {
             if (handHidden) handHidden.SetDroppable(cda);

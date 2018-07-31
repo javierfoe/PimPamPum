@@ -13,12 +13,17 @@ namespace Bang
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         private int index;
-        private bool draggable;
+        private bool draggable,discardable;
         private DropView currentDropView;
 
         public void Playable(bool value)
         {
             draggable = value;
+        }
+
+        public void Discardable(bool value)
+        {
+            discardable = value;
         }
 
         public void SetIndex(int index)
@@ -51,14 +56,17 @@ namespace Bang
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
-            PlayerController.LocalPlayer.BeginCardDrag(index);
+            if (!draggable && !discardable) return;
+            if (draggable)
+            {
+                PlayerController.LocalPlayer.BeginCardDrag(index);
+            }
             Highlight(true);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
+            if (!draggable && !discardable) return;
 
             DropView drop = null;
             List<GameObject> hovered = eventData.hovered;
@@ -67,10 +75,6 @@ namespace Bang
             {
                 hover = hovered[i];
                 drop = hover.GetComponent<DropView>();
-                if(drop != null)
-                {
-                    Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
-                }
                 drop = (drop != null && !drop.Droppable) ? null : drop;
             }
 
@@ -80,6 +84,7 @@ namespace Bang
 
             if (drop != null && drop.Droppable)
             {
+                Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
                 currentDropView = drop;
                 drop.Highlight(true);
                 area = drop.DropArea;
@@ -88,7 +93,7 @@ namespace Bang
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
+            if (!draggable && !discardable) return;
             Highlight(false);
             if(currentDropView != null)
             {
