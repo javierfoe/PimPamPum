@@ -127,15 +127,7 @@ namespace Bang
         public void EndTurn()
         {
             endTurn.Active = false;
-            EnableCards(false);
-            if (hand.Count < hp + 1)
-            {
-                CmdEndTurn();
-            }
-            else
-            {
-                DiscardEndTurn(true);
-            }
+            CmdEndTurn();
         }
 
         private void DiscardEndTurn(bool value)
@@ -143,7 +135,7 @@ namespace Bang
             int length = hand.Count;
             for(int i = 0; i < length; i++)
             {
-                TargetEnableDiscardCard(connectionToClient, i, true);
+                TargetEnableDiscardCard(connectionToClient, i, value);
             }
         }
 
@@ -216,7 +208,15 @@ namespace Bang
         [Command]
         public void CmdEndTurn()
         {
-            GameController.Instance.EndTurn();
+            EnableCards(false);
+            if (hand.Count < hp + 1)
+            {
+                GameController.Instance.EndTurn();
+            }
+            else
+            {
+                DiscardEndTurn(true);
+            }
         }
 
         [ClientRpc]

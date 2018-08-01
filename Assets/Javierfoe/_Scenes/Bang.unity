@@ -292,7 +292,7 @@ MonoBehaviour:
   isNetworkActive: 0
   matchMaker: {fileID: 0}
   gameController: {fileID: 1588766673}
-  maxPlayers: 1
+  maxPlayers: 2
   players: {fileID: 2013262940}
 --- !u!4 &486509228
 Transform:
