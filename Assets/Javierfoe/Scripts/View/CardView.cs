@@ -13,7 +13,7 @@ namespace Bang
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         private int index;
-        private bool draggable,discardable;
+        private bool draggable, discardable;
         private DropView currentDropView;
 
         public void Playable(bool value)
@@ -71,7 +71,7 @@ namespace Bang
             DropView drop = null;
             List<GameObject> hovered = eventData.hovered;
             GameObject hover;
-            for(int i = 0; i < hovered.Count && drop == null; i++)
+            for (int i = 0; i < hovered.Count && drop == null; i++)
             {
                 hover = hovered[i];
                 drop = hover.GetComponent<DropView>();
@@ -84,7 +84,7 @@ namespace Bang
 
             if (drop != null && drop.Droppable)
             {
-                Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
+                //Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
                 currentDropView = drop;
                 drop.Highlight(true);
                 area = drop.DropArea;
@@ -95,10 +95,14 @@ namespace Bang
         {
             if (!draggable && !discardable) return;
             Highlight(false);
-            if(currentDropView != null)
+            if (currentDropView != null)
             {
                 currentDropView.Highlight(false);
                 currentDropView = null;
+            }
+            if (discardable)
+            {
+                PlayerController.LocalPlayer.DiscardCard(index);
             }
             PlayerController.LocalPlayer.CmdStopTargeting();
         }

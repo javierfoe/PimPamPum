@@ -73,6 +73,11 @@ namespace Bang
             HiddenCards += 1;
         }
 
+        public void RemoveCard()
+        {
+            HiddenCards -= 1;
+        }
+
         public void AddCard(int index, string name, ESuit suit, ERank rank, Color color)
         {
             ICardView cv = Instantiate(GameController.Instance.cardPrefab, hand);
@@ -81,6 +86,17 @@ namespace Bang
             cv.SetSuit(suit);
             cv.SetRank(rank);
             handCards.Add(cv);
+        }
+
+        public void RemoveCard(int index)
+        {
+            ICardView cv = handCards[index];
+            handCards.RemoveAt(index);
+            Destroy(cv.GameObject());
+            for(int i = index; i < handCards.Count; i++)
+            {
+                handCards[i].SetIndex(i);
+            }
         }
 
         public void EquipWeapon(string name, ESuit suit, ERank rank, Color color)
@@ -100,16 +116,12 @@ namespace Bang
             handCards[index].Discardable(enable);
         }
 
-        public void SetStealable(ECardDropArea cda)
+        public void SetStealable(ECardDropArea cda, bool weapon)
         {
             if (handHidden) handHidden.SetDroppable(cda);
+            if (weapon) weaponCard.SetDroppable(cda);
             foreach (ICardView cv in propertyCards)
                 cv.SetDroppable(cda);
-        }
-
-        public void SetWeaponStealable(ECardDropArea cda)
-        {
-            weaponCard.SetDroppable(cda);
         }
     }
 }

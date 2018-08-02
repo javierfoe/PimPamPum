@@ -55,6 +55,12 @@ namespace Bang
             return result;
         }
 
+        public void DiscardCard(Card card)
+        {
+            discardStack.Add(card);
+            RpcSetDiscardTop(card.ToString(), card.Suit, card.Rank, card.Color);
+        }
+
         public void ShuffleCards(List<Card> temp)
         {
             Card c;

@@ -10,6 +10,7 @@ namespace Bang
 
     public interface IDropView
     {
+        GameObject GameObject();
         void SetDroppable(ECardDropArea cda);
     }
 
@@ -26,8 +27,7 @@ namespace Bang
 
     public interface IPlayerView : IDropView
     {
-        void SetStealable(ECardDropArea cda);
-        void SetWeaponStealable(ECardDropArea cda);
+        void SetStealable(ECardDropArea cda, bool weapon);
         void SetPlayerIndex(int index);
         void UpdateHP(int hp);
         void SetSheriff();
@@ -36,6 +36,8 @@ namespace Bang
         void EnableDiscardCard(int index, bool enable);
         void AddCard();
         void AddCard(int index, string name, ESuit suit, ERank rank, Color color);
+        void RemoveCard();
+        void RemoveCard(int index);
         void EquipWeapon(string name, ESuit suit, ERank rank, Color color);
     }
 }

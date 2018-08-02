@@ -34,6 +34,11 @@ namespace Bang
             DropArea = ECardDropArea.NULL;
         }
 
+        public GameObject GameObject()
+        {
+            return gameObject;
+        }
+
         public void SetDroppable(ECardDropArea cda)
         {
             DropArea = cda;

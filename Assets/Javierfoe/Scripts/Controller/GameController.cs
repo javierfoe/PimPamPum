@@ -40,6 +40,11 @@ namespace Bang
             return boardController.DrawCards(cards);
         }
 
+        public void DiscardCard(Card card)
+        {
+            boardController.DiscardCard(card);
+        }
+
         public void AddPlayerControllers(GameObject[] gos)
         {
             int i = 0;
@@ -94,14 +99,14 @@ namespace Bang
                 players[random].SetRole(r);
                 players.RemoveAt(random);
             }
-            Debug.Log("CurrentPlayer: " + currentPlayer);
+            //Debug.Log("CurrentPlayer: " + currentPlayer);
             sheriff.StartTurn();
         }
 
         public void EndTurn()
         {
             currentPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
-            Debug.Log("CurrentPlayer: " + currentPlayer);
+            //Debug.Log("CurrentPlayer: " + currentPlayer);
             playerControllers[currentPlayer].StartTurn();
         }
 
@@ -141,7 +146,7 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                pc.TargetSetStealable(conn, ECardDropArea.PLAY);
+                pc.SetStealable(conn, ECardDropArea.PLAY);
         }
 
         public void TargetOthers(int player)
@@ -158,9 +163,9 @@ namespace Bang
             List<int> playersInRange = PlayersInRange(player, range);
             foreach (int i in playersInRange)
             {
-                playerControllers[i].TargetSetStealable(conn, ECardDropArea.PLAY);
+                playerControllers[i].SetStealable(conn, ECardDropArea.PLAY);
             }
-            playerControllers[player].TargetSetStealable(conn, ECardDropArea.PLAY);
+            playerControllers[player].SetStealable(conn, ECardDropArea.PLAY);
         }
 
         public void TargetPlayersRange(int player, int range)

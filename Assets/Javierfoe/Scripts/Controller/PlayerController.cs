@@ -153,6 +153,11 @@ namespace Bang
             CmdBeginCardDrag(index);
         }
 
+        public void DiscardCard(int index)
+        {
+            CmdDiscardCard(index);
+        }
+
         public void Bang()
         {
             bangsUsed++;
@@ -161,6 +166,11 @@ namespace Bang
         private void EquipWeapon(Weapon weapon)
         {
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
+        }
+
+        public void SetStealable(NetworkConnection conn, ECardDropArea cda)
+        {
+            TargetSetStealable(conn, cda, weapon != colt45);
         }
 
         [Command]
@@ -219,6 +229,21 @@ namespace Bang
             }
         }
 
+        [Command]
+        public void CmdDiscardCard(int index)
+        {
+            Card card = hand[index];
+            hand.RemoveAt(index);
+            GameController.Instance.DiscardCard(card);
+            TargetRemoveCard(connectionToClient, index);
+            RpcRemoveCard();
+            if (hand.Count < hp + 1)
+            {
+                GameController.Instance.EndTurn();
+                DiscardEndTurn(false);
+            }
+        }
+
         [ClientRpc]
         private void RpcEquipWeapon(string name, ESuit suit, ERank rank, Color color)
         {
@@ -239,6 +264,13 @@ namespace Bang
         }
 
         [ClientRpc]
+        private void RpcRemoveCard()
+        {
+            if (isLocalPlayer) return;
+            PlayerView.RemoveCard();
+        }
+
+        [ClientRpc]
         private void RpcSheriff()
         {
             PlayerView.SetSheriff();
@@ -249,7 +281,7 @@ namespace Bang
         {
             ECardDropArea cda = ECardDropArea.NULL;
             PlayerView.SetDroppable(cda);
-            PlayerView.SetStealable(cda);
+            PlayerView.SetStealable(cda, true);
         }
 
         [TargetRpc]
@@ -259,10 +291,9 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetSetStealable(NetworkConnection conn, ECardDropArea cda)
+        public void TargetSetStealable(NetworkConnection conn, ECardDropArea cda, bool weapon)
         {
-            PlayerView.SetStealable(cda);
-            if (weapon != colt45) PlayerView.SetWeaponStealable(cda);
+            PlayerView.SetStealable(cda, weapon);
         }
 
         [TargetRpc]
@@ -281,6 +312,12 @@ namespace Bang
         private void TargetAddCard(NetworkConnection conn, int index, string name, ESuit suit, ERank rank, Color color)
         {
             PlayerView.AddCard(index, name, suit, rank, color);
+        }
+
+        [TargetRpc]
+        private void TargetRemoveCard(NetworkConnection conn, int index)
+        {
+            PlayerView.RemoveCard(index);
         }
 
         [TargetRpc]
