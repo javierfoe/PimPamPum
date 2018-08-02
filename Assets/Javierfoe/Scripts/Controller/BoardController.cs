@@ -72,6 +72,7 @@ namespace Bang
                 temp.RemoveAt(random);
                 deck.Add(c);
             }
+            RpcEmptyDiscardStack();
         }
 
         private void SetDeckSize()
@@ -89,6 +90,12 @@ namespace Bang
         private void RpcSetDiscardTop(string name, ESuit suit, ERank rank, Color color)
         {
             boardView.SetDiscardTop(name, suit, rank, color);
+        }
+
+        [ClientRpc]
+        private void RpcEmptyDiscardStack()
+        {
+            boardView.EmptyDiscardStack();
         }
 
         #region GenerateDeck

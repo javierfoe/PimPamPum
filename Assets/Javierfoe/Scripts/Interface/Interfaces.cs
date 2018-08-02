@@ -6,6 +6,7 @@ namespace Bang
     {
         void SetDeckSize(int cards);
         void SetDiscardTop(string name, ESuit suit, ERank rank, Color color);
+        void EmptyDiscardStack();
     }
 
     public interface IDropView

@@ -28,5 +28,12 @@ namespace Bang
             discardTopCard.SetRank(rank);
             discardTopCard.SetSuit(suit);
         }
+
+        public void EmptyDiscardStack()
+        {
+            discardTopCard.SetName("", Color.black);
+            discardTopCard.SetRank(ERank.NULL);
+            discardTopCard.SetSuit(ESuit.NULL);
+        }
     }
 }
