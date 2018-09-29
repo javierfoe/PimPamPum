@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Bang
 {
-    public class DropView : MonoBehaviour, IDropView
+    public abstract class DropView : MonoBehaviour, IDropView
     {
 
         [SerializeField] private Color highlight = new Color();
@@ -39,6 +39,11 @@ namespace Bang
             return gameObject;
         }
 
+        public ECardDropArea GetDroppable()
+        {
+            return DropArea;
+        }
+
         public void SetDroppable(ECardDropArea cda)
         {
             DropArea = cda;
@@ -47,6 +52,11 @@ namespace Bang
         public void Highlight(bool value)
         {
             background.color = value ? highlight : idle;
+        }
+
+        public virtual int[] GetIndexes()
+        {
+            return new int[] { -1 };
         }
     }
 }

@@ -45,6 +45,11 @@ namespace Bang
             playerIndex = index;
         }
 
+        public int GetPlayerIndex()
+        {
+            return playerIndex;
+        }
+
         public void SetSheriff()
         {
             SetRole(Roles.SHERIFF_NAME, Roles.SHERIFF_COLOR);
@@ -93,7 +98,7 @@ namespace Bang
             ICardView cv = handCards[index];
             handCards.RemoveAt(index);
             Destroy(cv.GameObject());
-            for(int i = index; i < handCards.Count; i++)
+            for (int i = index; i < handCards.Count; i++)
             {
                 handCards[i].SetIndex(i);
             }

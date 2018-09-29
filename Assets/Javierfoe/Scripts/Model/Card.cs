@@ -13,6 +13,11 @@ namespace Bang
         {
             get; private set;
         }
+        public ECardTarget Target
+        {
+            get; protected set;
+        }
+
         public Color Color
         {
             get
@@ -25,17 +30,22 @@ namespace Bang
         {
             Suit = suit;
             Rank = rank;
+            Target = ECardTarget.SELF;
         }
 
-        public virtual void BeginCardDrag(PlayerController pc) {
-            pc.CmdStopTargeting();
+        public virtual void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
         }
 
     }
 
     public class Bang : Card
     {
-        private Bang(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Bang(ESuit suit, ERank rank) : base(suit, rank)
+        {
+            Target = ECardTarget.PLAYER;
+        }
 
         public static Bang CreateBang(int index)
         {
@@ -97,7 +107,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CmdBangBeginCardDrag();
+            pc.BangBeginCardDrag();
         }
 
         public override string ToString()
@@ -177,7 +187,10 @@ namespace Bang
 
     public class Duel : Card
     {
-        private Duel(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Duel(ESuit suit, ERank rank) : base(suit, rank)
+        {
+            Target = ECardTarget.PLAYER;
+        }
 
         public static Duel CreateDuel(int index)
         {
@@ -195,7 +208,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CmdTargetOthers();
+            pc.TargetOthers();
         }
 
         public override string ToString()
@@ -206,7 +219,10 @@ namespace Bang
 
     public class CatBalou : Card
     {
-        protected CatBalou(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected CatBalou(ESuit suit, ERank rank) : base(suit, rank)
+        {
+            Target = ECardTarget.PANIC_CATBALOU;
+        }
 
         public static CatBalou CreateCatBalou(int index)
         {
@@ -226,7 +242,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CmdCatBalouBeginCardDrag();
+            pc.CatBalouBeginCardDrag();
         }
 
         public override string ToString()
@@ -237,7 +253,10 @@ namespace Bang
 
     public class Panic : CatBalou
     {
-        private Panic(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Panic(ESuit suit, ERank rank) : base(suit, rank)
+        {
+            Target = ECardTarget.PANIC_CATBALOU;
+        }
 
         public static Panic CreatePanic(int index)
         {
@@ -257,7 +276,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CmdPanicBeginCardDrag();
+            pc.PanicBeginCardDrag();
         }
 
         public override string ToString()
@@ -414,7 +433,10 @@ namespace Bang
 
     public class Jail : NegativeProperty
     {
-        private Jail(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Jail(ESuit suit, ERank rank) : base(suit, rank)
+        {
+            Target = ECardTarget.PLAYER;
+        }
 
         public static Jail CreateJail(int index)
         {
@@ -432,7 +454,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.CmdJailBeginCardDrag();
+            pc.JailBeginCardDrag();
         }
 
         public override string ToString()

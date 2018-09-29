@@ -16,6 +16,11 @@ namespace Bang
         private bool draggable, discardable;
         private DropView currentDropView;
 
+        public IPlayerView PlayerView
+        {
+            private get; set;
+        }
+
         public void Playable(bool value)
         {
             draggable = value;
@@ -52,6 +57,16 @@ namespace Bang
             SetName("", Color.black);
             SetRank(0);
             SetSuit(0);
+        }
+
+        public int GetPlayerIndex()
+        {
+            return PlayerView.GetPlayerIndex();
+        }
+
+        public void SetPlayerView(IPlayerView playerView)
+        {
+            PlayerView = playerView;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -100,11 +115,14 @@ namespace Bang
                 currentDropView.Highlight(false);
                 currentDropView = null;
             }
-            if (discardable)
+            if (draggable)
+            {
+                PlayerController.LocalPlayer.PlayCard(index, currentDropView);
+            }else if (discardable)
             {
                 PlayerController.LocalPlayer.DiscardCard(index);
             }
-            PlayerController.LocalPlayer.CmdStopTargeting();
+            PlayerController.LocalPlayer.StopTargeting();
         }
     }
 }

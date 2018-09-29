@@ -12,6 +12,7 @@ namespace Bang
         public static PlayerController LocalPlayer { get; private set; }
         private static Colt45 colt45 = new Colt45();
 
+        private Card draggedCard;
         private int bangsUsed;
         private int hp;
         private EndTurnButton endTurn;
@@ -80,7 +81,7 @@ namespace Bang
 
         public void SetRole(ERole role)
         {
-            this.Role = role;
+            Role = role;
             if (role == ERole.SHERIFF)
             {
                 HP = 5;
@@ -153,6 +154,11 @@ namespace Bang
             CmdBeginCardDrag(index);
         }
 
+        public void PlayCard(int index, IDropView drop)
+        {
+
+        }
+
         public void DiscardCard(int index)
         {
             CmdDiscardCard(index);
@@ -173,46 +179,53 @@ namespace Bang
             TargetSetStealable(conn, cda, weapon != colt45);
         }
 
-        [Command]
-        public void CmdBangBeginCardDrag()
+        public void BangBeginCardDrag()
         {
             GameController.Instance.TargetPlayersRange(playerNum, weapon.Range);
         }
 
-        [Command]
-        public void CmdJailBeginCardDrag()
+        public void JailBeginCardDrag()
         {
             GameController.Instance.TargetAllButSheriff(playerNum);
         }
 
-        [Command]
-        public void CmdCatBalouBeginCardDrag()
+        public void CatBalouBeginCardDrag()
         {
             GameController.Instance.TargetAllCards(playerNum);
         }
 
-        [Command]
-        public void CmdPanicBeginCardDrag()
+        public void PanicBeginCardDrag()
         {
             GameController.Instance.TargetAllRangeCards(playerNum, 1);
         }
 
-        [Command]
-        public void CmdTargetOthers()
+        public void TargetOthers()
         {
             GameController.Instance.TargetOthers(playerNum);
         }
 
-        [Command]
-        public void CmdStopTargeting()
+        public void SelfTargetCard()
         {
             GameController.Instance.StopTargeting(playerNum);
         }
 
         [Command]
+        public void CmdSelfTargetCard()
+        {
+            SelfTargetCard();
+        }
+
+        public void StopTargeting()
+        {
+            draggedCard = null;
+            CmdSelfTargetCard();
+        }
+
+        [Command]
         public void CmdBeginCardDrag(int index)
         {
-            hand[index].BeginCardDrag(this);
+            draggedCard = hand[index];
+            draggedCard.BeginCardDrag(this);
         }
 
         [Command]

@@ -56,6 +56,17 @@ namespace Bang
 
         public override void OnStartClient()
         {
+            if (isServer) return;
+            OnStart();
+        }
+
+        public override void OnStartServer()
+        {
+            OnStart();
+        }
+
+        private void OnStart()
+        {
             Instance = this;
             playerControllers = new PlayerController[maxPlayers];
         }

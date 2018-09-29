@@ -164,6 +164,13 @@ namespace Bang
         WINCHESTER
     }
 
+    public enum ECardTarget
+    {
+        SELF,
+        PLAYER,
+        PANIC_CATBALOU
+    }
+
     public enum ESuit
     {
         NULL,
