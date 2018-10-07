@@ -9,7 +9,6 @@ namespace Bang
 
         [SerializeField] private GameController gameController = null;
         [SerializeField] private int maxPlayers = 0;
-        [SerializeField] private Transform players = null;
 
         private GameObject[] playerControllerGameObjects;
         private PlayerController[] playerControllerComponents;

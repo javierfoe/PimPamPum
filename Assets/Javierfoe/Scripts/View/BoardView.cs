@@ -8,13 +8,13 @@ namespace Bang
     public class BoardView : MonoBehaviour, IBoardView
     {
 
-        [SerializeField] private GameObject discardStackTop = null;
+        [SerializeField] private CardView discardStackTop = null;
         [SerializeField] private Text deck = null;
         private ICardView discardTopCard;
 
         void Start()
         {
-            discardTopCard = discardStackTop.GetComponent<ICardView>();
+            discardTopCard = discardStackTop;
         }
 
         public void SetDeckSize(int cards)
