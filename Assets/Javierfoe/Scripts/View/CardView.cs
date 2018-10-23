@@ -15,6 +15,7 @@ namespace Bang
         private int index;
         private bool draggable, discardable;
         private DropView currentDropView;
+        private PlayerView currentPlayerView;
 
         public IPlayerView PlayerView
         {
@@ -84,25 +85,43 @@ namespace Bang
             if (!draggable && !discardable) return;
 
             DropView drop = null;
+            PlayerView pv = null;
             List<GameObject> hovered = eventData.hovered;
             GameObject hover;
             for (int i = 0; i < hovered.Count && drop == null; i++)
             {
                 hover = hovered[i];
                 drop = hover.GetComponent<DropView>();
-                drop = (drop != null && !drop.Droppable) ? null : drop;
+                drop = (drop != null && drop.Droppable) ? drop : null;
+            }
+            if (drop != null)
+            {
+                for (int i = 0; i < hovered.Count && pv == null; i++)
+                {
+                    hover = hovered[i];
+                    pv = hover.GetComponent<PlayerView>();
+                }
             }
 
-            ECardDropArea area = ECardDropArea.NULL;
-
-            if (currentDropView != null && drop != currentDropView) currentDropView.Highlight(false);
+            if (currentDropView != null && drop != currentDropView)
+            {
+                currentDropView.Highlight(false);
+            }
+            if (currentPlayerView != null && pv != currentPlayerView)
+            {
+                currentPlayerView.Highlight(false);
+            }
 
             if (drop != null && drop.Droppable)
             {
                 //Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
                 currentDropView = drop;
                 drop.Highlight(true);
-                area = drop.DropArea;
+            }
+            if (pv != null)
+            {
+                currentPlayerView = pv;
+                pv.Highlight(true);
             }
         }
 
@@ -115,10 +134,16 @@ namespace Bang
                 currentDropView.Highlight(false);
                 currentDropView = null;
             }
+            if (currentPlayerView != null)
+            {
+                currentPlayerView.Highlight(false);
+                currentPlayerView = null;
+            }
             if (draggable)
             {
                 PlayerController.LocalPlayer.PlayCard(index, currentDropView);
-            }else if (discardable)
+            }
+            else if (discardable)
             {
                 PlayerController.LocalPlayer.DiscardCard(index);
             }
