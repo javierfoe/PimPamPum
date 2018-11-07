@@ -14,11 +14,6 @@ namespace Bang
         private PlayerController[] playerControllerComponents;
         private int currentPlayers;
 
-        void Start()
-        {
-            new CursorIcons();
-        }
-
         public override void OnStartServer()
         {
             playerControllerGameObjects = new GameObject[maxPlayers];
