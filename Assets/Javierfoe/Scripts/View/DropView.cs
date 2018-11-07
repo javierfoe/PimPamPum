@@ -10,28 +10,17 @@ namespace Bang
 
         private Image background;
         private Color idle;
-        private ECardDropArea dropArea;
 
         public bool Droppable
         {
-            get; private set;
-        }
-
-        public ECardDropArea DropArea
-        {
-            get { return dropArea; }
-            protected set
-            {
-                dropArea = value;
-                Droppable = !(value < 0);
-            }
+            get; protected set;
         }
 
         protected virtual void Start()
         {
             background = GetComponent<Image>();
             idle = background.color;
-            DropArea = ECardDropArea.NULL;
+            Droppable = false;
         }
 
         public GameObject GameObject()
@@ -39,24 +28,19 @@ namespace Bang
             return gameObject;
         }
 
-        public ECardDropArea GetDroppable()
+        public bool GetDroppable()
         {
-            return DropArea;
+            return Droppable;
         }
 
-        public void SetDroppable(ECardDropArea cda)
+        public void SetDroppable(bool value)
         {
-            DropArea = cda;
+            Droppable = value;
         }
 
         public void Highlight(bool value)
         {
             background.color = value ? highlight : idle;
-        }
-
-        public virtual int[] GetIndexes()
-        {
-            return new int[] { -1 };
         }
     }
 }

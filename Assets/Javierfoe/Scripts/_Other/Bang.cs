@@ -2,33 +2,6 @@
 
 namespace Bang
 {
-    public class CursorIcons
-    {
-        public static CursorIcons Instance;
-
-        public static Transform Canvas
-        {
-            get; private set;
-        }
-
-        private Sprite[] cursorIcons;
-
-        public Sprite GetSprite(ECardDropArea da)
-        {
-            if (da < 0) return null;
-
-            return cursorIcons[(int)da];
-        }
-
-        public CursorIcons()
-        {
-            cursorIcons = new Sprite[2];
-            cursorIcons[0] = Resources.Load<Sprite>("redcross");
-            cursorIcons[1] = Resources.Load<Sprite>("explosion");
-            Canvas = Object.FindObjectOfType<Canvas>().transform;
-            Instance = this;
-        }
-    }
 
     public static class Number
     {
@@ -130,13 +103,6 @@ namespace Bang
         RENEGADE
     }
 
-    public enum ECardDropArea
-    {
-        NULL = -1,
-        CANCEL,
-        PLAY,
-    }
-
     public enum ECardType
     {
         BANG,
@@ -162,13 +128,6 @@ namespace Bang
         VOLCANIC,
         WELLSFARGO,
         WINCHESTER
-    }
-
-    public enum ECardTarget
-    {
-        SELF,
-        PLAYER,
-        PANIC_CATBALOU
     }
 
     public enum ESuit

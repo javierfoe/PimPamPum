@@ -13,10 +13,6 @@ namespace Bang
         {
             get; private set;
         }
-        public ECardTarget Target
-        {
-            get; protected set;
-        }
 
         public Color Color
         {
@@ -30,7 +26,6 @@ namespace Bang
         {
             Suit = suit;
             Rank = rank;
-            Target = ECardTarget.SELF;
         }
 
         public virtual void BeginCardDrag(PlayerController pc)
@@ -42,10 +37,7 @@ namespace Bang
 
     public class Bang : Card
     {
-        private Bang(ESuit suit, ERank rank) : base(suit, rank)
-        {
-            Target = ECardTarget.PLAYER;
-        }
+        private Bang(ESuit suit, ERank rank) : base(suit, rank) { }
 
         public static Bang CreateBang(int index)
         {
@@ -187,10 +179,7 @@ namespace Bang
 
     public class Duel : Card
     {
-        private Duel(ESuit suit, ERank rank) : base(suit, rank)
-        {
-            Target = ECardTarget.PLAYER;
-        }
+        private Duel(ESuit suit, ERank rank) : base(suit, rank) { }
 
         public static Duel CreateDuel(int index)
         {
@@ -219,10 +208,7 @@ namespace Bang
 
     public class CatBalou : Card
     {
-        protected CatBalou(ESuit suit, ERank rank) : base(suit, rank)
-        {
-            Target = ECardTarget.PANIC_CATBALOU;
-        }
+        protected CatBalou(ESuit suit, ERank rank) : base(suit, rank) { }
 
         public static CatBalou CreateCatBalou(int index)
         {
@@ -253,10 +239,7 @@ namespace Bang
 
     public class Panic : CatBalou
     {
-        private Panic(ESuit suit, ERank rank) : base(suit, rank)
-        {
-            Target = ECardTarget.PANIC_CATBALOU;
-        }
+        private Panic(ESuit suit, ERank rank) : base(suit, rank) { }
 
         public static Panic CreatePanic(int index)
         {
@@ -359,12 +342,12 @@ namespace Bang
 
     public abstract class Property : Card
     {
-        public Property(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected Property(ESuit suit, ERank rank) : base(suit, rank) { }
     }
 
     public class Mustang : Property
     {
-        public Mustang(ERank rank) : base(ESuit.HEARTS, rank) { }
+        private Mustang(ERank rank) : base(ESuit.HEARTS, rank) { }
 
         public static Mustang CreateMustang(int index)
         {
@@ -386,7 +369,7 @@ namespace Bang
 
     public class Barrel : Property
     {
-        public Barrel(ERank rank) : base(ESuit.SPADES, rank) { }
+        private Barrel(ERank rank) : base(ESuit.SPADES, rank) { }
 
         public static Barrel CreateBarrel(int index)
         {
@@ -418,7 +401,7 @@ namespace Bang
 
     public abstract class NegativeProperty : Property
     {
-        public NegativeProperty(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected NegativeProperty(ESuit suit, ERank rank) : base(suit, rank) { }
     }
 
     public class Dynamite : NegativeProperty
@@ -433,10 +416,7 @@ namespace Bang
 
     public class Jail : NegativeProperty
     {
-        private Jail(ESuit suit, ERank rank) : base(suit, rank)
-        {
-            Target = ECardTarget.PLAYER;
-        }
+        private Jail(ESuit suit, ERank rank) : base(suit, rank) { }
 
         public static Jail CreateJail(int index)
         {
@@ -470,9 +450,9 @@ namespace Bang
             get; private set;
         }
 
-        public Weapon(int range) : this(range, 0, 0) { }
+        protected Weapon(int range) : this(range, 0, 0) { }
 
-        public Weapon(int range, ESuit suit, ERank rank) : base(suit, rank)
+        protected Weapon(int range, ESuit suit, ERank rank) : base(suit, rank)
         {
             Range = range;
         }
@@ -530,7 +510,7 @@ namespace Bang
 
     public class Schofield : Weapon
     {
-        private Schofield(ESuit suit, ERank rank) : base(2, suit, rank) { }
+        protected Schofield(ESuit suit, ERank rank) : base(2, suit, rank) { }
 
         public static Schofield CreateSchofield(int index)
         {

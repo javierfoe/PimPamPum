@@ -12,8 +12,8 @@ namespace Bang
     public interface IDropView
     {
         GameObject GameObject();
-        ECardDropArea GetDroppable();
-        void SetDroppable(ECardDropArea cda);
+        bool GetDroppable();
+        void SetDroppable(bool value);
     }
 
     public interface ICardView : IDropView
@@ -31,7 +31,7 @@ namespace Bang
 
     public interface IPlayerView : IDropView
     {
-        void SetStealable(ECardDropArea cda, bool weapon);
+        void SetStealable(bool value, bool weapon);
         void SetPlayerIndex(int index);
         int GetPlayerIndex();
         void UpdateHP(int hp);

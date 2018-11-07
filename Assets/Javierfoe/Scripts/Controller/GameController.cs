@@ -150,14 +150,14 @@ namespace Bang
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 if (pc.PlayerNumber != player && pc.Role != ERole.SHERIFF)
-                    pc.TargetSetTargetable(conn, ECardDropArea.PLAY);
+                    pc.TargetSetTargetable(conn, true);
         }
 
         public void TargetAllCards(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                pc.SetStealable(conn, ECardDropArea.PLAY);
+                pc.SetStealable(conn, true);
         }
 
         public void TargetOthers(int player)
@@ -165,7 +165,7 @@ namespace Bang
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 if (pc.PlayerNumber != player)
-                    pc.TargetSetTargetable(conn, ECardDropArea.PLAY);
+                    pc.TargetSetTargetable(conn, true);
         }
 
         public void TargetAllRangeCards(int player, int range)
@@ -174,9 +174,9 @@ namespace Bang
             List<int> playersInRange = PlayersInRange(player, range);
             foreach (int i in playersInRange)
             {
-                playerControllers[i].SetStealable(conn, ECardDropArea.PLAY);
+                playerControllers[i].SetStealable(conn, true);
             }
-            playerControllers[player].SetStealable(conn, ECardDropArea.PLAY);
+            playerControllers[player].SetStealable(conn, true);
         }
 
         public void TargetPlayersRange(int player, int range)
@@ -185,7 +185,7 @@ namespace Bang
             List<int> playersInRange = PlayersInRange(player, range);
             foreach (int i in playersInRange)
             {
-                playerControllers[i].TargetSetTargetable(conn, ECardDropArea.PLAY);
+                playerControllers[i].TargetSetTargetable(conn, true);
             }
         }
 

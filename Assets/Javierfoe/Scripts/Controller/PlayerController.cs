@@ -174,9 +174,9 @@ namespace Bang
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
-        public void SetStealable(NetworkConnection conn, ECardDropArea cda)
+        public void SetStealable(NetworkConnection conn, bool value)
         {
-            TargetSetStealable(conn, cda, weapon != colt45);
+            TargetSetStealable(conn, value, weapon != colt45);
         }
 
         public void BangBeginCardDrag()
@@ -292,21 +292,20 @@ namespace Bang
         [TargetRpc]
         public void TargetStopTargeting(NetworkConnection conn)
         {
-            ECardDropArea cda = ECardDropArea.NULL;
-            PlayerView.SetDroppable(cda);
-            PlayerView.SetStealable(cda, true);
+            PlayerView.SetDroppable(false);
+            PlayerView.SetStealable(false, true);
         }
 
         [TargetRpc]
-        public void TargetSetTargetable(NetworkConnection conn, ECardDropArea cda)
+        public void TargetSetTargetable(NetworkConnection conn, bool value)
         {
-            PlayerView.SetDroppable(cda);
+            PlayerView.SetDroppable(value);
         }
 
         [TargetRpc]
-        public void TargetSetStealable(NetworkConnection conn, ECardDropArea cda, bool weapon)
+        public void TargetSetStealable(NetworkConnection conn, bool value, bool weapon)
         {
-            PlayerView.SetStealable(cda, weapon);
+            PlayerView.SetStealable(value, weapon);
         }
 
         [TargetRpc]

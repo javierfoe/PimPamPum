@@ -121,12 +121,12 @@ namespace Bang
             handCards[index].Discardable(enable);
         }
 
-        public void SetStealable(ECardDropArea cda, bool weapon)
+        public void SetStealable(bool value, bool weapon)
         {
-            if (handHidden) handHidden.SetDroppable(cda);
-            if (weapon) weaponCard.SetDroppable(cda);
+            if (handHidden) handHidden.SetDroppable(value);
+            if (weapon) weaponCard.SetDroppable(value);
             foreach (ICardView cv in propertyCards)
-                cv.SetDroppable(cda);
+                cv.SetDroppable(value);
         }
     }
 }
