@@ -134,7 +134,7 @@ namespace Bang
         private void DiscardEndTurn(bool value)
         {
             int length = hand.Count;
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 TargetEnableDiscardCard(connectionToClient, i, value);
             }
@@ -179,6 +179,12 @@ namespace Bang
             TargetSetStealable(conn, value, weapon != colt45);
         }
 
+        public void EndCardDrag()
+        {
+            draggedCard = null;
+            CmdStopTargeting();
+        }
+
         public void BangBeginCardDrag()
         {
             GameController.Instance.TargetPlayersRange(playerNum, weapon.Range);
@@ -206,19 +212,24 @@ namespace Bang
 
         public void SelfTargetCard()
         {
+            GameController.Instance.TargetSelf(playerNum);
+        }
+
+        public void StopTargeting()
+        {
             GameController.Instance.StopTargeting(playerNum);
+        }
+
+        [Command]
+        public void CmdStopTargeting()
+        {
+            StopTargeting();
         }
 
         [Command]
         public void CmdSelfTargetCard()
         {
             SelfTargetCard();
-        }
-
-        public void StopTargeting()
-        {
-            draggedCard = null;
-            CmdSelfTargetCard();
         }
 
         [Command]

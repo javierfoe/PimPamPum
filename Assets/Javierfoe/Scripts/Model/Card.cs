@@ -28,10 +28,7 @@ namespace Bang
             Rank = rank;
         }
 
-        public virtual void BeginCardDrag(PlayerController pc)
-        {
-            pc.SelfTargetCard();
-        }
+        public abstract void BeginCardDrag(PlayerController pc);
 
     }
 
@@ -171,6 +168,11 @@ namespace Bang
             return null;
         }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
+
         public override string ToString()
         {
             return "Indians";
@@ -272,6 +274,11 @@ namespace Bang
     {
         public Gatling() : base(ESuit.HEARTS, ERank.TEN) { }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
+
         public override string ToString()
         {
             return "Gatling";
@@ -302,6 +309,11 @@ namespace Bang
             return null;
         }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
+
         public override string ToString()
         {
             return "Beer";
@@ -311,6 +323,11 @@ namespace Bang
     public class Saloon : Card
     {
         public Saloon() : base(ESuit.HEARTS, ERank.FIVE) { }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
 
         public override string ToString()
         {
@@ -334,6 +351,11 @@ namespace Bang
             return null;
         }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
+
         public override string ToString()
         {
             return "General Store";
@@ -343,6 +365,11 @@ namespace Bang
     public abstract class Property : Card
     {
         protected Property(ESuit suit, ERank rank) : base(suit, rank) { }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
     }
 
     public class Mustang : Property
@@ -558,6 +585,11 @@ namespace Bang
         protected Draw(int numberToDraw, ESuit suit, ERank rank) : base(suit, rank)
         {
             this.numberToDraw = numberToDraw;
+        }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
         }
     }
 

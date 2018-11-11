@@ -160,6 +160,13 @@ namespace Bang
                 pc.SetStealable(conn, true);
         }
 
+        public void TargetSelf(int player)
+        {
+            PlayerController pc = playerControllers[player];
+            pc.TargetSetTargetable(pc.connectionToClient, true);
+
+        }
+
         public void TargetOthers(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
