@@ -138,11 +138,10 @@ namespace Bang
             return res;
         }
 
-        public void StopTargeting(int player)
+        public void StopTargeting()
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                pc.TargetStopTargeting(conn);
+                pc.StopTargeting();
         }
 
         public void TargetAllButSheriff(int player)

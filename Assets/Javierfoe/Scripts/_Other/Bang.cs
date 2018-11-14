@@ -157,4 +157,11 @@ namespace Bang
         KING
     }
 
+    public enum EDrop
+    {
+        HAND = -1,
+        WEAPON = -2,
+        NOTHING = -3
+    }
+
 }

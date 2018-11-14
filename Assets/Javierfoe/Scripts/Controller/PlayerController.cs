@@ -154,9 +154,9 @@ namespace Bang
             CmdBeginCardDrag(index);
         }
 
-        public void PlayCard(int index, IDropView drop)
+        public void PlayCard(int player, int drop)
         {
-
+            CmdPlayCard(player, drop);
         }
 
         public void DiscardCard(int index)
@@ -182,7 +182,7 @@ namespace Bang
         public void EndCardDrag()
         {
             draggedCard = null;
-            CmdStopTargeting();
+            GameController.Instance.StopTargeting();
         }
 
         public void BangBeginCardDrag()
@@ -217,13 +217,14 @@ namespace Bang
 
         public void StopTargeting()
         {
-            GameController.Instance.StopTargeting(playerNum);
+            PlayerView.SetDroppable(false);
+            PlayerView.SetStealable(false, true);
         }
 
         [Command]
-        public void CmdStopTargeting()
+        public void CmdPlayCard(int player, int drop)
         {
-            StopTargeting();
+            draggedCard.PlayCard(player, drop);
         }
 
         [Command]
@@ -298,13 +299,6 @@ namespace Bang
         private void RpcSheriff()
         {
             PlayerView.SetSheriff();
-        }
-
-        [TargetRpc]
-        public void TargetStopTargeting(NetworkConnection conn)
-        {
-            PlayerView.SetDroppable(false);
-            PlayerView.SetStealable(false, true);
         }
 
         [TargetRpc]

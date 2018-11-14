@@ -30,6 +30,11 @@ namespace Bang
 
         public abstract void BeginCardDrag(PlayerController pc);
 
+        public virtual void PlayCard(int player, int drop)
+        {
+            Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop);
+        }
+
     }
 
     public class Bang : Card

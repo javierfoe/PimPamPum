@@ -70,6 +70,11 @@ namespace Bang
             PlayerView = playerView;
         }
 
+        public override int GetDropEnum()
+        {
+            return index;
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!draggable && !discardable) return;
@@ -129,6 +134,15 @@ namespace Bang
         {
             if (!draggable && !discardable) return;
             Highlight(false);
+            if (draggable && currentPlayerView != null)
+            {
+                PlayerController.LocalPlayer.PlayCard(currentPlayerView.GetPlayerIndex(), currentDropView.GetDropEnum());
+            }
+            else if (discardable)
+            {
+                PlayerController.LocalPlayer.DiscardCard(index);
+            }
+            PlayerController.LocalPlayer.EndCardDrag();
             if (currentDropView != null)
             {
                 currentDropView.Highlight(false);
@@ -139,15 +153,6 @@ namespace Bang
                 currentPlayerView.Highlight(false);
                 currentPlayerView = null;
             }
-            if (draggable)
-            {
-                PlayerController.LocalPlayer.PlayCard(index, currentDropView);
-            }
-            else if (discardable)
-            {
-                PlayerController.LocalPlayer.DiscardCard(index);
-            }
-            PlayerController.LocalPlayer.StopTargeting();
         }
     }
 }

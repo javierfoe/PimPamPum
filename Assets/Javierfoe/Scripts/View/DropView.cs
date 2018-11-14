@@ -8,6 +8,7 @@ namespace Bang
 
         [SerializeField] private Color highlight = new Color();
 
+        protected EDrop eDrop;
         private Image background;
         private Color idle;
 
@@ -21,6 +22,7 @@ namespace Bang
             background = GetComponent<Image>();
             idle = background.color;
             Droppable = false;
+            eDrop = EDrop.NOTHING;
         }
 
         public GameObject GameObject()
@@ -41,6 +43,11 @@ namespace Bang
         public void Highlight(bool value)
         {
             background.color = value ? highlight : idle;
+        }
+
+        public virtual int GetDropEnum()
+        {
+            return (int)eDrop;
         }
     }
 }

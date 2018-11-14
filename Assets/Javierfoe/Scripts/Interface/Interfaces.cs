@@ -14,6 +14,7 @@ namespace Bang
         GameObject GameObject();
         bool GetDroppable();
         void SetDroppable(bool value);
+        int GetDropEnum();
     }
 
     public interface ICardView : IDropView

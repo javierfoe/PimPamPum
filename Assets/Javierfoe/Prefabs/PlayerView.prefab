@@ -19,8 +19,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224420744380626110}
-  - component: {fileID: 114576780231068602}
   - component: {fileID: 222470715983531072}
+  - component: {fileID: 114827269285346764}
   - component: {fileID: 114242735307848072}
   m_Layer: 5
   m_Name: Weapon
@@ -470,21 +470,6 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: 
---- !u!114 &114576780231068602
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1008839709338664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 913762a6b7171b74b967fd17160bd4b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlight: {r: 0.15143289, g: 0.25129318, b: 0.7830189, a: 0.7137255}
-  cardName: {fileID: 114896613605669552}
-  suit: {fileID: 114035818257721444}
-  rank: {fileID: 114731590806842470}
 --- !u!114 &114606889887309158
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -601,6 +586,21 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114827269285346764
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1008839709338664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5277a3c52439f4d4d9ec87d7ad39972c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlight: {r: 0.15143289, g: 0.25129318, b: 0.7830189, a: 0.7137255}
+  cardName: {fileID: 114896613605669552}
+  suit: {fileID: 114035818257721444}
+  rank: {fileID: 114731590806842470}
 --- !u!114 &114896613605669552
 MonoBehaviour:
   m_ObjectHideFlags: 1
