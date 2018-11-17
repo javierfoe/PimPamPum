@@ -30,9 +30,10 @@ namespace Bang
 
         public abstract void BeginCardDrag(PlayerController pc);
 
-        public virtual void PlayCard(int player, int drop)
+        public virtual void PlayCard(PlayerController pc, int player, int drop)
         {
             Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop);
+            pc.DiscardCardUsed();
         }
 
     }
@@ -319,6 +320,13 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.Heal();
+            Debug.Log("Beer used.");
+        }
+
         public override string ToString()
         {
             return "Beer";
@@ -590,6 +598,13 @@ namespace Bang
         protected Draw(int numberToDraw, ESuit suit, ERank rank) : base(suit, rank)
         {
             this.numberToDraw = numberToDraw;
+        }
+
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.Draw(numberToDraw);
+            pc.FinishCardUsed();
         }
 
         public override void BeginCardDrag(PlayerController pc)

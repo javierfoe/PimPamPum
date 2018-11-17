@@ -117,12 +117,14 @@ namespace Bang
                 currentPlayerView.Highlight(false);
             }
 
+            currentDropView = null;
             if (drop != null && drop.Droppable)
             {
                 //Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
                 currentDropView = drop;
                 drop.Highlight(true);
             }
+            currentPlayerView = null;
             if (pv != null)
             {
                 currentPlayerView = pv;
@@ -140,19 +142,19 @@ namespace Bang
             }
             else if (discardable)
             {
-                PlayerController.LocalPlayer.DiscardCard(index);
+                PlayerController.LocalPlayer.DiscardCardEndTurn(index);
             }
             PlayerController.LocalPlayer.EndCardDrag();
             if (currentDropView != null)
             {
                 currentDropView.Highlight(false);
-                currentDropView = null;
             }
             if (currentPlayerView != null)
             {
                 currentPlayerView.Highlight(false);
-                currentPlayerView = null;
             }
+            currentPlayerView = null;
+            currentDropView = null;
         }
     }
 }

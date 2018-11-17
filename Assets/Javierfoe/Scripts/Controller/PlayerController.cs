@@ -12,9 +12,8 @@ namespace Bang
         public static PlayerController LocalPlayer { get; private set; }
         private static Colt45 colt45 = new Colt45();
 
-        private Card draggedCard;
-        private int bangsUsed;
-        private int hp;
+        private int draggedCard;
+        private int bangsUsed,hp,maxHp;
         private EndTurnButton endTurn;
         private Weapon weapon;
         private GameController gameController;
@@ -41,6 +40,16 @@ namespace Bang
             {
                 hp = value;
                 RpcUpdateHP(hp);
+            }
+        }
+
+        private int MaxHP
+        {
+            get { return maxHp; }
+            set
+            {
+                maxHp = value;
+                HP = value;
             }
         }
 
@@ -79,7 +88,7 @@ namespace Bang
             LocalPlayer = this;
         }
 
-        public void SetRole(ERole role)
+        public virtual void SetRole(ERole role)
         {
             Role = role;
             if (role == ERole.SHERIFF)
@@ -164,6 +173,11 @@ namespace Bang
             CmdDiscardCard(index);
         }
 
+        public void DiscardCardEndTurn(int index)
+        {
+            CmdDiscardCardEndTurn(index);
+        }
+
         public void Bang()
         {
             bangsUsed++;
@@ -181,7 +195,7 @@ namespace Bang
 
         public void EndCardDrag()
         {
-            draggedCard = null;
+            draggedCard = -1;
             GameController.Instance.StopTargeting();
         }
 
@@ -221,10 +235,25 @@ namespace Bang
             PlayerView.SetStealable(false, true);
         }
 
+        public virtual void Heal()
+        {
+            if(HP < MaxHP) HP++;
+        }
+
+        public void DiscardCardUsed()
+        {
+            DiscardCard(draggedCard);
+        }
+
+        public void FinishCardUsed()
+        {
+            EnableCards(true);
+        }
+
         [Command]
         public void CmdPlayCard(int player, int drop)
         {
-            draggedCard.PlayCard(player, drop);
+            hand[draggedCard].PlayCard(this, player, drop);
         }
 
         [Command]
@@ -236,8 +265,8 @@ namespace Bang
         [Command]
         public void CmdBeginCardDrag(int index)
         {
-            draggedCard = hand[index];
-            draggedCard.BeginCardDrag(this);
+            draggedCard = index;
+            hand[draggedCard].BeginCardDrag(this);
         }
 
         [Command]
@@ -254,14 +283,25 @@ namespace Bang
             }
         }
 
-        [Command]
-        public void CmdDiscardCard(int index)
+        public void DiscardCardCmd(int index)
         {
             Card card = hand[index];
             hand.RemoveAt(index);
             GameController.Instance.DiscardCard(card);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
+        }
+
+        [Command]
+        public void CmdDiscardCard(int index)
+        {
+            DiscardCardCmd(index);
+        }
+
+        [Command]
+        public void CmdDiscardCardEndTurn(int index)
+        {
+            DiscardCardCmd(index);
             if (hand.Count < hp + 1)
             {
                 GameController.Instance.EndTurn();
