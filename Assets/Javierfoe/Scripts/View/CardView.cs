@@ -140,7 +140,7 @@ namespace Bang
             {
                 PlayerController.LocalPlayer.PlayCard(currentPlayerView.GetPlayerIndex(), currentDropView.GetDropEnum());
             }
-            else if (discardable)
+            else if (discardable && currentDropView != null)
             {
                 PlayerController.LocalPlayer.DiscardCardEndTurn(index);
             }
