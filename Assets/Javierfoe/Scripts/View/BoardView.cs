@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace Bang

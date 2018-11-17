@@ -126,6 +126,38 @@ namespace Bang
             RpcAddCard();
         }
 
+        private Card UnequipDraggedCard()
+        {
+            Card c = hand[draggedCard];
+            RemoveCardFromHand(draggedCard);
+            return c;
+        }
+
+        private void RemoveCardFromHand(int index)
+        {
+            hand.RemoveAt(index);
+            TargetRemoveCard(connectionToClient, index);
+            RpcRemoveCard();
+        }
+
+        public void EquipProperty()
+        {
+            Card c = UnequipDraggedCard();
+            EquipProperty(c);
+        }
+
+        public void EquipProperty(Card c)
+        {
+            properties.Add(c);
+            RpcEquipProperty(properties.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
+        }
+
+        public void Imprison(int player)
+        {
+            Card c = UnequipDraggedCard();
+            GameController.Instance.Imprison(player,c);
+        }
+
         public void StartTurn()
         {
             Draw(2);
@@ -181,6 +213,16 @@ namespace Bang
         public void Bang()
         {
             bangsUsed++;
+        }
+
+        public void EquipWeapon()
+        {
+            if(Weapon != colt45)
+            {
+                GameController.Instance.DiscardCard(Weapon);
+            }
+            Weapon weapon = (Weapon)UnequipDraggedCard();
+            Weapon = weapon;
         }
 
         private void EquipWeapon(Weapon weapon)
@@ -250,6 +292,15 @@ namespace Bang
             EnableCards(true);
         }
 
+        public void DiscardCardCmd(int index)
+        {
+            Card card = hand[index];
+            hand.RemoveAt(index);
+            GameController.Instance.DiscardCard(card);
+            TargetRemoveCard(connectionToClient, index);
+            RpcRemoveCard();
+        }
+
         [Command]
         public void CmdPlayCard(int player, int drop)
         {
@@ -283,15 +334,6 @@ namespace Bang
             }
         }
 
-        public void DiscardCardCmd(int index)
-        {
-            Card card = hand[index];
-            hand.RemoveAt(index);
-            GameController.Instance.DiscardCard(card);
-            TargetRemoveCard(connectionToClient, index);
-            RpcRemoveCard();
-        }
-
         [Command]
         public void CmdDiscardCard(int index)
         {
@@ -313,6 +355,12 @@ namespace Bang
         private void RpcEquipWeapon(string name, ESuit suit, ERank rank, Color color)
         {
             PlayerView.EquipWeapon(name, suit, rank, color);
+        }
+
+        [ClientRpc]
+        private void RpcEquipProperty(int index, string name, ESuit suit, ERank rank, Color color)
+        {
+            PlayerView.EquipProperty(index, name, suit, rank, color);
         }
 
         [ClientRpc]

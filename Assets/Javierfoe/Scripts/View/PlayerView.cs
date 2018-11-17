@@ -85,12 +85,24 @@ namespace Bang
 
         public void AddCard(int index, string name, ESuit suit, ERank rank, Color color)
         {
-            ICardView cv = Instantiate(GameController.Instance.cardPrefab, hand);
+            ICardView cv = InstantiateCard(index, name, suit, rank, color, hand);
+            handCards.Add(cv);
+        }
+
+        public void EquipProperty(int index, string name, ESuit suit, ERank rank, Color color)
+        {
+            ICardView cv = InstantiateCard(index, name, suit, rank, color, properties);
+            propertyCards.Add(cv);
+        }
+
+        private ICardView InstantiateCard(int index, string name, ESuit suit, ERank rank, Color color, Transform t)
+        {
+            ICardView cv = Instantiate(GameController.Instance.cardPrefab, t);
             cv.SetIndex(index);
             cv.SetName(name, color);
             cv.SetSuit(suit);
             cv.SetRank(rank);
-            handCards.Add(cv);
+            return cv;
         }
 
         public void RemoveCard(int index)

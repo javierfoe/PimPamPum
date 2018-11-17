@@ -287,7 +287,7 @@ MonoBehaviour:
   isNetworkActive: 0
   matchMaker: {fileID: 0}
   gameController: {fileID: 1588766673}
-  maxPlayers: 2
+  maxPlayers: 4
 --- !u!4 &486509228
 Transform:
   m_ObjectHideFlags: 0
@@ -527,6 +527,10 @@ Prefab:
     - target: {fileID: 1200586415814806, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
       propertyPath: m_Name
       value: PlayerView (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1980290107873928, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
@@ -1213,10 +1217,6 @@ Prefab:
     - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
         type: 2}
       propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1980290107873928, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
-namespace Bang
+﻿namespace Bang
 {
     public class WeaponView : CardView
     {
@@ -8,6 +6,11 @@ namespace Bang
         {
             base.Start();
             eDrop = EDrop.WEAPON;
+        }
+
+        public override int GetDropEnum()
+        {
+            return (int)eDrop;
         }
     }
 }

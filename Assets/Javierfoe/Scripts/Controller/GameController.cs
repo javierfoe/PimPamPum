@@ -114,6 +114,11 @@ namespace Bang
             sheriff.StartTurn();
         }
 
+        public void Imprison(int player, Card c)
+        {
+            playerControllers[player].EquipProperty(c);
+        }
+
         public void EndTurn()
         {
             currentPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
@@ -132,8 +137,8 @@ namespace Bang
                 add = add > maxPlayers - 1 ? add - maxPlayers : add;
                 sub = sub < 0 ? maxPlayers + sub : sub;
                 if (add == player || sub == player) continue;
-                if (!res.Contains(add)) res.Add(add);
-                if (!res.Contains(sub)) res.Add(sub);
+                if (!res.Contains(add) && add < playerControllers.Length) res.Add(add);
+                if (!res.Contains(sub) && sub < playerControllers.Length) res.Add(sub);
             }
             return res;
         }

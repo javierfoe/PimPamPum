@@ -33,7 +33,6 @@ namespace Bang
         public virtual void PlayCard(PlayerController pc, int player, int drop)
         {
             Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop);
-            pc.DiscardCardUsed();
         }
 
     }
@@ -325,6 +324,7 @@ namespace Bang
             base.PlayCard(pc, player, drop);
             pc.Heal();
             Debug.Log("Beer used.");
+            pc.DiscardCardUsed();
         }
 
         public override string ToString()
@@ -382,6 +382,17 @@ namespace Bang
         public override void BeginCardDrag(PlayerController pc)
         {
             pc.SelfTargetCard();
+        }
+
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            EquipProperty(pc, player, drop);
+        }
+
+        protected virtual void EquipProperty(PlayerController pc, int player, int drop)
+        {
+            pc.EquipProperty();
         }
     }
 
@@ -477,6 +488,11 @@ namespace Bang
             pc.JailBeginCardDrag();
         }
 
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            pc.Imprison(player);
+        }
+
         public override string ToString()
         {
             return "Jail";
@@ -496,6 +512,14 @@ namespace Bang
         {
             Range = range;
         }
+
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.EquipWeapon();
+        }
+
+        protected override void EquipProperty(PlayerController pc, int player, int drop){}
 
         public virtual void Bang(PlayerController pc)
         {
@@ -604,6 +628,7 @@ namespace Bang
         {
             base.PlayCard(pc, player, drop);
             pc.Draw(numberToDraw);
+            pc.DiscardCardUsed();
             pc.FinishCardUsed();
         }
 
