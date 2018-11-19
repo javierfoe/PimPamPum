@@ -5,11 +5,12 @@ namespace Bang
 {
     public class GameController : NetworkBehaviour
     {
+        public static CardView CardPrefab
+        {
+            get; private set;
+        }
 
-        public static GameController Instance { get; private set; }
-
-        public CardView cardPrefab;
-
+        [SerializeField] private CardView cardPrefab;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
 
@@ -56,18 +57,7 @@ namespace Bang
 
         public override void OnStartClient()
         {
-            if (isServer) return;
-            OnStart();
-        }
-
-        public override void OnStartServer()
-        {
-            OnStart();
-        }
-
-        private void OnStart()
-        {
-            Instance = this;
+            CardPrefab = cardPrefab;
             playerControllers = new PlayerController[maxPlayers];
         }
 
@@ -137,8 +127,8 @@ namespace Bang
                 add = add > maxPlayers - 1 ? add - maxPlayers : add;
                 sub = sub < 0 ? maxPlayers + sub : sub;
                 if (add == player || sub == player) continue;
-                if (!res.Contains(add) && add < playerControllers.Length) res.Add(add);
-                if (!res.Contains(sub) && sub < playerControllers.Length) res.Add(sub);
+                if (!res.Contains(add) && add < playerControllers.Length && add > -1) res.Add(add);
+                if (!res.Contains(sub) && sub < playerControllers.Length && sub > -1) res.Add(sub);
             }
             return res;
         }

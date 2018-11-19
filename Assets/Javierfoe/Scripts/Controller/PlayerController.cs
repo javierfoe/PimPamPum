@@ -10,13 +10,13 @@ namespace Bang
         [SyncVar] private int playerNum;
 
         public static PlayerController LocalPlayer { get; private set; }
+        private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
 
         private int draggedCard;
         private int bangsUsed,hp,maxHp;
         private EndTurnButton endTurn;
         private Weapon weapon;
-        private GameController gameController;
         private List<Card> hand, properties;
         private IPlayerView playerView;
 
@@ -76,7 +76,6 @@ namespace Bang
 
         public override void OnStartServer()
         {
-            gameController = GameController.Instance;
             hand = new List<Card>();
             properties = new List<Card>();
         }
@@ -86,6 +85,11 @@ namespace Bang
             endTurn = FindObjectOfType<EndTurnButton>();
             endTurn.Active = false;
             LocalPlayer = this;
+        }
+
+        public override void OnStartClient()
+        {
+            if (!GameController) GameController = FindObjectOfType<GameController>();
         }
 
         public virtual void SetRole(ERole role)
@@ -99,7 +103,7 @@ namespace Bang
             else
             {
                 HP = 4;
-                TargetSetRole(this.connectionToClient, role);
+                TargetSetRole(connectionToClient, role);
             }
             Weapon = colt45;
             DrawInitialCards();
@@ -107,7 +111,7 @@ namespace Bang
 
         public void Draw(int amount)
         {
-            List<Card> cards = gameController.DrawCards(amount);
+            List<Card> cards = GameController.DrawCards(amount);
             foreach (Card card in cards)
             {
                 AddCard(card);
@@ -155,7 +159,7 @@ namespace Bang
         public void Imprison(int player)
         {
             Card c = UnequipDraggedCard();
-            GameController.Instance.Imprison(player,c);
+            GameController.Imprison(player,c);
         }
 
         public void StartTurn()
@@ -219,7 +223,7 @@ namespace Bang
         {
             if(Weapon != colt45)
             {
-                GameController.Instance.DiscardCard(Weapon);
+                GameController.DiscardCard(Weapon);
             }
             Weapon weapon = (Weapon)UnequipDraggedCard();
             Weapon = weapon;
@@ -238,37 +242,37 @@ namespace Bang
         public void EndCardDrag()
         {
             draggedCard = -1;
-            GameController.Instance.StopTargeting();
+            GameController.StopTargeting();
         }
 
         public void BangBeginCardDrag()
         {
-            GameController.Instance.TargetPlayersRange(playerNum, weapon.Range);
+            GameController.TargetPlayersRange(playerNum, weapon.Range);
         }
 
         public void JailBeginCardDrag()
         {
-            GameController.Instance.TargetAllButSheriff(playerNum);
+            GameController.TargetAllButSheriff(playerNum);
         }
 
         public void CatBalouBeginCardDrag()
         {
-            GameController.Instance.TargetAllCards(playerNum);
+            GameController.TargetAllCards(playerNum);
         }
 
         public void PanicBeginCardDrag()
         {
-            GameController.Instance.TargetAllRangeCards(playerNum, 1);
+            GameController.TargetAllRangeCards(playerNum, 1);
         }
 
         public void TargetOthers()
         {
-            GameController.Instance.TargetOthers(playerNum);
+            GameController.TargetOthers(playerNum);
         }
 
         public void SelfTargetCard()
         {
-            GameController.Instance.TargetSelf(playerNum);
+            GameController.TargetSelf(playerNum);
         }
 
         public void StopTargeting()
@@ -296,7 +300,7 @@ namespace Bang
         {
             Card card = hand[index];
             hand.RemoveAt(index);
-            GameController.Instance.DiscardCard(card);
+            GameController.DiscardCard(card);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
         }
@@ -326,7 +330,7 @@ namespace Bang
             EnableCards(false);
             if (hand.Count < hp + 1)
             {
-                GameController.Instance.EndTurn();
+                GameController.EndTurn();
             }
             else
             {
@@ -346,7 +350,7 @@ namespace Bang
             DiscardCardCmd(index);
             if (hand.Count < hp + 1)
             {
-                GameController.Instance.EndTurn();
+                GameController.EndTurn();
                 DiscardEndTurn(false);
             }
         }
@@ -434,15 +438,14 @@ namespace Bang
         [TargetRpc]
         public void TargetSetup(NetworkConnection conn, int playerNumber)
         {
-            GameController gameController = GameController.Instance;
             IPlayerView ipv = null;
             if (isLocalPlayer)
             {
-                ipv = gameController.GetPlayerView(0);
+                ipv = GameController.GetPlayerView(0);
             }
             else
             {
-                ipv = gameController.GetPlayerView(playerNumber, this.PlayerNumber);
+                ipv = GameController.GetPlayerView(playerNumber, this.PlayerNumber);
             }
             PlayerView = ipv;
         }

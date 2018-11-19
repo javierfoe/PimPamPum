@@ -97,7 +97,7 @@ namespace Bang
 
         private ICardView InstantiateCard(int index, string name, ESuit suit, ERank rank, Color color, Transform t)
         {
-            ICardView cv = Instantiate(GameController.Instance.cardPrefab, t);
+            ICardView cv = Instantiate(GameController.CardPrefab, t);
             cv.SetIndex(index);
             cv.SetName(name, color);
             cv.SetSuit(suit);
