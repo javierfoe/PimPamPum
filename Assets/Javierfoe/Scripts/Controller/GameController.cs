@@ -139,11 +139,11 @@ namespace Bang
                 pc.StopTargeting();
         }
 
-        public void TargetAllButSheriff(int player)
+        public void TargetPrison(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && pc.Role != ERole.SHERIFF)
+                if (pc.PlayerNumber != player && pc.Role != ERole.SHERIFF && !pc.HasProperty<Jail>())
                     pc.TargetSetTargetable(conn, true);
         }
 
@@ -158,7 +158,12 @@ namespace Bang
         {
             PlayerController pc = playerControllers[player];
             pc.TargetSetTargetable(pc.connectionToClient, true);
+        }
 
+        public void TargetSelfProperty<T>(int player)
+        {
+            PlayerController pc = playerControllers[player];
+            pc.TargetSetTargetable(pc.connectionToClient, !pc.HasProperty<T>());
         }
 
         public void TargetOthers(int player)
