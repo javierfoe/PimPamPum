@@ -379,10 +379,7 @@ namespace Bang
     {
         protected Property(ESuit suit, ERank rank) : base(suit, rank) { }
 
-        public override void BeginCardDrag(PlayerController pc)
-        {
-            pc.SelfTargetCard();
-        }
+        public abstract override void BeginCardDrag(PlayerController pc);
 
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
@@ -412,6 +409,11 @@ namespace Bang
             return null;
         }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetPropertyCard<Mustang>();
+        }
+
         public override string ToString()
         {
             return "Mustang";
@@ -434,6 +436,11 @@ namespace Bang
             return null;
         }
 
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetPropertyCard<Barrel>();
+        }
+
         public override string ToString()
         {
             return "Barrel";
@@ -443,6 +450,11 @@ namespace Bang
     public class Binoculars : Property
     {
         public Binoculars() : base(ESuit.SPADES, ERank.ACE) { }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetPropertyCard<Binoculars>();
+        }
 
         public override string ToString()
         {
@@ -458,6 +470,11 @@ namespace Bang
     public class Dynamite : NegativeProperty
     {
         public Dynamite() : base(ESuit.HEARTS, ERank.TWO) { }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetPropertyCard<Dynamite>();
+        }
 
         public override string ToString()
         {
@@ -511,6 +528,11 @@ namespace Bang
         protected Weapon(int range, ESuit suit, ERank rank) : base(suit, rank)
         {
             Range = range;
+        }
+
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
         }
 
         public override void PlayCard(PlayerController pc, int player, int drop)

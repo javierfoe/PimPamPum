@@ -234,6 +234,27 @@ namespace Bang
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
+        public bool HasProperty<T>()
+        {
+            return Has<T>(properties);
+        }
+
+        public bool HasHand<T>()
+        {
+            return Has<T>(hand);
+        }
+
+        private bool Has<T>(List<Card> list)
+        {
+            bool res = false;
+            int length = list.Count;
+            for (int i = 0; i < length && !res; i++)
+            {
+                res = list[i] is T;
+            }
+            return res;
+        }
+
         public void SetStealable(NetworkConnection conn, bool value)
         {
             TargetSetStealable(conn, value, weapon != colt45);
@@ -252,7 +273,7 @@ namespace Bang
 
         public void JailBeginCardDrag()
         {
-            GameController.TargetAllButSheriff(playerNum);
+            GameController.TargetPrison(playerNum);
         }
 
         public void CatBalouBeginCardDrag()
@@ -273,6 +294,11 @@ namespace Bang
         public void SelfTargetCard()
         {
             GameController.TargetSelf(playerNum);
+        }
+
+        public void SelfTargetPropertyCard<T>()
+        {
+            GameController.TargetSelfProperty<T>(playerNum);
         }
 
         public void StopTargeting()
