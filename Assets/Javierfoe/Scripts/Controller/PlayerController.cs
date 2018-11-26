@@ -13,8 +13,7 @@ namespace Bang
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
 
-        private int draggedCard;
-        private int bangsUsed,hp,maxHp;
+        private int draggedCard, bangsUsed, hp, maxHp;
         private EndTurnButton endTurn;
         private Weapon weapon;
         private List<Card> hand, properties;
@@ -57,6 +56,16 @@ namespace Bang
         {
             get { return playerNum; }
             set { playerNum = value; }
+        }
+
+        public int Scope
+        {
+            get; private set;
+        }
+
+        public int RangeModifier
+        {
+            get; private set;
         }
 
         public ERole Role
@@ -159,7 +168,27 @@ namespace Bang
         public void Imprison(int player)
         {
             Card c = UnequipDraggedCard();
-            GameController.Imprison(player,c);
+            GameController.Imprison(player, c);
+        }
+
+        public void EquipScope()
+        {
+            Scope++;
+        }
+
+        public void UnequipScope()
+        {
+            Scope--;
+        }
+
+        public void EquipMustang()
+        {
+            RangeModifier++;
+        }
+
+        public void UnequipMustang()
+        {
+            RangeModifier--;
         }
 
         public void StartTurn()
@@ -221,7 +250,7 @@ namespace Bang
 
         public void EquipWeapon()
         {
-            if(Weapon != colt45)
+            if (Weapon != colt45)
             {
                 GameController.DiscardCard(Weapon);
             }
@@ -309,7 +338,7 @@ namespace Bang
 
         public virtual void Heal()
         {
-            if(HP < MaxHP) HP++;
+            if (HP < MaxHP) HP++;
         }
 
         public void DiscardCardUsed()

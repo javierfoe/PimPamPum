@@ -414,6 +414,12 @@ namespace Bang
             pc.SelfTargetPropertyCard<Mustang>();
         }
 
+        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        {
+            base.EquipProperty(pc, player, drop);
+            pc.EquipMustang();
+        }
+
         public override string ToString()
         {
             return "Mustang";
@@ -447,13 +453,19 @@ namespace Bang
         }
     }
 
-    public class Binoculars : Property
+    public class Scope : Property
     {
-        public Binoculars() : base(ESuit.SPADES, ERank.ACE) { }
+        public Scope() : base(ESuit.SPADES, ERank.ACE) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
-            pc.SelfTargetPropertyCard<Binoculars>();
+            pc.SelfTargetPropertyCard<Scope>();
+        }
+
+        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        {
+            base.EquipProperty(pc, player, drop);
+            pc.EquipScope();
         }
 
         public override string ToString()

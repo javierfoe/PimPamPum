@@ -106,7 +106,6 @@ namespace Bang
             GenerateBangs(temp);
             GenerateBarrels(temp);
             GenerateBeers(temp);
-            GenerateBinoculars(temp);
             GenerateCarabines(temp);
             GenerateCatBalous(temp);
             GenerateDuels(temp);
@@ -121,6 +120,7 @@ namespace Bang
             GenerateRemingtons(temp);
             GenerateSaloons(temp);
             GenerateSchofields(temp);
+            GenerateScopes(temp);
             GenerateStagecoaches(temp);
             GenerateVolcanics(temp);
             GenerateWellsFargos(temp);
@@ -250,9 +250,9 @@ namespace Bang
             temp.Add(new Saloon());
         }
 
-        private void GenerateBinoculars(List<Card> temp)
+        private void GenerateScopes(List<Card> temp)
         {
-            temp.Add(new Binoculars());
+            temp.Add(new Scope());
         }
 
         private void GenerateDynamites(List<Card> temp)
