@@ -379,7 +379,10 @@ namespace Bang
     {
         protected Property(ESuit suit, ERank rank) : base(suit, rank) { }
 
-		public abstract override void BeginCardDrag(PlayerController pc);
+        public override void BeginCardDrag(PlayerController pc)
+        {
+            pc.SelfTargetCard();
+        }
 
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
@@ -414,10 +417,6 @@ namespace Bang
             base.EquipProperty(pc, player, drop);
             pc.EquipMustang();
         }
-		
-		public override void BeginCardDrag(PlayerController pc){
-			pc.SelfTargetCard<Mustang>();
-		}
 
         public override string ToString()
         {
@@ -441,10 +440,6 @@ namespace Bang
             return null;
         }
 
-		public override void BeginCardDrag(PlayerController pc){
-			pc.SelfTargetCard<Barrel>();
-		}
-		
         public override string ToString()
         {
             return "Barrel";
@@ -460,10 +455,6 @@ namespace Bang
             base.EquipProperty(pc, player, drop);
             pc.EquipScope();
         }
-		
-		public override void BeginCardDrag(PlayerController pc){
-			pc.SelfTargetCard<Scope>();
-		}
 
         public override string ToString()
         {
@@ -479,11 +470,7 @@ namespace Bang
     public class Dynamite : NegativeProperty
     {
         public Dynamite() : base(ESuit.HEARTS, ERank.TWO) { }
-		
-		public override void BeginCardDrag(PlayerController pc){
-			pc.SelfTargetCard<Dynamite>();
-		}
-		
+
         public override string ToString()
         {
             return "Dynamite";
