@@ -412,12 +412,6 @@ namespace Bang
             return null;
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop)
-        {
-            base.EquipProperty(pc, player, drop);
-            pc.EquipMustang();
-        }
-
         public override string ToString()
         {
             return "Mustang";
@@ -446,15 +440,9 @@ namespace Bang
         }
     }
 
-    public class Scope : Property
+    public class Binoculars : Property
     {
-        public Scope() : base(ESuit.SPADES, ERank.ACE) { }
-
-        protected override void EquipProperty(PlayerController pc, int player, int drop)
-        {
-            base.EquipProperty(pc, player, drop);
-            pc.EquipScope();
-        }
+        public Binoculars() : base(ESuit.SPADES, ERank.ACE) { }
 
         public override string ToString()
         {
