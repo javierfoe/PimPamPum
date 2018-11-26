@@ -476,16 +476,43 @@ namespace Bang
 
     public abstract class NegativeProperty : Property
     {
-        protected NegativeProperty(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected ESuit Trigger
+        {
+            get; private set;
+        }
+
+        protected ERank Minimum
+        {
+            get; private set;
+        }
+
+        protected ERank Maximum
+        {
+            get; private set;
+        }
+
+        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger, ERank minimum, ERank maximum) : base(suit, rank) {
+            Trigger = trigger;
+            Minimum = minimum;
+            Maximum = maximum;
+        }
+
+        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger) : this(suit, rank, trigger, ERank.ACE, ERank.ACE) { }
     }
 
     public class Dynamite : NegativeProperty
     {
-        public Dynamite() : base(ESuit.HEARTS, ERank.TWO) { }
+        public Dynamite() : base(ESuit.HEARTS, ERank.TWO, ESuit.DIAMONDS, ERank.TWO, ERank.NINE) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
             pc.SelfTargetPropertyCard<Dynamite>();
+        }
+
+        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        {
+            base.EquipProperty(pc, player, drop);
+            pc.EquipDynamite();
         }
 
         public override string ToString()
@@ -496,7 +523,7 @@ namespace Bang
 
     public class Jail : NegativeProperty
     {
-        private Jail(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Jail(ESuit suit, ERank rank) : base(suit, rank, ESuit.HEARTS) { }
 
         public static Jail CreateJail(int index)
         {
@@ -519,7 +546,10 @@ namespace Bang
 
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
-            pc.Imprison(player);
+            PlayerController target = GameController.GetPlayerController(player);
+            pc.UnequipDraggedCard();
+            target.EquipProperty(this);
+            target.EquipJail();
         }
 
         public override string ToString()

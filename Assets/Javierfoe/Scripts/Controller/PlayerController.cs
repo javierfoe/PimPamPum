@@ -13,6 +13,8 @@ namespace Bang
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
 
+        private delegate void OnStartTurn();
+        private OnStartTurn onStartTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
         private EndTurnButton endTurn;
         private Weapon weapon;
@@ -139,7 +141,7 @@ namespace Bang
             RpcAddCard();
         }
 
-        private Card UnequipDraggedCard()
+        public Card UnequipDraggedCard()
         {
             Card c = hand[draggedCard];
             RemoveCardFromHand(draggedCard);
@@ -165,10 +167,24 @@ namespace Bang
             RpcEquipProperty(properties.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
         }
 
-        public void Imprison(int player)
+        public void EquipJail()
         {
-            Card c = UnequipDraggedCard();
-            GameController.Imprison(player, c);
+            onStartTurn += JailCheck;
+        }
+
+        public void UnequipJail()
+        {
+            onStartTurn -= JailCheck;
+        }
+
+        public void EquipDynamite()
+        {
+            onStartTurn += DynamiteCheck;
+        }
+
+        public void UnequipDynamite()
+        {
+            onStartTurn -= DynamiteCheck;
         }
 
         public void EquipScope()
@@ -193,10 +209,21 @@ namespace Bang
 
         public void StartTurn()
         {
+            if(onStartTurn != null) onStartTurn();
             Draw(2);
             bangsUsed = 0;
             EnableCards(true);
             TargetEndTurnButton(connectionToClient);
+        }
+
+        public void DynamiteCheck()
+        {
+            Debug.Log("La patata caliente");
+        }
+
+        public void JailCheck()
+        {
+            Debug.Log("Estoy en la carsel wei");
         }
 
         public void EndTurn()

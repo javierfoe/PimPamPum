@@ -17,7 +17,12 @@ namespace Bang
         [SyncVar] private int maxPlayers;
 
         private int currentPlayer;
-        private PlayerController[] playerControllers;
+        private static PlayerController[] playerControllers;
+
+        public static PlayerController GetPlayerController(int index)
+        {
+            return playerControllers[index];
+        }
 
         public int MaxPlayers
         {
@@ -102,11 +107,6 @@ namespace Bang
             }
             //Debug.Log("CurrentPlayer: " + currentPlayer);
             sheriff.StartTurn();
-        }
-
-        public void Imprison(int player, Card c)
-        {
-            playerControllers[player].EquipProperty(c);
         }
 
         public void EndTurn()
