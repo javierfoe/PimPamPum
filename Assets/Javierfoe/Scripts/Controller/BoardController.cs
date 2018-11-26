@@ -252,7 +252,7 @@ namespace Bang
 
         private void GenerateBinoculars(List<Card> temp)
         {
-            temp.Add(new Binoculars());
+            temp.Add(new Scope());
         }
 
         private void GenerateDynamites(List<Card> temp)

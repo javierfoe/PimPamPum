@@ -118,19 +118,36 @@ namespace Bang
 
         public List<int> PlayersInRange(int player, int range)
         {
+            range += playerControllers[player].Scope;
             List<int> res = new List<int>();
             int add, sub;
-            for (int i = 0; i < range; i++)
+            for (int i = 0; i < range && i < maxPlayers; i++)
             {
                 add = player + i + 1;
                 sub = player - i - 1;
                 add = add > maxPlayers - 1 ? add - maxPlayers : add;
                 sub = sub < 0 ? maxPlayers + sub : sub;
                 if (add == player || sub == player) continue;
-                if (!res.Contains(add) && add < playerControllers.Length && add > -1) res.Add(add);
-                if (!res.Contains(sub) && sub < playerControllers.Length && sub > -1) res.Add(sub);
+                AddToTargetList(res, player, add, range);
+                AddToTargetList(res, player, sub, range);
             }
             return res;
+        }
+
+        private void AddToTargetList(List<int> list, int attacker, int target, int range)
+        {
+            if (!list.Contains(target) && target < playerControllers.Length && target > -1 && CheckRangeBetweenPlayers(attacker, target, range)) list.Add(target);
+        }
+
+        private bool CheckRangeBetweenPlayers(int attacker, int target, int range)
+        {
+            int normalDistance = attacker - target;
+            if (normalDistance < 0) normalDistance = -normalDistance;
+            int reverseDistance = attacker + maxPlayers - target;
+            if (reverseDistance < 0) reverseDistance = -reverseDistance;
+            int distance = normalDistance < reverseDistance ? normalDistance : reverseDistance;
+            distance += playerControllers[target].RangeModifier;
+            return distance < range + 1;            
         }
 
         public void StopTargeting()
