@@ -322,9 +322,9 @@ namespace Bang
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
             base.PlayCard(pc, player, drop);
+            pc.DiscardCardUsed();
             pc.Heal();
             Debug.Log("Beer used.");
-            pc.DiscardCardUsed();
         }
 
         public override string ToString()
@@ -384,12 +384,13 @@ namespace Bang
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
             base.PlayCard(pc, player, drop);
+            pc.UnequipDraggedCard();
             EquipProperty(pc, player, drop);
         }
 
-        protected virtual void EquipProperty(PlayerController pc, int player, int drop)
+        public virtual void EquipProperty(PlayerController pc, int player, int drop)
         {
-            pc.EquipProperty();
+            pc.EquipProperty(this);
         }
 
         public virtual void UnequipProperty(PlayerController pc) { }
@@ -416,7 +417,7 @@ namespace Bang
             pc.SelfTargetPropertyCard<Mustang>();
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        public override void EquipProperty(PlayerController pc, int player, int drop)
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipMustang();
@@ -469,7 +470,7 @@ namespace Bang
             pc.SelfTargetPropertyCard<Scope>();
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        public override void EquipProperty(PlayerController pc, int player, int drop)
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipScope();
@@ -517,14 +518,14 @@ namespace Bang
 
     public class Dynamite : NegativeProperty
     {
-        public Dynamite() : base(ESuit.HEARTS, ERank.TWO, ESuit.DIAMONDS, ERank.TWO, ERank.NINE) { }
+        public Dynamite() : base(ESuit.HEARTS, ERank.TWO, ESuit.SPADES, ERank.TWO, ERank.NINE) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
             pc.SelfTargetPropertyCard<Dynamite>();
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop)
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipDynamite();
@@ -615,10 +616,10 @@ namespace Bang
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
             base.PlayCard(pc, player, drop);
-            pc.EquipWeapon();
+            pc.EquipWeapon(this);
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop) { }
+        public override void EquipProperty(PlayerController pc, int player, int drop) { }
 
         public virtual void Bang(PlayerController pc)
         {

@@ -15,12 +15,24 @@ namespace Bang
 
         private delegate void OnStartTurn();
         private OnStartTurn onStartTurn;
-        private bool endTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
         private EndTurnButton endTurnButton;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
+        private bool endTurn;
+
+        private bool EndTurnOnStart
+        {
+            get
+            {
+                return endTurn || IsDead;
+            }
+            set
+            {
+                endTurn = value;
+            }
+        }
 
         public IPlayerView PlayerView
         {
@@ -43,6 +55,11 @@ namespace Bang
                 hp = value;
                 RpcUpdateHP(hp);
             }
+        }
+
+        public bool IsDead
+        {
+            get { return HP < 1; }
         }
 
         private int MaxHP
@@ -82,7 +99,7 @@ namespace Bang
             set
             {
                 weapon = value;
-                EquipWeapon(value);
+                RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
             }
         }
 
@@ -106,15 +123,16 @@ namespace Bang
 
         public virtual void SetRole(ERole role)
         {
+            int hp = 3;
             Role = role;
             if (role == ERole.SHERIFF)
             {
-                HP = 5;
+                MaxHP = hp;
                 RpcSheriff();
             }
             else
             {
-                HP = 4;
+                MaxHP = hp;
                 TargetSetRole(connectionToClient, role);
             }
             Weapon = colt45;
@@ -154,12 +172,6 @@ namespace Bang
             hand.RemoveAt(index);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
-        }
-
-        public void EquipProperty()
-        {
-            Property c = (Property)UnequipDraggedCard();
-            EquipProperty(c);
         }
 
         public void EquipProperty(Property c)
@@ -210,11 +222,11 @@ namespace Bang
 
         public void StartTurn()
         {
-            endTurn = false;
+            EndTurnOnStart = false;
             if (onStartTurn != null) onStartTurn();
-            if (endTurn)
+            if (EndTurnOnStart)
             {
-                EndTurn();
+                TargetEndTurn(connectionToClient);
                 return;
             }
             Draw(2);
@@ -225,13 +237,27 @@ namespace Bang
 
         public void DynamiteCheck()
         {
-            Debug.Log("La patata caliente");
+            Card c = GameController.DrawDiscardCard();
+            int index;
+            Dynamite d = FindProperty<Dynamite>(out index);
+            UnequipProperty(index);
+            if (d.CheckCondition(c))
+            {
+                Hit(3);
+                if (!IsDead)
+                {
+                    GameController.DiscardCard(d);
+                }
+            }
+            else
+            {
+                GameController.PassDynamite(playerNum, d);
+            }
         }
 
         public void JailCheck()
         {
             Card c = GameController.DrawDiscardCard();
-            Debug.Log("Cárcel carta: Suit - " + c.Suit + " Rank - " + c.Rank);
             int index;
             Jail j = FindProperty<Jail>(out index);
             endTurn = !j.CheckCondition(c);
@@ -250,7 +276,7 @@ namespace Bang
                 c = properties[i];
                 found = c is T;
                 index = found ? i : index;
-                res = (T)c;
+                res = found ? (T)c : res;
             }
             return res;
         }
@@ -304,19 +330,13 @@ namespace Bang
             bangsUsed++;
         }
 
-        public void EquipWeapon()
+        public void EquipWeapon(Weapon weapon)
         {
             if (Weapon != colt45)
             {
                 GameController.DiscardCard(Weapon);
             }
-            Weapon weapon = (Weapon)UnequipDraggedCard();
             Weapon = weapon;
-        }
-
-        private void EquipWeapon(Weapon weapon)
-        {
-            RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
         public bool HasProperty<T>() where T : Property
@@ -353,7 +373,7 @@ namespace Bang
 
         public void BangBeginCardDrag()
         {
-            GameController.TargetPlayersRange(playerNum, weapon.Range);
+            GameController.TargetPlayersRange(playerNum, weapon.Range + Scope);
         }
 
         public void JailBeginCardDrag()
@@ -368,7 +388,7 @@ namespace Bang
 
         public void PanicBeginCardDrag()
         {
-            GameController.TargetAllRangeCards(playerNum, 1);
+            GameController.TargetAllRangeCards(playerNum, 1 + Scope);
         }
 
         public void TargetOthers()
@@ -392,6 +412,28 @@ namespace Bang
             PlayerView.SetStealable(false, true);
         }
 
+        public void Hit(int amount)
+        {
+            HP -= amount;
+            for (int i = 0; i < amount; i++) Hit();
+            if (IsDead) Die();
+        }
+
+        public virtual void Hit() { }
+
+        public virtual void Die()
+        {
+            for(int i = hand.Count - 1; i > -1; i--)
+            {
+                DiscardCardFromHand(i);
+            }
+            for (int i = properties.Count - 1; i > -1; i--)
+            {
+                DiscardProperty(i);
+            }
+            DiscardWeapon();
+        }
+
         public virtual void Heal()
         {
             if (HP < MaxHP) HP++;
@@ -409,19 +451,46 @@ namespace Bang
 
         public void DiscardCardFromHandCmd(int index)
         {
-            Card card = hand[index];
-            hand.RemoveAt(index);
+            Card card = UnequipHandCard(index);
             GameController.DiscardCard(card);
-            TargetRemoveCard(connectionToClient, index);
-            RpcRemoveCard();
         }
 
-        public void UnequipProperty(int index)
+        public void DiscardWeapon()
+        {
+            if (Weapon == colt45) return;
+            Weapon weapon = Weapon;
+            UnequipWeapon();
+            GameController.DiscardCard(weapon);
+        }
+
+        public void UnequipWeapon()
+        {
+            Weapon.UnequipProperty(this);
+            Weapon = colt45;
+        }
+
+        public Card UnequipHandCard(int index)
+        {
+            Card card = hand[index];
+            hand.RemoveAt(index);
+            TargetRemoveCard(connectionToClient, index);
+            RpcRemoveCard();
+            return card;
+        }
+
+        public Card UnequipProperty(int index)
         {
             Property card = (Property)properties[index];
             properties.RemoveAt(index);
             card.UnequipProperty(this);
             RpcRemoveProperty(index);
+            return card;
+        }
+
+        public void DiscardProperty(int index)
+        {
+            Card card = UnequipProperty(index);
+            DiscardProperty(card);
         }
 
         public void DiscardProperty(Card card)
@@ -521,6 +590,12 @@ namespace Bang
         private void RpcSheriff()
         {
             PlayerView.SetSheriff();
+        }
+
+        [TargetRpc]
+        public void TargetEndTurn(NetworkConnection conn)
+        {
+            EndTurn();
         }
 
         [TargetRpc]

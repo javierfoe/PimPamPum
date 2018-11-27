@@ -39,6 +39,7 @@ namespace Bang
         public Card DrawDiscardCard()
         {
             Card res = DrawCard();
+            Debug.Log("Draw! Card: Suit - " + res.Suit + " Rank - " + res.Rank);
             DiscardCard(res);
             return res;
         }
@@ -65,6 +66,19 @@ namespace Bang
                 playerControllers[i++] = go.GetComponent<PlayerController>();
 
             RpcAddPlayerControllers(gos);
+        }
+
+        public void PassDynamite(int player, Dynamite d)
+        {
+            int playerAux = player;
+            PlayerController pc;
+            do
+            {
+                playerAux++;
+                playerAux = playerAux > maxPlayers - 1 ? 0 : playerAux;
+                pc = playerControllers[playerAux];
+            } while (pc.HasProperty<Dynamite>());
+            d.EquipProperty(pc);
         }
 
         public override void OnStartClient()
