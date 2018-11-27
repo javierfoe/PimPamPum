@@ -391,6 +391,11 @@ namespace Bang
         {
             pc.EquipProperty();
         }
+
+        public virtual void UnequipProperty(PlayerController pc)
+        {
+            pc.DiscardProperty(this);
+        }
     }
 
     public class Mustang : Property
@@ -418,6 +423,12 @@ namespace Bang
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipMustang();
+        }
+
+        public override void UnequipProperty(PlayerController pc)
+        {
+            base.UnequipProperty(pc);
+            pc.UnequipMustang();
         }
 
         public override string ToString()
@@ -468,6 +479,12 @@ namespace Bang
             pc.EquipScope();
         }
 
+        public override void UnequipProperty(PlayerController pc)
+        {
+            base.UnequipProperty(pc);
+            pc.UnequipScope();
+        }
+
         public override string ToString()
         {
             return "Binoculars";
@@ -491,7 +508,8 @@ namespace Bang
             get; private set;
         }
 
-        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger, ERank minimum, ERank maximum) : base(suit, rank) {
+        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger, ERank minimum, ERank maximum) : base(suit, rank)
+        {
             Trigger = trigger;
             Minimum = minimum;
             Maximum = maximum;
@@ -515,6 +533,12 @@ namespace Bang
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipDynamite();
+        }
+
+        public override void UnequipProperty(PlayerController pc)
+        {
+            base.UnequipProperty(pc);
+            pc.UnequipDynamite();
         }
 
         public override bool CheckCondition(Card c)
@@ -564,6 +588,12 @@ namespace Bang
             target.EquipJail();
         }
 
+        public override void UnequipProperty(PlayerController pc)
+        {
+            base.UnequipProperty(pc);
+            pc.UnequipJail();
+        }
+
         public override string ToString()
         {
             return "Jail";
@@ -595,7 +625,7 @@ namespace Bang
             pc.EquipWeapon();
         }
 
-        protected override void EquipProperty(PlayerController pc, int player, int drop){}
+        protected override void EquipProperty(PlayerController pc, int player, int drop) { }
 
         public virtual void Bang(PlayerController pc)
         {

@@ -183,7 +183,7 @@ namespace Bang
             pc.TargetSetTargetable(pc.connectionToClient, true);
         }
 
-        public void TargetSelfProperty<T>(int player)
+        public void TargetSelfProperty<T>(int player) where T : Card
         {
             PlayerController pc = playerControllers[player];
             pc.TargetSetTargetable(pc.connectionToClient, !pc.HasProperty<T>());

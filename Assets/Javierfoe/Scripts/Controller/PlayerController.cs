@@ -210,6 +210,7 @@ namespace Bang
 
         public void StartTurn()
         {
+            endTurn = false;
             if (onStartTurn != null) onStartTurn();
             if (endTurn)
             {
@@ -233,7 +234,7 @@ namespace Bang
             int index;
             Jail j = FindProperty<Jail>(out index);
             endTurn = !j.CheckCondition(c);
-            DiscardPropertyCmd(index);
+            j.UnequipProperty(this);
         }
 
         private T FindProperty<T>(out int index) where T : Card
@@ -378,7 +379,7 @@ namespace Bang
             GameController.TargetSelf(playerNum);
         }
 
-        public void SelfTargetPropertyCard<T>()
+        public void SelfTargetPropertyCard<T>() where T : Card
         {
             GameController.TargetSelfProperty<T>(playerNum);
         }
@@ -411,6 +412,12 @@ namespace Bang
             GameController.DiscardCard(card);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
+        }
+
+        public void DiscardProperty(Card p)
+        {
+            int index = properties.IndexOf(p);
+            DiscardPropertyCmd(index);
         }
 
         public void DiscardPropertyCmd(int index)
