@@ -158,11 +158,11 @@ namespace Bang
 
         public void EquipProperty()
         {
-            Card c = UnequipDraggedCard();
+            Property c = (Property)UnequipDraggedCard();
             EquipProperty(c);
         }
 
-        public void EquipProperty(Card c)
+        public void EquipProperty(Property c)
         {
             properties.Add(c);
             RpcEquipProperty(properties.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
@@ -231,10 +231,12 @@ namespace Bang
         public void JailCheck()
         {
             Card c = GameController.DrawDiscardCard();
+            Debug.Log("Cárcel carta: Suit - " + c.Suit + " Rank - " + c.Rank);
             int index;
             Jail j = FindProperty<Jail>(out index);
             endTurn = !j.CheckCondition(c);
-            j.UnequipProperty(this);
+            UnequipProperty(index);
+            GameController.DiscardCard(j);
         }
 
         private T FindProperty<T>(out int index) where T : Card
@@ -287,14 +289,14 @@ namespace Bang
             CmdPlayCard(player, drop);
         }
 
-        public void DiscardCard(int index)
+        public void DiscardCardFromHand(int index)
         {
-            CmdDiscardCard(index);
+            CmdDiscardCardFromHand(index);
         }
 
         public void DiscardCardEndTurn(int index)
         {
-            CmdDiscardCardEndTurn(index);
+            CmdDiscardCardFromHandEndTurn(index);
         }
 
         public void Bang()
@@ -317,7 +319,7 @@ namespace Bang
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
-        public bool HasProperty<T>() where T : Card
+        public bool HasProperty<T>() where T : Property
         {
             return Has<T>(properties);
         }
@@ -379,7 +381,7 @@ namespace Bang
             GameController.TargetSelf(playerNum);
         }
 
-        public void SelfTargetPropertyCard<T>() where T : Card
+        public void SelfTargetPropertyCard<T>() where T : Property
         {
             GameController.TargetSelfProperty<T>(playerNum);
         }
@@ -397,7 +399,7 @@ namespace Bang
 
         public void DiscardCardUsed()
         {
-            DiscardCard(draggedCard);
+            DiscardCardFromHand(draggedCard);
         }
 
         public void FinishCardUsed()
@@ -405,7 +407,7 @@ namespace Bang
             EnableCards(true);
         }
 
-        public void DiscardCardCmd(int index)
+        public void DiscardCardFromHandCmd(int index)
         {
             Card card = hand[index];
             hand.RemoveAt(index);
@@ -414,17 +416,16 @@ namespace Bang
             RpcRemoveCard();
         }
 
-        public void DiscardProperty(Card p)
+        public void UnequipProperty(int index)
         {
-            int index = properties.IndexOf(p);
-            DiscardPropertyCmd(index);
+            Property card = (Property)properties[index];
+            properties.RemoveAt(index);
+            card.UnequipProperty(this);
+            RpcRemoveProperty(index);
         }
 
-        public void DiscardPropertyCmd(int index)
+        public void DiscardProperty(Card card)
         {
-            Card card = properties[index];
-            properties.RemoveAt(index);
-            RpcRemoveProperty(index);
             GameController.DiscardCard(card);
         }
 
@@ -462,26 +463,20 @@ namespace Bang
         }
 
         [Command]
-        public void CmdDiscardCard(int index)
+        public void CmdDiscardCardFromHand(int index)
         {
-            DiscardCardCmd(index);
+            DiscardCardFromHandCmd(index);
         }
 
         [Command]
-        public void CmdDiscardCardEndTurn(int index)
+        public void CmdDiscardCardFromHandEndTurn(int index)
         {
-            DiscardCardCmd(index);
+            DiscardCardFromHandCmd(index);
             if (hand.Count < hp + 1)
             {
                 GameController.EndTurn();
                 DiscardEndTurn(false);
             }
-        }
-
-        [Command]
-        public void CmdDiscardProperty(int index)
-        {
-            DiscardPropertyCmd(index);
         }
 
         [ClientRpc]

@@ -392,10 +392,7 @@ namespace Bang
             pc.EquipProperty();
         }
 
-        public virtual void UnequipProperty(PlayerController pc)
-        {
-            pc.DiscardProperty(this);
-        }
+        public virtual void UnequipProperty(PlayerController pc) { }
     }
 
     public class Mustang : Property
@@ -427,7 +424,6 @@ namespace Bang
 
         public override void UnequipProperty(PlayerController pc)
         {
-            base.UnequipProperty(pc);
             pc.UnequipMustang();
         }
 
@@ -481,7 +477,6 @@ namespace Bang
 
         public override void UnequipProperty(PlayerController pc)
         {
-            base.UnequipProperty(pc);
             pc.UnequipScope();
         }
 
@@ -537,7 +532,6 @@ namespace Bang
 
         public override void UnequipProperty(PlayerController pc)
         {
-            base.UnequipProperty(pc);
             pc.UnequipDynamite();
         }
 
@@ -590,7 +584,6 @@ namespace Bang
 
         public override void UnequipProperty(PlayerController pc)
         {
-            base.UnequipProperty(pc);
             pc.UnequipJail();
         }
 
