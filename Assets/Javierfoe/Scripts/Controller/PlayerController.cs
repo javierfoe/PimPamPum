@@ -15,8 +15,9 @@ namespace Bang
 
         private delegate void OnStartTurn();
         private OnStartTurn onStartTurn;
+        private bool endTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
-        private EndTurnButton endTurn;
+        private EndTurnButton endTurnButton;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
@@ -93,8 +94,8 @@ namespace Bang
 
         public override void OnStartLocalPlayer()
         {
-            endTurn = FindObjectOfType<EndTurnButton>();
-            endTurn.Active = false;
+            endTurnButton = FindObjectOfType<EndTurnButton>();
+            endTurnButton.Active = false;
             LocalPlayer = this;
         }
 
@@ -209,7 +210,12 @@ namespace Bang
 
         public void StartTurn()
         {
-            if(onStartTurn != null) onStartTurn();
+            if (onStartTurn != null) onStartTurn();
+            if (endTurn)
+            {
+                EndTurn();
+                return;
+            }
             Draw(2);
             bangsUsed = 0;
             EnableCards(true);
@@ -223,12 +229,32 @@ namespace Bang
 
         public void JailCheck()
         {
-            Debug.Log("Estoy en la carsel wei");
+            Card c = GameController.DrawDiscardCard();
+            int index;
+            Jail j = FindProperty<Jail>(out index);
+            endTurn = !j.CheckCondition(c);
+            DiscardPropertyCmd(index);
+        }
+
+        private T FindProperty<T>(out int index) where T : Card
+        {
+            bool found = false;
+            T res = null;
+            Card c;
+            index = -1;
+            for(int i = 0; i < properties.Count && !found; i++)
+            {
+                c = properties[i];
+                found = c is T;
+                index = found ? i : index;
+                res = (T)c;
+            }
+            return res;
         }
 
         public void EndTurn()
         {
-            endTurn.Active = false;
+            endTurnButton.Active = false;
             CmdEndTurn();
         }
 
@@ -290,17 +316,17 @@ namespace Bang
             RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
         }
 
-        public bool HasProperty<T>()
+        public bool HasProperty<T>() where T : Card
         {
             return Has<T>(properties);
         }
 
-        public bool HasHand<T>()
+        public bool HasHand<T>() where T : Card
         {
             return Has<T>(hand);
         }
 
-        private bool Has<T>(List<Card> list)
+        private bool Has<T>(List<Card> list) where T : Card
         {
             bool res = false;
             int length = list.Count;
@@ -387,6 +413,14 @@ namespace Bang
             RpcRemoveCard();
         }
 
+        public void DiscardPropertyCmd(int index)
+        {
+            Card card = properties[index];
+            properties.RemoveAt(index);
+            RpcRemoveProperty(index);
+            GameController.DiscardCard(card);
+        }
+
         [Command]
         public void CmdPlayCard(int player, int drop)
         {
@@ -437,6 +471,12 @@ namespace Bang
             }
         }
 
+        [Command]
+        public void CmdDiscardProperty(int index)
+        {
+            DiscardPropertyCmd(index);
+        }
+
         [ClientRpc]
         private void RpcEquipWeapon(string name, ESuit suit, ERank rank, Color color)
         {
@@ -467,6 +507,12 @@ namespace Bang
         {
             if (isLocalPlayer) return;
             PlayerView.RemoveCard();
+        }
+
+        [ClientRpc]
+        private void RpcRemoveProperty(int index)
+        {
+            PlayerView.RemoveProperty(index);
         }
 
         [ClientRpc]
@@ -535,7 +581,7 @@ namespace Bang
         [TargetRpc]
         public void TargetEndTurnButton(NetworkConnection conn)
         {
-            endTurn.Active = true;
+            endTurnButton.Active = true;
         }
 
     }

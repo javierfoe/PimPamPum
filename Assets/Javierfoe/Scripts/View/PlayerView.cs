@@ -95,6 +95,12 @@ namespace Bang
             propertyCards.Add(cv);
         }
 
+        public void RemoveProperty(int index)
+        {
+            Destroy(propertyCards[index].GameObject());
+            propertyCards.RemoveAt(index);
+        }
+
         private ICardView InstantiateCard(int index, string name, ESuit suit, ERank rank, Color color, Transform t)
         {
             ICardView cv = Instantiate(GameController.CardPrefab, t);

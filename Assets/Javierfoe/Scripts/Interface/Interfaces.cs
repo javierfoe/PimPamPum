@@ -43,6 +43,7 @@ namespace Bang
         void AddCard();
         void AddCard(int index, string name, ESuit suit, ERank rank, Color color);
         void EquipProperty(int index, string name, ESuit suit, ERank rank, Color color);
+        void RemoveProperty(int index);
         void RemoveCard();
         void RemoveCard(int index);
         void EquipWeapon(string name, ESuit suit, ERank rank, Color color);

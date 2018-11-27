@@ -498,6 +498,8 @@ namespace Bang
         }
 
         protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger) : this(suit, rank, trigger, ERank.ACE, ERank.ACE) { }
+
+        public abstract bool CheckCondition(Card c);
     }
 
     public class Dynamite : NegativeProperty
@@ -513,6 +515,11 @@ namespace Bang
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipDynamite();
+        }
+
+        public override bool CheckCondition(Card c)
+        {
+            return c.Suit == Trigger && c.Rank <= Maximum && c.Rank >= Minimum;
         }
 
         public override string ToString()
@@ -537,6 +544,11 @@ namespace Bang
                     return new Jail(ESuit.HEARTS, ERank.FOUR);
             }
             return null;
+        }
+
+        public override bool CheckCondition(Card c)
+        {
+            return c.Suit == Trigger;
         }
 
         public override void BeginCardDrag(PlayerController pc)

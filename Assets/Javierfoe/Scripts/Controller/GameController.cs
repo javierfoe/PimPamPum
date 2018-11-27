@@ -36,6 +36,13 @@ namespace Bang
             set { playerViews = value; }
         }
 
+        public Card DrawDiscardCard()
+        {
+            Card res = DrawCard();
+            DiscardCard(res);
+            return res;
+        }
+
         public Card DrawCard()
         {
             return boardController.DrawCard();
