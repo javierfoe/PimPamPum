@@ -123,16 +123,15 @@ namespace Bang
 
         public virtual void SetRole(ERole role)
         {
-            int hp = 3;
             Role = role;
             if (role == ERole.SHERIFF)
             {
-                MaxHP = hp;
+                MaxHP = 5;
                 RpcSheriff();
             }
             else
             {
-                MaxHP = hp;
+                MaxHP = 4;
                 TargetSetRole(connectionToClient, role);
             }
             Weapon = colt45;

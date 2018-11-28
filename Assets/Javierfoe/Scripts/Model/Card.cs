@@ -538,7 +538,9 @@ namespace Bang
 
         public override bool CheckCondition(Card c)
         {
-            return c.Suit == Trigger && c.Rank <= Maximum && c.Rank >= Minimum;
+            bool res = c.Suit == Trigger && c.Rank <= Maximum && c.Rank >= Minimum;
+            Debug.Log(res ? "BOOOOOM! A pastar!" : "Toma patatita caliente");
+            return res;
         }
 
         public override string ToString()
@@ -567,7 +569,9 @@ namespace Bang
 
         public override bool CheckCondition(Card c)
         {
-            return c.Suit == Trigger;
+            bool res = c.Suit == Trigger;
+            Debug.Log(res ? "Me libro de la carcel" : "Hijoeputa malparido gonorrea, sigo en la carcel");
+            return res;
         }
 
         public override void BeginCardDrag(PlayerController pc)

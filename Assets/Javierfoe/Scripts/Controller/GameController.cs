@@ -163,7 +163,7 @@ namespace Bang
         {
             int normalDistance = attacker - target;
             if (normalDistance < 0) normalDistance = -normalDistance;
-            int reverseDistance = attacker + maxPlayers - target;
+            int reverseDistance = target + maxPlayers - attacker;
             if (reverseDistance < 0) reverseDistance = -reverseDistance;
             int distance = normalDistance < reverseDistance ? normalDistance : reverseDistance;
             distance += playerControllers[target].RangeModifier;
