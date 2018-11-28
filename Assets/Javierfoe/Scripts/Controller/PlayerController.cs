@@ -173,6 +173,12 @@ namespace Bang
             RpcRemoveCard();
         }
 
+        public void Imprison(int target, Jail c)
+        {
+            PlayerController pc = GameController.GetPlayerController(target);
+            c.EquipProperty(pc);
+        }
+
         public void EquipProperty(Property c)
         {
             properties.Add(c);
@@ -322,6 +328,11 @@ namespace Bang
         public void DiscardCardEndTurn(int index)
         {
             CmdDiscardCardFromHandEndTurn(index);
+        }
+
+        public void ShotBang(int target)
+        {
+
         }
 
         public void Bang()

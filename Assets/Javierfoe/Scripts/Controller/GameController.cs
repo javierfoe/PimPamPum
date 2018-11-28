@@ -5,21 +5,23 @@ namespace Bang
 {
     public class GameController : NetworkBehaviour
     {
+
         public static CardView CardPrefab
         {
             get; private set;
         }
 
-        [SerializeField] private CardView cardPrefab;
+
+        [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
 
         [SyncVar] private int maxPlayers;
 
         private int currentPlayer;
-        private static PlayerController[] playerControllers;
+        private PlayerController[] playerControllers;
 
-        public static PlayerController GetPlayerController(int index)
+        public PlayerController GetPlayerController(int index)
         {
             return playerControllers[index];
         }
@@ -163,7 +165,7 @@ namespace Bang
         {
             int normalDistance = attacker - target;
             if (normalDistance < 0) normalDistance = -normalDistance;
-            int reverseDistance = target + maxPlayers - attacker;
+            int reverseDistance = maxPlayers - attacker - target;
             if (reverseDistance < 0) reverseDistance = -reverseDistance;
             int distance = normalDistance < reverseDistance ? normalDistance : reverseDistance;
             distance += playerControllers[target].RangeModifier;

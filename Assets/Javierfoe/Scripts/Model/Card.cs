@@ -18,7 +18,7 @@ namespace Bang
         {
             get
             {
-                return this is Property ? Color.blue : Color.yellow;
+                return this is Property ? Color.blue : Color.red;
             }
         }
 
@@ -102,6 +102,12 @@ namespace Bang
         public override void BeginCardDrag(PlayerController pc)
         {
             pc.BangBeginCardDrag();
+        }
+
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.ShotBang(player);
         }
 
         public override string ToString()
@@ -388,7 +394,7 @@ namespace Bang
             EquipProperty(pc, player, drop);
         }
 
-        public virtual void EquipProperty(PlayerController pc, int player, int drop)
+        public virtual void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
         {
             pc.EquipProperty(this);
         }
@@ -417,7 +423,7 @@ namespace Bang
             pc.SelfTargetPropertyCard<Mustang>();
         }
 
-        public override void EquipProperty(PlayerController pc, int player, int drop)
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipMustang();
@@ -470,7 +476,7 @@ namespace Bang
             pc.SelfTargetPropertyCard<Scope>();
         }
 
-        public override void EquipProperty(PlayerController pc, int player, int drop)
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
         {
             base.EquipProperty(pc, player, drop);
             pc.EquipScope();
@@ -581,10 +587,14 @@ namespace Bang
 
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
-            PlayerController target = GameController.GetPlayerController(player);
             pc.UnequipDraggedCard();
-            target.EquipProperty(this);
-            target.EquipJail();
+            pc.Imprison(player, this);
+        }
+
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
+        {
+            base.EquipProperty(pc, player, drop);
+            pc.EquipJail();
         }
 
         public override void UnequipProperty(PlayerController pc)
@@ -623,7 +633,7 @@ namespace Bang
             pc.EquipWeapon(this);
         }
 
-        public override void EquipProperty(PlayerController pc, int player, int drop) { }
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1) { }
 
         public virtual void Bang(PlayerController pc)
         {
