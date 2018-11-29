@@ -95,6 +95,15 @@ namespace Bang
 
     }
 
+    public enum EDecision
+    {
+        PENDING = -1,
+        TAKEHIT = 0,
+        DODGE = 1,
+        DUEL = 2,
+        SOURCE = 3
+    }
+
     public enum ERole
     {
         SHERIFF,

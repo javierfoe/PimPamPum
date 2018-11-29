@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 namespace Bang
@@ -11,15 +12,40 @@ namespace Bang
             get; private set;
         }
 
+        private static readonly int Everyone = -1;
 
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
+        [SerializeField] private float decisionTime = 0;
 
         [SyncVar] private int maxPlayers;
 
+        private EDecision[] decisionsMade;
+        private int decisionMaker;
         private int currentPlayer;
         private PlayerController[] playerControllers;
+
+        public bool AreDecisionsMade
+        {
+            get
+            {
+                bool res;
+                if(decisionMaker > Everyone)
+                {
+                    res = decisionsMade[decisionMaker] != EDecision.PENDING;
+                }
+                else
+                {
+                    res = true;
+                    for(int i = 0; i < decisionsMade.Length && res; i++)
+                    {
+                        res &= decisionsMade[i] != EDecision.PENDING;
+                    }
+                }
+                return res;
+            }
+        }
 
         public PlayerController GetPlayerController(int index)
         {
@@ -61,6 +87,44 @@ namespace Bang
             boardController.DiscardCard(card);
         }
 
+        public void MakeDecision(int player, EDecision decision)
+        {
+            decisionsMade[player] = decision;
+        }
+
+        private IEnumerator WaitForPlayerResponse(int player, int target)
+        {
+            yield return Response(player, target);
+        }
+
+        private IEnumerator WaitForPlayersResponse(int player)
+        {
+            yield return Response(player, Everyone);
+        }
+
+        private IEnumerator Response(int player, int target)
+        {
+            decisionsMade = new EDecision[maxPlayers];
+            for(int i = 0; i < maxPlayers; i++)
+            {
+                decisionsMade[i] = EDecision.PENDING;
+            }
+            if (target > Everyone) decisionsMade[target] = EDecision.SOURCE;
+            decisionMaker = Everyone;
+            float time = 0;
+            while (!AreDecisionsMade && time < decisionTime)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+            EDecision ed;
+            for(int i = 0; i < maxPlayers; i++)
+            {
+                ed = decisionsMade[i];
+                decisionsMade[i] = ed == EDecision.PENDING ? EDecision.TAKEHIT : ed;
+            }
+        }
+
         public void AddPlayerControllers(GameObject[] gos)
         {
             int i = 0;
@@ -91,18 +155,14 @@ namespace Bang
 
         public IPlayerView GetPlayerView(int index)
         {
-
             return playerViews.GetChild(index).GetComponent<IPlayerView>();
-
         }
 
         public IPlayerView GetPlayerView(int localPlayer, int remotePlayer)
         {
-
             int index = remotePlayer - localPlayer;
             if (index < 0) index = MaxPlayers + index;
             return GetPlayerView(index);
-
         }
 
         public void StartGame()
