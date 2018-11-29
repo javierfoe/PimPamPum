@@ -131,91 +131,91 @@ namespace Bang
 
         private void GenerateBangs(List<Card> temp)
         {
-            int length = Number.BANGS;
+            int length = Number.Bangs;
             for (int i = 0; i < length; i++)
                 temp.Add(Bang.CreateBang(i));
         }
 
         private void GenerateMisseds(List<Card> temp)
         {
-            int length = Number.MISSEDS;
+            int length = Number.Misseds;
             for (int i = 0; i < length; i++)
                 temp.Add(Missed.CreateMissed(i));
         }
 
         private void GenerateBeers(List<Card> temp)
         {
-            int length = Number.BEERS;
+            int length = Number.Beers;
             for (int i = 0; i < length; i++)
                 temp.Add(Beer.CreateBeer(i));
         }
 
         private void GeneratePanics(List<Card> temp)
         {
-            int length = Number.PANICS;
+            int length = Number.Panics;
             for (int i = 0; i < length; i++)
                 temp.Add(Panic.CreatePanic(i));
         }
 
         private void GenerateCatBalous(List<Card> temp)
         {
-            int length = Number.CAT_BALOUS;
+            int length = Number.CatBalous;
             for (int i = 0; i < length; i++)
                 temp.Add(CatBalou.CreateCatBalou(i));
         }
 
         private void GenerateJails(List<Card> temp)
         {
-            int length = Number.JAILS;
+            int length = Number.Jails;
             for (int i = 0; i < length; i++)
                 temp.Add(Jail.CreateJail(i));
         }
 
         private void GenerateMustangs(List<Card> temp)
         {
-            int length = Number.MUSTANGS;
+            int length = Number.Mustangs;
             for (int i = 0; i < length; i++)
                 temp.Add(Mustang.CreateMustang(i));
         }
 
         private void GenerateBarrels(List<Card> temp)
         {
-            int length = Number.BARRELS;
+            int length = Number.Barrels;
             for (int i = 0; i < length; i++)
                 temp.Add(Barrel.CreateBarrel(i));
         }
 
         private void GenerateStagecoaches(List<Card> temp)
         {
-            int length = Number.STAGECOACHES;
+            int length = Number.Stagecoaches;
             for (int i = 0; i < length; i++)
                 temp.Add(new Stagecoach());
         }
 
         private void GenerateSchofields(List<Card> temp)
         {
-            int length = Number.SCHOFIELDS;
+            int length = Number.Schofields;
             for (int i = 0; i < length; i++)
                 temp.Add(Schofield.CreateSchofield(i));
         }
 
         private void GenerateVolcanics(List<Card> temp)
         {
-            int length = Number.VOLCANICS;
+            int length = Number.Volcanics;
             for (int i = 0; i < length; i++)
                 temp.Add(Volcanic.CreateVolcanic(i));
         }
 
         private void GenerateGeneralStores(List<Card> temp)
         {
-            int length = Number.GENERAL_STORES;
+            int length = Number.GeneralStores;
             for (int i = 0; i < length; i++)
                 temp.Add(GeneralStore.CreateGeneralStore(i));
         }
 
         private void GenerateIndians(List<Card> temp)
         {
-            int length = Number.INDIANS;
+            int length = Number.Indians;
             for (int i = 0; i < length; i++)
                 temp.Add(Indians.CreateIndians(i));
         }
@@ -262,7 +262,7 @@ namespace Bang
 
         private void GenerateDuels(List<Card> temp)
         {
-            int length = Number.DUELS;
+            int length = Number.Duels;
             for (int i = 0; i < length; i++)
                 temp.Add(Duel.CreateDuel(i));
         }

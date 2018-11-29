@@ -31,8 +31,8 @@ namespace Bang
         public void EmptyDiscardStack()
         {
             discardTopCard.SetName("", Color.black);
-            discardTopCard.SetRank(ERank.NULL);
-            discardTopCard.SetSuit(ESuit.NULL);
+            discardTopCard.SetRank(ERank.Null);
+            discardTopCard.SetSuit(ESuit.Null);
         }
     }
 }

@@ -124,7 +124,7 @@ namespace Bang
         public virtual void SetRole(ERole role)
         {
             Role = role;
-            if (role == ERole.SHERIFF)
+            if (role == ERole.Sheriff)
             {
                 MaxHP = 5;
                 RpcSheriff();

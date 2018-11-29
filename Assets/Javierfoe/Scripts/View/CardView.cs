@@ -7,8 +7,8 @@ namespace Bang
 {
     public class CardView : DropView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
-        private readonly string[] SUITS = { "", "S", "H", "D", "C" };
-        private readonly string[] RANKS = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+        private readonly string[] Suits = { "", "S", "H", "D", "C" };
+        private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
@@ -45,12 +45,12 @@ namespace Bang
 
         public void SetRank(ERank rank)
         {
-            this.rank.text = RANKS[(int)rank];
+            this.rank.text = Ranks[(int)rank];
         }
 
         public void SetSuit(ESuit suit)
         {
-            this.suit.text = SUITS[(int)suit];
+            this.suit.text = Suits[(int)suit];
         }
 
         public void Empty()

@@ -52,7 +52,7 @@ namespace Bang
 
         public void SetSheriff()
         {
-            SetRole(Roles.SHERIFF_NAME, Roles.SHERIFF_COLOR);
+            SetRole(Roles.SheriffName, Roles.SheriffColor);
         }
 
         public void SetRole(ERole role)

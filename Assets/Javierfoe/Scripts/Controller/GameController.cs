@@ -33,14 +33,14 @@ namespace Bang
                 bool res;
                 if(decisionMaker > Everyone)
                 {
-                    res = decisionsMade[decisionMaker] != EDecision.PENDING;
+                    res = decisionsMade[decisionMaker] != EDecision.Pending;
                 }
                 else
                 {
                     res = true;
                     for(int i = 0; i < decisionsMade.Length && res; i++)
                     {
-                        res &= decisionsMade[i] != EDecision.PENDING;
+                        res &= decisionsMade[i] != EDecision.Pending;
                     }
                 }
                 return res;
@@ -107,9 +107,9 @@ namespace Bang
             decisionsMade = new EDecision[maxPlayers];
             for(int i = 0; i < maxPlayers; i++)
             {
-                decisionsMade[i] = EDecision.PENDING;
+                decisionsMade[i] = EDecision.Pending;
             }
-            if (target > Everyone) decisionsMade[player] = EDecision.SOURCE;
+            if (target > Everyone) decisionsMade[player] = EDecision.Source;
             decisionMaker = Everyone;
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime)
@@ -121,7 +121,7 @@ namespace Bang
             for(int i = 0; i < maxPlayers; i++)
             {
                 ed = decisionsMade[i];
-                decisionsMade[i] = ed == EDecision.PENDING ? EDecision.TAKEHIT : ed;
+                decisionsMade[i] = ed == EDecision.Pending ? EDecision.TakeHit : ed;
             }
         }
 
@@ -242,7 +242,7 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && pc.Role != ERole.SHERIFF && !pc.HasProperty<Jail>())
+                if (pc.PlayerNumber != player && pc.Role != ERole.Sheriff && !pc.HasProperty<Jail>())
                     pc.TargetSetTargetable(conn, true);
         }
 

@@ -5,12 +5,12 @@
         protected override void Start()
         {
             base.Start();
-            eDrop = EDrop.WEAPON;
+            drop = Weapon;
         }
 
         public override int GetDropEnum()
         {
-            return (int)eDrop;
+            return drop;
         }
     }
 }

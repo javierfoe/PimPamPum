@@ -6,9 +6,13 @@ namespace Bang
     public abstract class DropView : MonoBehaviour, IDropView
     {
 
+        protected const int Nothing = -3;
+        protected const int Hand = -2;
+        protected const int Weapon = -1;
+
         [SerializeField] private Color highlight = new Color();
 
-        protected EDrop eDrop;
+        protected int drop;
         private Image background;
         private Color idle;
 
@@ -22,7 +26,7 @@ namespace Bang
             background = GetComponent<Image>();
             idle = background.color;
             Droppable = false;
-            eDrop = EDrop.NOTHING;
+            drop = Nothing;
         }
 
         public GameObject GameObject()
@@ -47,7 +51,7 @@ namespace Bang
 
         public virtual int GetDropEnum()
         {
-            return (int)eDrop;
+            return drop;
         }
     }
 }
