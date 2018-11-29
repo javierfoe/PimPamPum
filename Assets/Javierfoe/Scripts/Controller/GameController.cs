@@ -109,7 +109,7 @@ namespace Bang
             {
                 decisionsMade[i] = EDecision.PENDING;
             }
-            if (target > Everyone) decisionsMade[target] = EDecision.SOURCE;
+            if (target > Everyone) decisionsMade[player] = EDecision.SOURCE;
             decisionMaker = Everyone;
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime)
