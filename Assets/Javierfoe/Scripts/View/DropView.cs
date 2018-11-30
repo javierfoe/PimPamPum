@@ -6,7 +6,7 @@ namespace Bang
     public abstract class DropView : MonoBehaviour, IDropView
     {
 
-        protected const int Nothing = -3;
+        protected const int Trash = -3;
         protected const int Hand = -2;
         protected const int Weapon = -1;
 
@@ -26,7 +26,6 @@ namespace Bang
             background = GetComponent<Image>();
             idle = background.color;
             Droppable = false;
-            drop = Nothing;
         }
 
         public GameObject GameObject()
