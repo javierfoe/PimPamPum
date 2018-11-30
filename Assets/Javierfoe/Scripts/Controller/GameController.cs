@@ -105,10 +105,6 @@ namespace Bang
         private IEnumerator Response(int player, int target)
         {
             decisionsMade = new EDecision[maxPlayers];
-            for(int i = 0; i < maxPlayers; i++)
-            {
-                decisionsMade[i] = EDecision.Pending;
-            }
             if (target > Everyone) decisionsMade[player] = EDecision.Source;
             decisionMaker = Everyone;
             float time = 0;

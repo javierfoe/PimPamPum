@@ -292,12 +292,12 @@ namespace Bang
             CmdEndTurn();
         }
 
-        private void DiscardEndTurn(bool value)
+        private void DiscardEndTurn()
         {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableDiscardCard(connectionToClient, i, value);
+                TargetEnableDiscardCard(connectionToClient, i, true);
             }
         }
 
@@ -307,6 +307,24 @@ namespace Bang
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, !(hand[i] is Missed) && value);
+            }
+        }
+
+        private void EnableCardsResponse<T>() where T : Card
+        {
+            int length = hand.Count;
+            for(int i = 0; i < length; i++)
+            {
+                TargetEnableResponseCard(connectionToClient, i, hand[i] is T);
+            }
+        }
+
+        private void EnableCardsDuelResponse()
+        {
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                TargetEnableDuelResponseCard(connectionToClient, i, hand[i] is Bang);
             }
         }
 
@@ -332,7 +350,9 @@ namespace Bang
 
         public void ShotBang(int target)
         {
-
+            EnableCards(false);
+            PlayerController pc = GameController.GetPlayerController(target);
+            pc.EnableCardsResponse<Missed>();
         }
 
         public void Bang()
@@ -537,7 +557,7 @@ namespace Bang
             }
             else
             {
-                DiscardEndTurn(true);
+                DiscardEndTurn();
             }
         }
 
@@ -554,7 +574,7 @@ namespace Bang
             if (hand.Count < hp + 1)
             {
                 GameController.EndTurn();
-                DiscardEndTurn(false);
+                EnableCards(false);
             }
         }
 
@@ -630,6 +650,18 @@ namespace Bang
         private void TargetEnableCard(NetworkConnection conn, int card, bool value)
         {
             PlayerView.EnableCard(card, value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableResponseCard(NetworkConnection conn, int card, bool value)
+        {
+
+        }
+
+        [TargetRpc]
+        private void TargetEnableDuelResponseCard(NetworkConnection conn, int card, bool value)
+        {
+
         }
 
         [TargetRpc]

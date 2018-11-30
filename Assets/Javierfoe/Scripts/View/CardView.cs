@@ -13,7 +13,7 @@ namespace Bang
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         private int index;
-        private bool draggable, discardable;
+        private bool draggable, discardable, duel, response;
         private DropView currentDropView;
         private PlayerView currentPlayerView;
 
@@ -25,11 +25,27 @@ namespace Bang
         public void Playable(bool value)
         {
             draggable = value;
+            if (!value)
+            {
+                Discardable(false);
+                Response(false);
+                Duel(false);
+            }
         }
 
         public void Discardable(bool value)
         {
             discardable = value;
+        }
+
+        public void Response(bool value)
+        {
+            response = value;
+        }
+
+        public void Duel(bool value)
+        {
+            duel = value;
         }
 
         public void SetIndex(int index)

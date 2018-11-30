@@ -21,6 +21,8 @@ namespace Bang
     {
         void Playable(bool value);
         void Discardable(bool value);
+        void Response(bool value);
+        void Duel(bool value);
         int GetPlayerIndex();
         void SetIndex(int index);
         void SetRank(ERank rank);

@@ -99,7 +99,7 @@ namespace Bang
     {
         Pending,
         TakeHit,
-        Dodge,
+        Avoid,
         Duel,
         Source
     }
