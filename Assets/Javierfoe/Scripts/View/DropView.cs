@@ -6,10 +6,6 @@ namespace Bang
     public abstract class DropView : MonoBehaviour, IDropView
     {
 
-        protected const int Trash = -3;
-        protected const int Hand = -2;
-        protected const int Weapon = -1;
-
         [SerializeField] private Color highlight = new Color();
 
         protected int drop;

@@ -36,11 +36,15 @@ namespace Bang
         protected override void Start()
         {
             base.Start();
-            endTurnButton = FindObjectOfType<EndTurnButton>();
-            endTurnButton.Active = false;
             handCards = new List<ICardView>();
             propertyCards = new List<ICardView>();
             weaponCard = weapon.GetComponent<ICardView>();
+        }
+
+        public void SetEndTurnButton()
+        {
+            endTurnButton = FindObjectOfType<EndTurnButton>();
+            endTurnButton.Active = false;
         }
 
         public void SetPlayerIndex(int index)

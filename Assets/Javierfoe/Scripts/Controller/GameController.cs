@@ -26,19 +26,24 @@ namespace Bang
         private int currentPlayer;
         private PlayerController[] playerControllers;
 
-        public bool AreDecisionsMade
+        public float DecisionTime
+        {
+            get { return decisionTime; }
+        }
+
+        private bool AreDecisionsMade
         {
             get
             {
                 bool res;
-                if(decisionMaker > Everyone)
+                if (decisionMaker > Everyone)
                 {
                     res = decisionsMade[decisionMaker] != Decision.Pending;
                 }
                 else
                 {
                     res = true;
-                    for(int i = 0; i < decisionsMade.Length && res; i++)
+                    for (int i = 0; i < decisionsMade.Length && res; i++)
                     {
                         res &= decisionsMade[i] != Decision.Pending;
                     }
@@ -92,6 +97,17 @@ namespace Bang
             decisionsMade[player] = decision;
         }
 
+        public IEnumerator Dying(int player)
+        {
+            PlayerController pc = playerControllers[player];
+            float time = 0;
+            while (!AreDecisionsMade && time < decisionTime && pc.IsDead)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+        }
+
         private IEnumerator WaitForPlayerResponse(int player, int target)
         {
             yield return Response(player, target);
@@ -114,11 +130,22 @@ namespace Bang
                 yield return null;
             }
             Decision ed;
-            for(int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
                 ed = decisionsMade[i];
                 decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
             }
+            for (int i = player + 1; i < maxPlayers; i++)
+            {
+                if (decisionsMade[i] == Decision.TakeHit)
+                    yield return playerControllers[i].Hit();
+            }
+            for(int i = 0; i < player; i++)
+            {
+                if (decisionsMade[i] == Decision.TakeHit)
+                    yield return playerControllers[i].Hit();
+            }
+            playerControllers[player].ResponsesFinished();
         }
 
         public void AddPlayerControllers(GameObject[] gos)

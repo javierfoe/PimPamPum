@@ -128,15 +128,19 @@ namespace Bang
         {
             if (!draggable) return;
             Highlight(false);
-            PlayerController.LocalPlayer.UseCard(index, currentPlayerView.GetPlayerIndex(), currentDropView.GetDropEnum());
+            int player = -1;
+            int drop = Drop.Nothing;
             if (currentDropView != null)
             {
+                drop = currentDropView.GetDropEnum();
                 currentDropView.Highlight(false);
             }
             if (currentPlayerView != null)
             {
+                player = currentPlayerView.GetPlayerIndex();
                 currentPlayerView.Highlight(false);
             }
+            PlayerController.LocalPlayer.UseCard(index, player, drop);
             currentPlayerView = null;
             currentDropView = null;
         }

@@ -33,6 +33,7 @@ namespace Bang
     {
         void SetStealable(bool value, bool weapon);
         void SetPlayerIndex(int index);
+        void SetEndTurnButton();
         int GetPlayerIndex();
         void UpdateHP(int hp);
         void SetSheriff();

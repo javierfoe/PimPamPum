@@ -21,6 +21,14 @@ namespace Bang
         public const int Indians = 2;
     }
 
+    public static class Drop
+    {
+        public const int Nothing = -4;
+        public const int Trash = -3;
+        public const int Hand = -2;
+        public const int Weapon = -1;
+    }
+
     public class Roles
     {
 
@@ -99,6 +107,7 @@ namespace Bang
     {
         Pending,
         TakeHit,
+        Die,
         Avoid,
         Duel,
         Source

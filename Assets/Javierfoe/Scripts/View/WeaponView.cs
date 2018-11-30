@@ -5,7 +5,7 @@
         protected override void Start()
         {
             base.Start();
-            drop = Weapon;
+            drop = Drop.Weapon;
         }
 
         public override int GetDropEnum()

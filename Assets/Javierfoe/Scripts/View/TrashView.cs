@@ -6,7 +6,7 @@
         {
             base.Start();
             Droppable = true;
-            drop = Trash;
+            drop = Drop.Trash;
         }
     }
 }

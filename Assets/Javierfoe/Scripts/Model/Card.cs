@@ -28,7 +28,7 @@ namespace Bang
             Rank = rank;
         }
 
-        public abstract void BeginCardDrag(PlayerController pc);
+        public virtual void BeginCardDrag(PlayerController pc) { }
 
         public virtual void PlayCard(PlayerController pc, int player, int drop)
         {
@@ -107,7 +107,7 @@ namespace Bang
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
             base.PlayCard(pc, player, drop);
-            pc.ShotBang(player);
+            //pc.ShotBang(player);
         }
 
         public override string ToString()
@@ -150,11 +150,6 @@ namespace Bang
                     return new Missed(Suit.Clubs, Rank.King);
             }
             return null;
-        }
-
-        public override void BeginCardDrag(PlayerController pc)
-        {
-            throw new System.NotImplementedException();
         }
 
         public override string ToString()

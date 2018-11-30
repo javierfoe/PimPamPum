@@ -17,7 +17,7 @@ namespace Bang
         {
             base.Start();
             text = GetComponentInChildren<Text>();
-            drop = Hand;
+            drop = Drop.Hand;
         }
     }
 }

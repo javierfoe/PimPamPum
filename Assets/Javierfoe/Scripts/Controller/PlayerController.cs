@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -12,7 +13,14 @@ namespace Bang
             Play,
             Response,
             Duel,
-            Discard
+            Discard,
+            Dying
+        }
+
+        private enum HitState
+        {
+            Draw,
+            Play
         }
 
         [SyncVar] private int playerNum;
@@ -25,6 +33,7 @@ namespace Bang
         private OnStartTurn onStartTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
         private State state;
+        private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
@@ -233,17 +242,48 @@ namespace Bang
 
         public void StartTurn()
         {
+            hitState = HitState.Draw;
             EndTurnOnStart = false;
             if (onStartTurn != null) onStartTurn();
+        }
+
+        private void Phase1()
+        {
             if (EndTurnOnStart)
             {
-                TargetEndTurn(connectionToClient);
+                ForceEndTurn();
                 return;
             }
+            hitState = HitState.Play;
             Draw(2);
             bangsUsed = 0;
             EnableCardsPlay();
-            TargetEndTurnButton(connectionToClient);
+            TargetEnableEndTurnButton(connectionToClient);
+        }
+
+        private void Phase2()
+        {
+            if (!IsDead)
+            {
+                EnableCardsPlay();
+            }
+            else
+            {
+                ForceEndTurn();
+            }
+        }
+
+        private void DyingFinished()
+        {
+            switch (hitState)
+            {
+                case HitState.Draw:
+                    Phase1();
+                    break;
+                case HitState.Play:
+                    Phase2();
+                    break;
+            }
         }
 
         public void DynamiteCheck()
@@ -254,11 +294,8 @@ namespace Bang
             UnequipProperty(index);
             if (d.CheckCondition(c))
             {
+                GameController.DiscardCard(d);
                 Hit(3);
-                if (!IsDead)
-                {
-                    GameController.DiscardCard(d);
-                }
             }
             else
             {
@@ -290,6 +327,11 @@ namespace Bang
                 res = found ? (T)c : res;
             }
             return res;
+        }
+
+        public void ForceEndTurn()
+        {
+            CmdForceEndTurn();
         }
 
         public void EndTurn()
@@ -327,7 +369,17 @@ namespace Bang
             }
         }
 
-        private void EnableCardsResponse<T>() where T : Card
+        protected virtual void EnableCardsDying()
+        {
+            state = State.Dying;
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                TargetEnableCard(connectionToClient, i, hand[i] is Beer);
+            }
+        }
+
+        protected virtual void EnableCardsResponse<T>() where T : Card
         {
             state = State.Response;
             int length = hand.Count;
@@ -337,7 +389,7 @@ namespace Bang
             }
         }
 
-        private void EnableCardsDuelResponse()
+        protected virtual void EnableCardsDuelResponse()
         {
             state = State.Duel;
             int length = hand.Count;
@@ -372,6 +424,11 @@ namespace Bang
             DisableCards();
             PlayerController pc = GameController.GetPlayerController(target);
             pc.EnableCardsResponse<Missed>();
+        }
+
+        public void ResponsesFinished()
+        {
+            EnableCardsPlay();
         }
 
         public void Bang()
@@ -412,12 +469,6 @@ namespace Bang
         public void SetStealable(NetworkConnection conn, bool value)
         {
             TargetSetStealable(conn, value, weapon != colt45);
-        }
-
-        public void EndCardDrag()
-        {
-            draggedCard = -1;
-            GameController.StopTargeting();
         }
 
         public void BangBeginCardDrag()
@@ -461,14 +512,21 @@ namespace Bang
             PlayerView.SetStealable(false, true);
         }
 
-        public void Hit(int amount)
+        public IEnumerator Hit(int amount = 1)
         {
             HP -= amount;
-            for (int i = 0; i < amount; i++) Hit();
+            for (int i = 0; i < amount; i++) HitTrigger();
+            if (IsDead)
+            {
+                EnableCardsDying();
+                yield return GameController.Dying(playerNum);
+                DisableCards();
+            }
             if (IsDead) Die();
+            DyingFinished();
         }
 
-        public virtual void Hit() { }
+        public virtual void HitTrigger() { }
 
         public virtual void Die()
         {
@@ -493,16 +551,24 @@ namespace Bang
             switch (state)
             {
                 case State.Play:
+                    if (player < 0) return;
                     PlayCard(player, drop);
+                    break;
+                case State.Discard:
+                    if (drop != Drop.Trash) return;
+                    DiscardCardEndTurn(index);
+                    break;
+                case State.Dying:
+                    if (drop != Drop.Trash) return;
+                    PlayCard(playerNum, drop);
                     break;
                 case State.Duel:
                     break;
                 case State.Response:
                     break;
-                case State.Discard:
-                    DiscardCardEndTurn(index);
-                    break;
             }
+            draggedCard = -1;
+            GameController.StopTargeting();
         }
 
         public void DiscardCardUsed()
@@ -581,6 +647,12 @@ namespace Bang
         {
             draggedCard = index;
             hand[draggedCard].BeginCardDrag(this);
+        }
+
+        [Command]
+        public void CmdForceEndTurn()
+        {
+            GameController.EndTurn();
         }
 
         [Command]
@@ -707,6 +779,7 @@ namespace Bang
             if (isLocalPlayer)
             {
                 ipv = GameController.GetPlayerView(0);
+                ipv.SetEndTurnButton();
             }
             else
             {
@@ -716,7 +789,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetEndTurnButton(NetworkConnection conn)
+        public void TargetEnableEndTurnButton(NetworkConnection conn)
         {
             PlayerView.EnableEndTurnButton(true);
         }
