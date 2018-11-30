@@ -21,7 +21,7 @@ namespace Bang
 
         [SyncVar] private int maxPlayers;
 
-        private EDecision[] decisionsMade;
+        private Decision[] decisionsMade;
         private int decisionMaker;
         private int currentPlayer;
         private PlayerController[] playerControllers;
@@ -33,14 +33,14 @@ namespace Bang
                 bool res;
                 if(decisionMaker > Everyone)
                 {
-                    res = decisionsMade[decisionMaker] != EDecision.Pending;
+                    res = decisionsMade[decisionMaker] != Decision.Pending;
                 }
                 else
                 {
                     res = true;
                     for(int i = 0; i < decisionsMade.Length && res; i++)
                     {
-                        res &= decisionsMade[i] != EDecision.Pending;
+                        res &= decisionsMade[i] != Decision.Pending;
                     }
                 }
                 return res;
@@ -87,7 +87,7 @@ namespace Bang
             boardController.DiscardCard(card);
         }
 
-        public void MakeDecision(int player, EDecision decision)
+        public void MakeDecision(int player, Decision decision)
         {
             decisionsMade[player] = decision;
         }
@@ -104,8 +104,8 @@ namespace Bang
 
         private IEnumerator Response(int player, int target)
         {
-            decisionsMade = new EDecision[maxPlayers];
-            if (target > Everyone) decisionsMade[player] = EDecision.Source;
+            decisionsMade = new Decision[maxPlayers];
+            if (target > Everyone) decisionsMade[player] = Decision.Source;
             decisionMaker = Everyone;
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime)
@@ -113,11 +113,11 @@ namespace Bang
                 time += Time.deltaTime;
                 yield return null;
             }
-            EDecision ed;
+            Decision ed;
             for(int i = 0; i < maxPlayers; i++)
             {
                 ed = decisionsMade[i];
-                decisionsMade[i] = ed == EDecision.Pending ? EDecision.TakeHit : ed;
+                decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
             }
         }
 
@@ -165,14 +165,14 @@ namespace Bang
         {
             boardController.ConstructorBoard();
 
-            ERole[] roles = Roles.GetRoles(MaxPlayers);
+            Role[] roles = Roles.GetRoles(MaxPlayers);
             List<PlayerController> players = new List<PlayerController>();
             foreach (PlayerController pc in playerControllers)
                 players.Add(pc);
 
             int range, random;
             PlayerController sheriff = null;
-            foreach (ERole r in roles)
+            foreach (Role r in roles)
             {
                 range = players.Count;
                 random = Random.Range(0, range);
@@ -238,7 +238,7 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && pc.Role != ERole.Sheriff && !pc.HasProperty<Jail>())
+                if (pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>())
                     pc.TargetSetTargetable(conn, true);
         }
 

@@ -55,7 +55,7 @@ namespace Bang
             SetRole(Roles.SheriffName, Roles.SheriffColor);
         }
 
-        public void SetRole(ERole role)
+        public void SetRole(Role role)
         {
             Color color = Roles.GetColorFromRole(role);
             string name = Roles.GetNameFromRole(role);
@@ -83,13 +83,13 @@ namespace Bang
             HiddenCards -= 1;
         }
 
-        public void AddCard(int index, string name, ESuit suit, ERank rank, Color color)
+        public void AddCard(int index, string name, Suit suit, Rank rank, Color color)
         {
             ICardView cv = InstantiateCard(index, name, suit, rank, color, hand);
             handCards.Add(cv);
         }
 
-        public void EquipProperty(int index, string name, ESuit suit, ERank rank, Color color)
+        public void EquipProperty(int index, string name, Suit suit, Rank rank, Color color)
         {
             ICardView cv = InstantiateCard(index, name, suit, rank, color, properties);
             propertyCards.Add(cv);
@@ -101,7 +101,7 @@ namespace Bang
             propertyCards.RemoveAt(index);
         }
 
-        private ICardView InstantiateCard(int index, string name, ESuit suit, ERank rank, Color color, Transform t)
+        private ICardView InstantiateCard(int index, string name, Suit suit, Rank rank, Color color, Transform t)
         {
             ICardView cv = Instantiate(GameController.CardPrefab, t);
             cv.SetIndex(index);
@@ -122,7 +122,7 @@ namespace Bang
             }
         }
 
-        public void EquipWeapon(string name, ESuit suit, ERank rank, Color color)
+        public void EquipWeapon(string name, Suit suit, Rank rank, Color color)
         {
             weaponCard.SetName(name, color);
             weaponCard.SetSuit(suit);
@@ -132,11 +132,6 @@ namespace Bang
         public void EnableCard(int index, bool enable)
         {
             handCards[index].Playable(enable);
-        }
-
-        public void EnableDiscardCard(int index, bool enable)
-        {
-            handCards[index].Discardable(enable);
         }
 
         public void SetStealable(bool value, bool weapon)

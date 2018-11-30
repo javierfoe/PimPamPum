@@ -13,7 +13,7 @@ namespace Bang
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         private int index;
-        private bool draggable, discardable, duel, response;
+        private bool draggable;
         private DropView currentDropView;
         private PlayerView currentPlayerView;
 
@@ -25,27 +25,6 @@ namespace Bang
         public void Playable(bool value)
         {
             draggable = value;
-            if (!value)
-            {
-                Discardable(false);
-                Response(false);
-                Duel(false);
-            }
-        }
-
-        public void Discardable(bool value)
-        {
-            discardable = value;
-        }
-
-        public void Response(bool value)
-        {
-            response = value;
-        }
-
-        public void Duel(bool value)
-        {
-            duel = value;
         }
 
         public void SetIndex(int index)
@@ -59,12 +38,12 @@ namespace Bang
             cardName.text = name;
         }
 
-        public void SetRank(ERank rank)
+        public void SetRank(Rank rank)
         {
             this.rank.text = Ranks[(int)rank];
         }
 
-        public void SetSuit(ESuit suit)
+        public void SetSuit(Suit suit)
         {
             this.suit.text = Suits[(int)suit];
         }
@@ -93,17 +72,14 @@ namespace Bang
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!draggable && !discardable) return;
-            if (draggable)
-            {
-                PlayerController.LocalPlayer.BeginCardDrag(index);
-            }
+            if (!draggable) return;
+            PlayerController.LocalPlayer.BeginCardDrag(index);
             Highlight(true);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!draggable && !discardable) return;
+            if (!draggable) return;
 
             DropView drop = null;
             PlayerView pv = null;
@@ -150,17 +126,9 @@ namespace Bang
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!draggable && !discardable) return;
+            if (!draggable) return;
             Highlight(false);
-            if (draggable && currentPlayerView != null)
-            {
-                PlayerController.LocalPlayer.PlayCard(currentPlayerView.GetPlayerIndex(), currentDropView.GetDropEnum());
-            }
-            else if (discardable && currentDropView != null)
-            {
-                PlayerController.LocalPlayer.DiscardCardEndTurn(index);
-            }
-            PlayerController.LocalPlayer.EndCardDrag();
+            PlayerController.LocalPlayer.UseCard(index, currentPlayerView.GetPlayerIndex(), currentDropView.GetDropEnum());
             if (currentDropView != null)
             {
                 currentDropView.Highlight(false);

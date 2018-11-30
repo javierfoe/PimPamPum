@@ -87,7 +87,7 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcSetDiscardTop(string name, ESuit suit, ERank rank, Color color)
+        private void RpcSetDiscardTop(string name, Suit suit, Rank rank, Color color)
         {
             boardView.SetDiscardTop(name, suit, rank, color);
         }

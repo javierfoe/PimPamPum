@@ -21,7 +21,7 @@ namespace Bang
             deck.text = cards.ToString();
         }
 
-        public void SetDiscardTop(string name, ESuit suit, ERank rank, Color color)
+        public void SetDiscardTop(string name, Suit suit, Rank rank, Color color)
         {
             discardTopCard.SetName(name, color);
             discardTopCard.SetRank(rank);
@@ -31,8 +31,8 @@ namespace Bang
         public void EmptyDiscardStack()
         {
             discardTopCard.SetName("", Color.black);
-            discardTopCard.SetRank(ERank.Null);
-            discardTopCard.SetSuit(ESuit.Null);
+            discardTopCard.SetRank(Rank.Null);
+            discardTopCard.SetSuit(Suit.Null);
         }
     }
 }

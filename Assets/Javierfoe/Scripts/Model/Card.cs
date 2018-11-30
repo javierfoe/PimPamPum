@@ -5,11 +5,11 @@ namespace Bang
 
     public abstract class Card
     {
-        public ESuit Suit
+        public Suit Suit
         {
             get; private set;
         }
-        public ERank Rank
+        public Rank Rank
         {
             get; private set;
         }
@@ -22,7 +22,7 @@ namespace Bang
             }
         }
 
-        public Card(ESuit suit, ERank rank)
+        public Card(Suit suit, Rank rank)
         {
             Suit = suit;
             Rank = rank;
@@ -39,62 +39,62 @@ namespace Bang
 
     public class Bang : Card
     {
-        private Bang(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Bang(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Bang CreateBang(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Bang(ESuit.Spades, ERank.Ace);
+                    return new Bang(Suit.Spades, Rank.Ace);
                 case 1:
-                    return new Bang(ESuit.Hearts, ERank.Ace);
+                    return new Bang(Suit.Hearts, Rank.Ace);
                 case 2:
-                    return new Bang(ESuit.Hearts, ERank.Queen);
+                    return new Bang(Suit.Hearts, Rank.Queen);
                 case 3:
-                    return new Bang(ESuit.Hearts, ERank.King);
+                    return new Bang(Suit.Hearts, Rank.King);
                 case 4:
-                    return new Bang(ESuit.Clubs, ERank.Two);
+                    return new Bang(Suit.Clubs, Rank.Two);
                 case 5:
-                    return new Bang(ESuit.Clubs, ERank.Three);
+                    return new Bang(Suit.Clubs, Rank.Three);
                 case 6:
-                    return new Bang(ESuit.Clubs, ERank.Four);
+                    return new Bang(Suit.Clubs, Rank.Four);
                 case 7:
-                    return new Bang(ESuit.Clubs, ERank.Five);
+                    return new Bang(Suit.Clubs, Rank.Five);
                 case 8:
-                    return new Bang(ESuit.Clubs, ERank.Six);
+                    return new Bang(Suit.Clubs, Rank.Six);
                 case 9:
-                    return new Bang(ESuit.Clubs, ERank.Seven);
+                    return new Bang(Suit.Clubs, Rank.Seven);
                 case 10:
-                    return new Bang(ESuit.Clubs, ERank.Eight);
+                    return new Bang(Suit.Clubs, Rank.Eight);
                 case 11:
-                    return new Bang(ESuit.Clubs, ERank.Nine);
+                    return new Bang(Suit.Clubs, Rank.Nine);
                 case 12:
-                    return new Bang(ESuit.Diamonds, ERank.Ace);
+                    return new Bang(Suit.Diamonds, Rank.Ace);
                 case 13:
-                    return new Bang(ESuit.Diamonds, ERank.Two);
+                    return new Bang(Suit.Diamonds, Rank.Two);
                 case 14:
-                    return new Bang(ESuit.Diamonds, ERank.Three);
+                    return new Bang(Suit.Diamonds, Rank.Three);
                 case 15:
-                    return new Bang(ESuit.Diamonds, ERank.Four);
+                    return new Bang(Suit.Diamonds, Rank.Four);
                 case 16:
-                    return new Bang(ESuit.Diamonds, ERank.Five);
+                    return new Bang(Suit.Diamonds, Rank.Five);
                 case 17:
-                    return new Bang(ESuit.Diamonds, ERank.Six);
+                    return new Bang(Suit.Diamonds, Rank.Six);
                 case 18:
-                    return new Bang(ESuit.Diamonds, ERank.Seven);
+                    return new Bang(Suit.Diamonds, Rank.Seven);
                 case 19:
-                    return new Bang(ESuit.Diamonds, ERank.Eight);
+                    return new Bang(Suit.Diamonds, Rank.Eight);
                 case 20:
-                    return new Bang(ESuit.Diamonds, ERank.Nine);
+                    return new Bang(Suit.Diamonds, Rank.Nine);
                 case 21:
-                    return new Bang(ESuit.Diamonds, ERank.Ten);
+                    return new Bang(Suit.Diamonds, Rank.Ten);
                 case 22:
-                    return new Bang(ESuit.Diamonds, ERank.Jack);
+                    return new Bang(Suit.Diamonds, Rank.Jack);
                 case 23:
-                    return new Bang(ESuit.Diamonds, ERank.Queen);
+                    return new Bang(Suit.Diamonds, Rank.Queen);
                 case 24:
-                    return new Bang(ESuit.Diamonds, ERank.King);
+                    return new Bang(Suit.Diamonds, Rank.King);
             }
             return null;
         }
@@ -118,36 +118,36 @@ namespace Bang
 
     public class Missed : Card
     {
-        private Missed(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Missed(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Missed CreateMissed(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Missed(ESuit.Spades, ERank.Two);
+                    return new Missed(Suit.Spades, Rank.Two);
                 case 1:
-                    return new Missed(ESuit.Spades, ERank.Three);
+                    return new Missed(Suit.Spades, Rank.Three);
                 case 2:
-                    return new Missed(ESuit.Spades, ERank.Four);
+                    return new Missed(Suit.Spades, Rank.Four);
                 case 3:
-                    return new Missed(ESuit.Spades, ERank.Five);
+                    return new Missed(Suit.Spades, Rank.Five);
                 case 4:
-                    return new Missed(ESuit.Spades, ERank.Six);
+                    return new Missed(Suit.Spades, Rank.Six);
                 case 5:
-                    return new Missed(ESuit.Spades, ERank.Seven);
+                    return new Missed(Suit.Spades, Rank.Seven);
                 case 6:
-                    return new Missed(ESuit.Spades, ERank.Eight);
+                    return new Missed(Suit.Spades, Rank.Eight);
                 case 7:
-                    return new Missed(ESuit.Clubs, ERank.Ace);
+                    return new Missed(Suit.Clubs, Rank.Ace);
                 case 8:
-                    return new Missed(ESuit.Clubs, ERank.Ten);
+                    return new Missed(Suit.Clubs, Rank.Ten);
                 case 9:
-                    return new Missed(ESuit.Clubs, ERank.Jack);
+                    return new Missed(Suit.Clubs, Rank.Jack);
                 case 10:
-                    return new Missed(ESuit.Clubs, ERank.Queen);
+                    return new Missed(Suit.Clubs, Rank.Queen);
                 case 11:
-                    return new Missed(ESuit.Clubs, ERank.King);
+                    return new Missed(Suit.Clubs, Rank.King);
             }
             return null;
         }
@@ -165,16 +165,16 @@ namespace Bang
 
     public class Indians : Card
     {
-        private Indians(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Indians(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Indians CreateIndians(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Indians(ESuit.Diamonds, ERank.King);
+                    return new Indians(Suit.Diamonds, Rank.King);
                 case 1:
-                    return new Indians(ESuit.Diamonds, ERank.Ace);
+                    return new Indians(Suit.Diamonds, Rank.Ace);
             }
             return null;
         }
@@ -192,18 +192,18 @@ namespace Bang
 
     public class Duel : Card
     {
-        private Duel(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Duel(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Duel CreateDuel(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Duel(ESuit.Clubs, ERank.Eight);
+                    return new Duel(Suit.Clubs, Rank.Eight);
                 case 1:
-                    return new Duel(ESuit.Spades, ERank.Jack);
+                    return new Duel(Suit.Spades, Rank.Jack);
                 case 2:
-                    return new Duel(ESuit.Diamonds, ERank.Queen);
+                    return new Duel(Suit.Diamonds, Rank.Queen);
             }
             return null;
         }
@@ -221,20 +221,20 @@ namespace Bang
 
     public class CatBalou : Card
     {
-        protected CatBalou(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected CatBalou(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static CatBalou CreateCatBalou(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new CatBalou(ESuit.Diamonds, ERank.Nine);
+                    return new CatBalou(Suit.Diamonds, Rank.Nine);
                 case 1:
-                    return new CatBalou(ESuit.Diamonds, ERank.Ten);
+                    return new CatBalou(Suit.Diamonds, Rank.Ten);
                 case 2:
-                    return new CatBalou(ESuit.Diamonds, ERank.Jack);
+                    return new CatBalou(Suit.Diamonds, Rank.Jack);
                 case 3:
-                    return new CatBalou(ESuit.Hearts, ERank.King);
+                    return new CatBalou(Suit.Hearts, Rank.King);
             }
             return null;
         }
@@ -252,20 +252,20 @@ namespace Bang
 
     public class Panic : CatBalou
     {
-        private Panic(ESuit suit, ERank rank) : base(suit, rank) { }
+        private Panic(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Panic CreatePanic(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Panic(ESuit.Hearts, ERank.Jack);
+                    return new Panic(Suit.Hearts, Rank.Jack);
                 case 1:
-                    return new Panic(ESuit.Hearts, ERank.Queen);
+                    return new Panic(Suit.Hearts, Rank.Queen);
                 case 2:
-                    return new Panic(ESuit.Hearts, ERank.Ace);
+                    return new Panic(Suit.Hearts, Rank.Ace);
                 case 3:
-                    return new Panic(ESuit.Diamonds, ERank.Eight);
+                    return new Panic(Suit.Diamonds, Rank.Eight);
             }
             return null;
         }
@@ -283,7 +283,7 @@ namespace Bang
 
     public class Gatling : Card
     {
-        public Gatling() : base(ESuit.Hearts, ERank.Ten) { }
+        public Gatling() : base(Suit.Hearts, Rank.Ten) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -298,24 +298,24 @@ namespace Bang
 
     public class Beer : Card
     {
-        private Beer(ERank rank) : base(ESuit.Hearts, rank) { }
+        private Beer(Rank rank) : base(Suit.Hearts, rank) { }
 
         public static Beer CreateBeer(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Beer(ERank.Six);
+                    return new Beer(Rank.Six);
                 case 1:
-                    return new Beer(ERank.Seven);
+                    return new Beer(Rank.Seven);
                 case 2:
-                    return new Beer(ERank.Eight);
+                    return new Beer(Rank.Eight);
                 case 3:
-                    return new Beer(ERank.Nine);
+                    return new Beer(Rank.Nine);
                 case 4:
-                    return new Beer(ERank.Ten);
+                    return new Beer(Rank.Ten);
                 case 5:
-                    return new Beer(ERank.Jack);
+                    return new Beer(Rank.Jack);
             }
             return null;
         }
@@ -341,7 +341,7 @@ namespace Bang
 
     public class Saloon : Card
     {
-        public Saloon() : base(ESuit.Hearts, ERank.Five) { }
+        public Saloon() : base(Suit.Hearts, Rank.Five) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -356,16 +356,16 @@ namespace Bang
 
     public class GeneralStore : Card
     {
-        private GeneralStore(ESuit suit, ERank rank) : base(suit, rank) { }
+        private GeneralStore(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static GeneralStore CreateGeneralStore(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new GeneralStore(ESuit.Spades, ERank.Queen);
+                    return new GeneralStore(Suit.Spades, Rank.Queen);
                 case 1:
-                    return new GeneralStore(ESuit.Clubs, ERank.Nine);
+                    return new GeneralStore(Suit.Clubs, Rank.Nine);
             }
             return null;
         }
@@ -383,7 +383,7 @@ namespace Bang
 
     public abstract class Property : Card
     {
-        protected Property(ESuit suit, ERank rank) : base(suit, rank) { }
+        protected Property(Suit suit, Rank rank) : base(suit, rank) { }
 
         public abstract override void BeginCardDrag(PlayerController pc);
 
@@ -404,16 +404,16 @@ namespace Bang
 
     public class Mustang : Property
     {
-        private Mustang(ERank rank) : base(ESuit.Hearts, rank) { }
+        private Mustang(Rank rank) : base(Suit.Hearts, rank) { }
 
         public static Mustang CreateMustang(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Mustang(ERank.Eight);
+                    return new Mustang(Rank.Eight);
                 case 1:
-                    return new Mustang(ERank.Nine);
+                    return new Mustang(Rank.Nine);
             }
             return null;
         }
@@ -442,16 +442,16 @@ namespace Bang
 
     public class Barrel : Property
     {
-        private Barrel(ERank rank) : base(ESuit.Spades, rank) { }
+        private Barrel(Rank rank) : base(Suit.Spades, rank) { }
 
         public static Barrel CreateBarrel(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Barrel(ERank.Queen);
+                    return new Barrel(Rank.Queen);
                 case 1:
-                    return new Barrel(ERank.King);
+                    return new Barrel(Rank.King);
             }
             return null;
         }
@@ -469,7 +469,7 @@ namespace Bang
 
     public class Scope : Property
     {
-        public Scope() : base(ESuit.Spades, ERank.Ace) { }
+        public Scope() : base(Suit.Spades, Rank.Ace) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -495,36 +495,36 @@ namespace Bang
 
     public abstract class NegativeProperty : Property
     {
-        protected ESuit Trigger
+        protected Suit Trigger
         {
             get; private set;
         }
 
-        protected ERank Minimum
+        protected Rank Minimum
         {
             get; private set;
         }
 
-        protected ERank Maximum
+        protected Rank Maximum
         {
             get; private set;
         }
 
-        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger, ERank minimum, ERank maximum) : base(suit, rank)
+        protected NegativeProperty(Suit suit, Rank rank, Suit trigger, Rank minimum, Rank maximum) : base(suit, rank)
         {
             Trigger = trigger;
             Minimum = minimum;
             Maximum = maximum;
         }
 
-        protected NegativeProperty(ESuit suit, ERank rank, ESuit trigger) : this(suit, rank, trigger, ERank.Ace, ERank.Ace) { }
+        protected NegativeProperty(Suit suit, Rank rank, Suit trigger) : this(suit, rank, trigger, Rank.Ace, Rank.Ace) { }
 
         public abstract bool CheckCondition(Card c);
     }
 
     public class Dynamite : NegativeProperty
     {
-        public Dynamite() : base(ESuit.Hearts, ERank.Two, ESuit.Spades, ERank.Two, ERank.Nine) { }
+        public Dynamite() : base(Suit.Hearts, Rank.Two, Suit.Spades, Rank.Two, Rank.Nine) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -557,18 +557,18 @@ namespace Bang
 
     public class Jail : NegativeProperty
     {
-        private Jail(ESuit suit, ERank rank) : base(suit, rank, ESuit.Hearts) { }
+        private Jail(Suit suit, Rank rank) : base(suit, rank, Suit.Hearts) { }
 
         public static Jail CreateJail(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Jail(ESuit.Spades, ERank.Ten);
+                    return new Jail(Suit.Spades, Rank.Ten);
                 case 1:
-                    return new Jail(ESuit.Spades, ERank.Jack);
+                    return new Jail(Suit.Spades, Rank.Jack);
                 case 2:
-                    return new Jail(ESuit.Hearts, ERank.Four);
+                    return new Jail(Suit.Hearts, Rank.Four);
             }
             return null;
         }
@@ -617,7 +617,7 @@ namespace Bang
 
         protected Weapon(int range) : this(range, 0, 0) { }
 
-        protected Weapon(int range, ESuit suit, ERank rank) : base(suit, rank)
+        protected Weapon(int range, Suit suit, Rank rank) : base(suit, rank)
         {
             Range = range;
         }
@@ -653,16 +653,16 @@ namespace Bang
 
     public class Volcanic : Weapon
     {
-        private Volcanic(ESuit suit) : base(1, suit, ERank.Ten) { }
+        private Volcanic(Suit suit) : base(1, suit, Rank.Ten) { }
 
         public static Volcanic CreateVolcanic(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Volcanic(ESuit.Clubs);
+                    return new Volcanic(Suit.Clubs);
                 case 1:
-                    return new Volcanic(ESuit.Spades);
+                    return new Volcanic(Suit.Spades);
             }
             return null;
         }
@@ -678,7 +678,7 @@ namespace Bang
 
     public class Remington : Weapon
     {
-        public Remington() : base(3, ESuit.Clubs, ERank.King) { }
+        public Remington() : base(3, Suit.Clubs, Rank.King) { }
 
         public override string ToString()
         {
@@ -688,18 +688,18 @@ namespace Bang
 
     public class Schofield : Weapon
     {
-        protected Schofield(ESuit suit, ERank rank) : base(2, suit, rank) { }
+        protected Schofield(Suit suit, Rank rank) : base(2, suit, rank) { }
 
         public static Schofield CreateSchofield(int index)
         {
             switch (index)
             {
                 case 0:
-                    return new Schofield(ESuit.Clubs, ERank.Jack);
+                    return new Schofield(Suit.Clubs, Rank.Jack);
                 case 1:
-                    return new Schofield(ESuit.Clubs, ERank.Queen);
+                    return new Schofield(Suit.Clubs, Rank.Queen);
                 case 2:
-                    return new Schofield(ESuit.Spades, ERank.King);
+                    return new Schofield(Suit.Spades, Rank.King);
             }
             return null;
         }
@@ -712,7 +712,7 @@ namespace Bang
 
     public class Carabine : Weapon
     {
-        public Carabine() : base(4, ESuit.Clubs, ERank.Ace) { }
+        public Carabine() : base(4, Suit.Clubs, Rank.Ace) { }
 
         public override string ToString()
         {
@@ -722,7 +722,7 @@ namespace Bang
 
     public class Winchester : Weapon
     {
-        public Winchester() : base(5, ESuit.Spades, ERank.Eight) { }
+        public Winchester() : base(5, Suit.Spades, Rank.Eight) { }
 
         public override string ToString()
         {
@@ -733,7 +733,7 @@ namespace Bang
     public abstract class Draw : Card
     {
         private int numberToDraw;
-        protected Draw(int numberToDraw, ESuit suit, ERank rank) : base(suit, rank)
+        protected Draw(int numberToDraw, Suit suit, Rank rank) : base(suit, rank)
         {
             this.numberToDraw = numberToDraw;
         }
@@ -754,7 +754,7 @@ namespace Bang
 
     public class WellsFargo : Draw
     {
-        public WellsFargo() : base(3, ESuit.Hearts, ERank.Three) { }
+        public WellsFargo() : base(3, Suit.Hearts, Rank.Three) { }
 
         public override string ToString()
         {
@@ -764,7 +764,7 @@ namespace Bang
 
     public class Stagecoach : Draw
     {
-        public Stagecoach() : base(2, ESuit.Spades, ERank.Nine) { }
+        public Stagecoach() : base(2, Suit.Spades, Rank.Nine) { }
 
         public override string ToString()
         {

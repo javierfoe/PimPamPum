@@ -7,6 +7,14 @@ namespace Bang
     public class PlayerController : NetworkBehaviour
     {
 
+        private enum State
+        {
+            Play,
+            Response,
+            Duel,
+            Discard
+        }
+
         [SyncVar] private int playerNum;
 
         public static PlayerController LocalPlayer { get; private set; }
@@ -16,6 +24,7 @@ namespace Bang
         private delegate void OnStartTurn();
         private OnStartTurn onStartTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
+        private State state;
         private EndTurnButton endTurnButton;
         private Weapon weapon;
         private List<Card> hand, properties;
@@ -88,7 +97,7 @@ namespace Bang
             get; private set;
         }
 
-        public ERole Role
+        public Role Role
         {
             private set; get;
         }
@@ -121,10 +130,10 @@ namespace Bang
             if (!GameController) GameController = FindObjectOfType<GameController>();
         }
 
-        public virtual void SetRole(ERole role)
+        public virtual void SetRole(Role role)
         {
             Role = role;
-            if (role == ERole.Sheriff)
+            if (role == Role.Sheriff)
             {
                 MaxHP = 5;
                 RpcSheriff();
@@ -297,7 +306,7 @@ namespace Bang
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableDiscardCard(connectionToClient, i, true);
+                TargetEnableCard(connectionToClient, i, true);
             }
         }
 
@@ -469,6 +478,11 @@ namespace Bang
             if (HP < MaxHP) HP++;
         }
 
+        public void UseCard(int index, int player, int drop)
+        {
+
+        }
+
         public void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
@@ -579,13 +593,13 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcEquipWeapon(string name, ESuit suit, ERank rank, Color color)
+        private void RpcEquipWeapon(string name, Suit suit, Rank rank, Color color)
         {
             PlayerView.EquipWeapon(name, suit, rank, color);
         }
 
         [ClientRpc]
-        private void RpcEquipProperty(int index, string name, ESuit suit, ERank rank, Color color)
+        private void RpcEquipProperty(int index, string name, Suit suit, Rank rank, Color color)
         {
             PlayerView.EquipProperty(index, name, suit, rank, color);
         }
@@ -641,12 +655,6 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetEnableDiscardCard(NetworkConnection conn, int card, bool value)
-        {
-            PlayerView.EnableDiscardCard(card, value);
-        }
-
-        [TargetRpc]
         private void TargetEnableCard(NetworkConnection conn, int card, bool value)
         {
             PlayerView.EnableCard(card, value);
@@ -665,7 +673,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetAddCard(NetworkConnection conn, int index, string name, ESuit suit, ERank rank, Color color)
+        private void TargetAddCard(NetworkConnection conn, int index, string name, Suit suit, Rank rank, Color color)
         {
             PlayerView.AddCard(index, name, suit, rank, color);
         }
@@ -677,7 +685,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetSetRole(NetworkConnection conn, ERole role)
+        private void TargetSetRole(NetworkConnection conn, Role role)
         {
             PlayerView.SetRole(role);
         }

@@ -5,7 +5,7 @@ namespace Bang
     public interface IBoardView
     {
         void SetDeckSize(int cards);
-        void SetDiscardTop(string name, ESuit suit, ERank rank, Color color);
+        void SetDiscardTop(string name, Suit suit, Rank rank, Color color);
         void EmptyDiscardStack();
     }
 
@@ -20,13 +20,10 @@ namespace Bang
     public interface ICardView : IDropView
     {
         void Playable(bool value);
-        void Discardable(bool value);
-        void Response(bool value);
-        void Duel(bool value);
         int GetPlayerIndex();
         void SetIndex(int index);
-        void SetRank(ERank rank);
-        void SetSuit(ESuit suit);
+        void SetRank(Rank rank);
+        void SetSuit(Suit suit);
         void SetName(string name, Color color);
         void SetPlayerView(IPlayerView playerView);
         void Empty();
@@ -39,15 +36,14 @@ namespace Bang
         int GetPlayerIndex();
         void UpdateHP(int hp);
         void SetSheriff();
-        void SetRole(ERole role);
+        void SetRole(Role role);
         void EnableCard(int index, bool enable);
-        void EnableDiscardCard(int index, bool enable);
         void AddCard();
-        void AddCard(int index, string name, ESuit suit, ERank rank, Color color);
-        void EquipProperty(int index, string name, ESuit suit, ERank rank, Color color);
+        void AddCard(int index, string name, Suit suit, Rank rank, Color color);
+        void EquipProperty(int index, string name, Suit suit, Rank rank, Color color);
         void RemoveProperty(int index);
         void RemoveCard();
         void RemoveCard(int index);
-        void EquipWeapon(string name, ESuit suit, ERank rank, Color color);
+        void EquipWeapon(string name, Suit suit, Rank rank, Color color);
     }
 }
