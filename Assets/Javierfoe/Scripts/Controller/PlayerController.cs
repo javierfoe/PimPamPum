@@ -309,6 +309,7 @@ namespace Bang
 
         private void EnableCardsPlay()
         {
+            state = State.Play;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -318,6 +319,7 @@ namespace Bang
 
         private void DiscardEndTurn()
         {
+            state = State.Discard;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -327,6 +329,7 @@ namespace Bang
 
         private void EnableCardsResponse<T>() where T : Card
         {
+            state = State.Response;
             int length = hand.Count;
             for(int i = 0; i < length; i++)
             {
@@ -336,6 +339,7 @@ namespace Bang
 
         private void EnableCardsDuelResponse()
         {
+            state = State.Duel;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -486,7 +490,19 @@ namespace Bang
 
         public void UseCard(int index, int player, int drop)
         {
-
+            switch (state)
+            {
+                case State.Play:
+                    PlayCard(player, drop);
+                    break;
+                case State.Duel:
+                    break;
+                case State.Response:
+                    break;
+                case State.Discard:
+                    DiscardCardEndTurn(index);
+                    break;
+            }
         }
 
         public void DiscardCardUsed()
