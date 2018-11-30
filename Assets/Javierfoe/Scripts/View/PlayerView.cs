@@ -18,6 +18,7 @@ namespace Bang
         private ICardView weaponCard;
         private List<ICardView> handCards;
         private List<ICardView> propertyCards;
+        private EndTurnButton endTurnButton;
 
         private int HiddenCards
         {
@@ -35,6 +36,8 @@ namespace Bang
         protected override void Start()
         {
             base.Start();
+            endTurnButton = FindObjectOfType<EndTurnButton>();
+            endTurnButton.Active = false;
             handCards = new List<ICardView>();
             propertyCards = new List<ICardView>();
             weaponCard = weapon.GetComponent<ICardView>();
@@ -140,6 +143,11 @@ namespace Bang
             if (weapon) weaponCard.SetDroppable(value);
             foreach (ICardView cv in propertyCards)
                 cv.SetDroppable(value);
+        }
+
+        public void EnableEndTurnButton(bool value)
+        {
+            endTurnButton.Active = value;
         }
     }
 }

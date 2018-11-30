@@ -25,7 +25,6 @@ namespace Bang
         private OnStartTurn onStartTurn;
         private int draggedCard, bangsUsed, hp, maxHp;
         private State state;
-        private EndTurnButton endTurnButton;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
@@ -120,8 +119,6 @@ namespace Bang
 
         public override void OnStartLocalPlayer()
         {
-            endTurnButton = FindObjectOfType<EndTurnButton>();
-            endTurnButton.Active = false;
             LocalPlayer = this;
         }
 
@@ -245,7 +242,7 @@ namespace Bang
             }
             Draw(2);
             bangsUsed = 0;
-            EnableCards(true);
+            EnableCardsPlay();
             TargetEndTurnButton(connectionToClient);
         }
 
@@ -297,8 +294,26 @@ namespace Bang
 
         public void EndTurn()
         {
-            endTurnButton.Active = false;
+            PlayerView.EnableEndTurnButton(false);
             CmdEndTurn();
+        }
+
+        private void DisableCards()
+        {
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                TargetEnableCard(connectionToClient, i, false);
+            }
+        }
+
+        private void EnableCardsPlay()
+        {
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                TargetEnableCard(connectionToClient, i, !(hand[i] is Missed));
+            }
         }
 
         private void DiscardEndTurn()
@@ -310,21 +325,12 @@ namespace Bang
             }
         }
 
-        private void EnableCards(bool value)
-        {
-            int length = hand.Count;
-            for (int i = 0; i < length; i++)
-            {
-                TargetEnableCard(connectionToClient, i, !(hand[i] is Missed) && value);
-            }
-        }
-
         private void EnableCardsResponse<T>() where T : Card
         {
             int length = hand.Count;
             for(int i = 0; i < length; i++)
             {
-                TargetEnableResponseCard(connectionToClient, i, hand[i] is T);
+                TargetEnableCard(connectionToClient, i, hand[i] is T);
             }
         }
 
@@ -333,7 +339,7 @@ namespace Bang
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableDuelResponseCard(connectionToClient, i, hand[i] is Bang);
+                TargetEnableCard(connectionToClient, i, hand[i] is Bang);
             }
         }
 
@@ -359,7 +365,7 @@ namespace Bang
 
         public void ShotBang(int target)
         {
-            EnableCards(false);
+            DisableCards();
             PlayerController pc = GameController.GetPlayerController(target);
             pc.EnableCardsResponse<Missed>();
         }
@@ -490,7 +496,7 @@ namespace Bang
 
         public void FinishCardUsed()
         {
-            EnableCards(true);
+            EnableCardsPlay();
         }
 
         public void DiscardCardFromHandCmd(int index)
@@ -564,7 +570,7 @@ namespace Bang
         [Command]
         public void CmdEndTurn()
         {
-            EnableCards(false);
+            DisableCards();
             if (hand.Count < hp + 1)
             {
                 GameController.EndTurn();
@@ -588,7 +594,7 @@ namespace Bang
             if (hand.Count < hp + 1)
             {
                 GameController.EndTurn();
-                EnableCards(false);
+                DisableCards();
             }
         }
 
@@ -661,18 +667,6 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetEnableResponseCard(NetworkConnection conn, int card, bool value)
-        {
-
-        }
-
-        [TargetRpc]
-        private void TargetEnableDuelResponseCard(NetworkConnection conn, int card, bool value)
-        {
-
-        }
-
-        [TargetRpc]
         private void TargetAddCard(NetworkConnection conn, int index, string name, Suit suit, Rank rank, Color color)
         {
             PlayerView.AddCard(index, name, suit, rank, color);
@@ -708,7 +702,7 @@ namespace Bang
         [TargetRpc]
         public void TargetEndTurnButton(NetworkConnection conn)
         {
-            endTurnButton.Active = true;
+            PlayerView.EnableEndTurnButton(true);
         }
 
     }

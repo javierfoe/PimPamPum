@@ -37,6 +37,7 @@ namespace Bang
         void UpdateHP(int hp);
         void SetSheriff();
         void SetRole(Role role);
+        void EnableEndTurnButton(bool enable);
         void EnableCard(int index, bool enable);
         void AddCard();
         void AddCard(int index, string name, Suit suit, Rank rank, Color color);
