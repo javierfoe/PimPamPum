@@ -135,15 +135,22 @@ namespace Bang
                 ed = decisionsMade[i];
                 decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
             }
-            for (int i = player + 1; i < maxPlayers; i++)
+            if (target == Everyone)
             {
-                if (decisionsMade[i] == Decision.TakeHit)
-                    yield return playerControllers[i].Hit();
+                for (int i = player + 1; i < maxPlayers; i++)
+                {
+                    if (decisionsMade[i] == Decision.TakeHit)
+                        yield return playerControllers[i].Hit();
+                }
+                for (int i = 0; i < player; i++)
+                {
+                    if (decisionsMade[i] == Decision.TakeHit)
+                        yield return playerControllers[i].Hit();
+                }
             }
-            for(int i = 0; i < player; i++)
+            else if(decisionsMade[target] == Decision.TakeHit)
             {
-                if (decisionsMade[i] == Decision.TakeHit)
-                    yield return playerControllers[i].Hit();
+                yield return playerControllers[target].Hit();
             }
             playerControllers[player].ResponsesFinished();
         }
