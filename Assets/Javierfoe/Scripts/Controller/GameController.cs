@@ -255,12 +255,6 @@ namespace Bang
             return distance < range + 1;
         }
 
-        public void StopTargeting()
-        {
-            foreach (PlayerController pc in playerControllers)
-                pc.StopTargeting();
-        }
-
         public void TargetPrison(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
@@ -315,6 +309,13 @@ namespace Bang
             {
                 playerControllers[i].TargetSetTargetable(conn, true);
             }
+        }
+
+        public void StopTargeting(int playerNum)
+        {
+            NetworkConnection conn = playerControllers[playerNum].connectionToClient;
+            foreach (PlayerController pc in playerControllers)
+                pc.StopTargeting(conn);
         }
 
         [ClientRpc]

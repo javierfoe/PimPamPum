@@ -29,27 +29,14 @@ namespace Bang
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
 
-        private delegate void OnStartTurn();
-        private OnStartTurn onStartTurn;
+        private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp, maxHp;
         private State state;
         private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
-        private bool endTurn;
-
-        private bool EndTurnOnStart
-        {
-            get
-            {
-                return endTurn || IsDead;
-            }
-            set
-            {
-                endTurn = value;
-            }
-        }
+        private bool endTurn, jail, dynamite;
 
         public IPlayerView PlayerView
         {
@@ -202,22 +189,22 @@ namespace Bang
 
         public void EquipJail()
         {
-            onStartTurn += JailCheck;
+            jail = true;
         }
 
         public void UnequipJail()
         {
-            onStartTurn -= JailCheck;
+            jail = false;
         }
 
         public void EquipDynamite()
         {
-            onStartTurn += DynamiteCheck;
+            dynamite = true;
         }
 
         public void UnequipDynamite()
         {
-            onStartTurn -= DynamiteCheck;
+            dynamite = false;
         }
 
         public void EquipScope()
@@ -243,21 +230,16 @@ namespace Bang
         public void StartTurn()
         {
             hitState = HitState.Draw;
-            EndTurnOnStart = false;
-            if (onStartTurn != null) onStartTurn();
+            endTurn = false;
+            StartCoroutine(OnStartTurn());
         }
 
         private void Phase1()
         {
-            if (EndTurnOnStart)
-            {
-                ForceEndTurn();
-                return;
-            }
             hitState = HitState.Play;
             Draw(2);
             bangsUsed = 0;
-            EnableCardsPlay();
+            Phase2();
             TargetEnableEndTurnButton(connectionToClient);
         }
 
@@ -277,16 +259,13 @@ namespace Bang
         {
             switch (hitState)
             {
-                case HitState.Draw:
-                    Phase1();
-                    break;
                 case HitState.Play:
                     Phase2();
                     break;
             }
         }
 
-        public void DynamiteCheck()
+        private IEnumerator DynamiteCheck()
         {
             Card c = GameController.DrawDiscardCard();
             int index;
@@ -295,7 +274,7 @@ namespace Bang
             if (d.CheckCondition(c))
             {
                 GameController.DiscardCard(d);
-                Hit(3);
+                yield return Hit(3);
             }
             else
             {
@@ -319,7 +298,7 @@ namespace Bang
             T res = null;
             Card c;
             index = -1;
-            for(int i = 0; i < properties.Count && !found; i++)
+            for (int i = 0; i < properties.Count && !found; i++)
             {
                 c = properties[i];
                 found = c is T;
@@ -383,7 +362,7 @@ namespace Bang
         {
             state = State.Response;
             int length = hand.Count;
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, hand[i] is T);
             }
@@ -401,9 +380,10 @@ namespace Bang
 
         public void BeginCardDrag(int index)
         {
-            CmdBeginCardDrag(index);
+                CmdBeginCardDrag(index);
         }
 
+        [Client]
         public void PlayCard(int player, int drop)
         {
             CmdPlayCard(player, drop);
@@ -428,7 +408,7 @@ namespace Bang
 
         public void ResponsesFinished()
         {
-            EnableCardsPlay();
+            Phase2();
         }
 
         public void Bang()
@@ -506,10 +486,39 @@ namespace Bang
             GameController.TargetSelfProperty<T>(playerNum);
         }
 
-        public void StopTargeting()
+        [Server]
+        public void StopTargeting(NetworkConnection conn)
         {
-            PlayerView.SetDroppable(false);
-            PlayerView.SetStealable(false, true);
+            TargetSetTargetable(conn, false);
+            TargetSetStealable(conn, false, true);
+        }
+
+        private IEnumerator OnStartTurn()
+        {
+            if (dynamite)
+            {
+                yield return DynamiteCheck();
+            }
+            if (IsDead)
+            {
+                ForceEndTurn();
+            }
+            else if (jail)
+            {
+                JailCheck();
+                if (endTurn)
+                {
+                    ForceEndTurn();
+                }
+                else
+                {
+                    Phase1();
+                }
+            }
+            else
+            {
+                Phase1();
+            }
         }
 
         public IEnumerator Hit(int amount = 1)
@@ -530,7 +539,7 @@ namespace Bang
 
         public virtual void Die()
         {
-            for(int i = hand.Count - 1; i > -1; i--)
+            for (int i = hand.Count - 1; i > -1; i--)
             {
                 DiscardCardFromHand(i);
             }
@@ -546,29 +555,11 @@ namespace Bang
             if (HP < MaxHP) HP++;
         }
 
+        [Client]
         public void UseCard(int index, int player, int drop)
         {
-            switch (state)
-            {
-                case State.Play:
-                    if (player < 0) return;
-                    PlayCard(player, drop);
-                    break;
-                case State.Discard:
-                    if (drop != Drop.Trash) return;
-                    DiscardCardEndTurn(index);
-                    break;
-                case State.Dying:
-                    if (drop != Drop.Trash) return;
-                    PlayCard(playerNum, drop);
-                    break;
-                case State.Duel:
-                    break;
-                case State.Response:
-                    break;
-            }
-            draggedCard = -1;
-            GameController.StopTargeting();
+            CmdUseCard(index, player, drop);
+            CmdStopTargeting();
         }
 
         public void DiscardCardUsed()
@@ -578,7 +569,7 @@ namespace Bang
 
         public void FinishCardUsed()
         {
-            EnableCardsPlay();
+            Phase2();
         }
 
         public void DiscardCardFromHandCmd(int index)
@@ -645,6 +636,7 @@ namespace Bang
         [Command]
         public void CmdBeginCardDrag(int index)
         {
+            if (state != State.Play) return;
             draggedCard = index;
             hand[draggedCard].BeginCardDrag(this);
         }
@@ -684,6 +676,37 @@ namespace Bang
                 GameController.EndTurn();
                 DisableCards();
             }
+        }
+
+        [Command]
+        public void CmdStopTargeting()
+        {
+            GameController.StopTargeting(playerNum);
+        }
+
+        [Command]
+        private void CmdUseCard(int index, int player, int drop)
+        {
+            switch (state)
+            {
+                case State.Play:
+                    if (player > -1)
+                        PlayCard(player, drop);
+                    break;
+                case State.Discard:
+                    if (drop == Drop.Trash)
+                        DiscardCardEndTurn(index);
+                    break;
+                case State.Dying:
+                    if (drop == Drop.Trash)
+                        PlayCard(playerNum, drop);
+                    break;
+                case State.Duel:
+                    break;
+                case State.Response:
+                    break;
+            }
+            draggedCard = -1;
         }
 
         [ClientRpc]
