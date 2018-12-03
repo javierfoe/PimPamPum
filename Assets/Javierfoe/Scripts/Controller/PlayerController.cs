@@ -113,14 +113,14 @@ namespace Bang
             properties = new List<Card>();
         }
 
-        public override void OnStartLocalPlayer()
-        {
-            LocalPlayer = this;
-        }
-
         public override void OnStartClient()
         {
             if (!GameController) GameController = FindObjectOfType<GameController>();
+        }
+
+        public override void OnStartLocalPlayer()
+        {
+            LocalPlayer = this;
         }
 
         public virtual void SetRole(Role role)
@@ -149,7 +149,7 @@ namespace Bang
             }
         }
 
-        private void DrawInitialCards()
+        protected virtual void DrawInitialCards()
         {
             Draw(hp);
         }
@@ -240,7 +240,7 @@ namespace Bang
             Draw(2);
             bangsUsed = 0;
             Phase2();
-            TargetEnableEndTurnButton(connectionToClient);
+            EnableEndTurnButton(true);
         }
 
         private void Phase2()
@@ -310,31 +310,15 @@ namespace Bang
 
         public void ForceEndTurn()
         {
-            CmdForceEndTurn();
+            GameController.EndTurn();
         }
 
-        public void EndTurn()
-        {
-            PlayerView.EnableEndTurnButton(false);
-            CmdEndTurn();
-        }
-
-        private void DisableCards()
+        public void DisableCards()
         {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, false);
-            }
-        }
-
-        private void EnableCardsPlay()
-        {
-            state = State.Play;
-            int length = hand.Count;
-            for (int i = 0; i < length; i++)
-            {
-                TargetEnableCard(connectionToClient, i, !(hand[i] is Missed));
             }
         }
 
@@ -348,6 +332,16 @@ namespace Bang
             }
         }
 
+        protected virtual void EnableCardsPlay()
+        {
+            state = State.Play;
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                TargetEnableCard(connectionToClient, i, !(hand[i] is Missed));
+            }
+        }
+
         protected virtual void EnableCardsDying()
         {
             state = State.Dying;
@@ -358,8 +352,9 @@ namespace Bang
             }
         }
 
-        protected virtual void EnableCardsResponse<T>() where T : Card
+        public virtual void EnableCardsResponse<T>() where T : Card
         {
+            EnableTakeHitButton(true);
             state = State.Response;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
@@ -368,7 +363,7 @@ namespace Bang
             }
         }
 
-        protected virtual void EnableCardsDuelResponse()
+        public virtual void EnableCardsDuelResponse()
         {
             state = State.Duel;
             int length = hand.Count;
@@ -378,32 +373,20 @@ namespace Bang
             }
         }
 
-        public void BeginCardDrag(int index)
-        {
-                CmdBeginCardDrag(index);
-        }
-
-        [Client]
         public void PlayCard(int player, int drop)
         {
-            CmdPlayCard(player, drop);
-        }
-
-        public void DiscardCardFromHand(int index)
-        {
-            CmdDiscardCardFromHand(index);
+            hand[draggedCard].PlayCard(this, player, drop);
         }
 
         public void DiscardCardEndTurn(int index)
         {
-            CmdDiscardCardFromHandEndTurn(index);
+            DiscardCardFromHandEndTurn(index);
         }
 
         public void ShotBang(int target)
         {
             DisableCards();
-            PlayerController pc = GameController.GetPlayerController(target);
-            pc.EnableCardsResponse<Missed>();
+            StartCoroutine(GameController.WaitForBangResponse(playerNum, target, 1));
         }
 
         public void ResponsesFinished()
@@ -486,7 +469,6 @@ namespace Bang
             GameController.TargetSelfProperty<T>(playerNum);
         }
 
-        [Server]
         public void StopTargeting(NetworkConnection conn)
         {
             TargetSetTargetable(conn, false);
@@ -523,6 +505,7 @@ namespace Bang
 
         public IEnumerator Hit(int amount = 1)
         {
+            EnableTakeHitButton(false);
             HP -= amount;
             for (int i = 0; i < amount; i++) HitTrigger();
             if (IsDead)
@@ -555,13 +538,6 @@ namespace Bang
             if (HP < MaxHP) HP++;
         }
 
-        [Client]
-        public void UseCard(int index, int player, int drop)
-        {
-            CmdUseCard(index, player, drop);
-            CmdStopTargeting();
-        }
-
         public void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
@@ -572,7 +548,7 @@ namespace Bang
             Phase2();
         }
 
-        public void DiscardCardFromHandCmd(int index)
+        public void DiscardCardFromHand(int index)
         {
             Card card = UnequipHandCard(index);
             GameController.DiscardCard(card);
@@ -621,16 +597,62 @@ namespace Bang
             GameController.DiscardCard(card);
         }
 
-        [Command]
-        public void CmdPlayCard(int player, int drop)
+        public void DiscardCardFromHandEndTurn(int index)
         {
-            hand[draggedCard].PlayCard(this, player, drop);
+            DiscardCardFromHand(index);
+            if (hand.Count < hp + 1)
+            {
+                GameController.EndTurn();
+                DisableCards();
+            }
+        }
+
+        private void EnableTakeHitButton(bool value)
+        {
+            TargetEnableTakeHitButton(connectionToClient, value);
+        }
+
+        private void EnableEndTurnButton(bool value)
+        {
+            TargetEnableEndTurnButton(connectionToClient, value);
+        }
+
+        private void MakeDecision(Decision decision)
+        {
+            GameController.MakeDecision(playerNum, decision);
+        }
+
+        [Client]
+        public void TakeHit()
+        {
+            PlayerView.EnableTakeHitButton(false);
+            CmdMakeDecision(Decision.TakeHit);
+        }
+
+        [Client]
+        public void BeginCardDrag(int index)
+        {
+            CmdBeginCardDrag(index);
+        }
+
+        [Client]
+        public void UseCard(int index, int player, int drop)
+        {
+            CmdUseCard(index, player, drop);
+            CmdStopTargeting();
+        }
+
+        [Client]
+        public void EndTurn()
+        {
+            PlayerView.EnableEndTurnButton(false);
+            CmdEndTurn();
         }
 
         [Command]
-        public void CmdSelfTargetCard()
+        public void CmdMakeDecision(Decision decision)
         {
-            SelfTargetCard();
+            MakeDecision(decision);
         }
 
         [Command]
@@ -639,12 +661,6 @@ namespace Bang
             if (state != State.Play) return;
             draggedCard = index;
             hand[draggedCard].BeginCardDrag(this);
-        }
-
-        [Command]
-        public void CmdForceEndTurn()
-        {
-            GameController.EndTurn();
         }
 
         [Command]
@@ -658,23 +674,6 @@ namespace Bang
             else
             {
                 DiscardEndTurn();
-            }
-        }
-
-        [Command]
-        public void CmdDiscardCardFromHand(int index)
-        {
-            DiscardCardFromHandCmd(index);
-        }
-
-        [Command]
-        public void CmdDiscardCardFromHandEndTurn(int index)
-        {
-            DiscardCardFromHandCmd(index);
-            if (hand.Count < hp + 1)
-            {
-                GameController.EndTurn();
-                DisableCards();
             }
         }
 
@@ -704,6 +703,11 @@ namespace Bang
                 case State.Duel:
                     break;
                 case State.Response:
+                    if (drop == Drop.Trash)
+                    {
+                        MakeDecision(Decision.Avoid);
+                        DiscardCardFromHand(index);
+                    }
                     break;
             }
             draggedCard = -1;
@@ -754,12 +758,6 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetEndTurn(NetworkConnection conn)
-        {
-            EndTurn();
-        }
-
-        [TargetRpc]
         public void TargetSetTargetable(NetworkConnection conn, bool value)
         {
             PlayerView.SetDroppable(value);
@@ -802,7 +800,7 @@ namespace Bang
             if (isLocalPlayer)
             {
                 ipv = GameController.GetPlayerView(0);
-                ipv.SetEndTurnButton();
+                ipv.SetClientButtons();
             }
             else
             {
@@ -812,9 +810,15 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetEnableEndTurnButton(NetworkConnection conn)
+        private void TargetEnableTakeHitButton(NetworkConnection conn, bool value)
         {
-            PlayerView.EnableEndTurnButton(true);
+            PlayerView.EnableTakeHitButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableEndTurnButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableEndTurnButton(value);
         }
 
     }

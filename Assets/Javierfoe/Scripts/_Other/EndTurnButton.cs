@@ -1,25 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-namespace Bang
+﻿namespace Bang
 {
 
-    public class EndTurnButton : MonoBehaviour
+    public class EndTurnButton : BangButton
     {
 
-        public bool Active
+        protected override void Click()
         {
-            set
-            {
-                gameObject.SetActive(value);
-            }
+            PlayerController.LocalPlayer.EndTurn();
         }
 
-        // Use this for initialization
-        void Start()
-        {
-            Button button = GetComponent<Button>();
-            button.onClick.AddListener(() => PlayerController.LocalPlayer.EndTurn());
-        }
     }
 }

@@ -33,12 +33,13 @@ namespace Bang
     {
         void SetStealable(bool value, bool weapon);
         void SetPlayerIndex(int index);
-        void SetEndTurnButton();
+        void SetClientButtons();
         int GetPlayerIndex();
         void UpdateHP(int hp);
         void SetSheriff();
         void SetRole(Role role);
         void EnableEndTurnButton(bool enable);
+        void EnableTakeHitButton(bool enable);
         void EnableCard(int index, bool enable);
         void AddCard();
         void AddCard(int index, string name, Suit suit, Rank rank, Color color);

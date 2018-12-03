@@ -107,7 +107,8 @@ namespace Bang
         public override void PlayCard(PlayerController pc, int player, int drop)
         {
             base.PlayCard(pc, player, drop);
-            //pc.ShotBang(player);
+            pc.DiscardCardUsed();
+            pc.ShotBang(player);
         }
 
         public override string ToString()

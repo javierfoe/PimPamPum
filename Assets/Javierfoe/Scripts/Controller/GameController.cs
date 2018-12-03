@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+
 namespace Bang
 {
     public class GameController : NetworkBehaviour
@@ -50,6 +51,11 @@ namespace Bang
                 }
                 return res;
             }
+        }
+
+        private Decision GetDecision(int index)
+        {
+            return decisionsMade[index];
         }
 
         public PlayerController GetPlayerController(int index)
@@ -108,14 +114,23 @@ namespace Bang
             }
         }
 
-        private IEnumerator WaitForPlayerResponse(int player, int target)
+        public IEnumerator WaitForBangResponse(int player, int target, int misses)
         {
-            yield return Response(player, target);
-        }
+            PlayerController targetPlayer = playerControllers[target];
+            targetPlayer.EnableCardsResponse<Missed>();
 
-        private IEnumerator WaitForPlayersResponse(int player)
-        {
-            yield return Response(player, Everyone);
+            int misseds = 0;
+            Decision decision;
+            do
+            {
+                yield return Response(player, target);
+                decision = GetDecision(target);
+                misseds += decision == Decision.Avoid ? 1 : 0;
+            } while (misseds < misses && decision != Decision.TakeHit);
+
+            targetPlayer.DisableCards();
+
+            playerControllers[player].ResponsesFinished();
         }
 
         private IEnumerator Response(int player, int target)
@@ -148,11 +163,10 @@ namespace Bang
                         yield return playerControllers[i].Hit();
                 }
             }
-            else if(decisionsMade[target] == Decision.TakeHit)
+            else if (decisionsMade[target] == Decision.TakeHit)
             {
                 yield return playerControllers[target].Hit();
             }
-            playerControllers[player].ResponsesFinished();
         }
 
         public void AddPlayerControllers(GameObject[] gos)
@@ -328,13 +342,11 @@ namespace Bang
         [ClientRpc]
         private void RpcAddPlayerControllers(GameObject[] gos)
         {
-
             if (isServer) return;
             Debug.Log("AddPlayerControllers RPC: " + gos.Length);
             int i = 0;
             foreach (GameObject go in gos)
                 playerControllers[i++] = go.GetComponent<PlayerController>();
-
         }
     }
 }
