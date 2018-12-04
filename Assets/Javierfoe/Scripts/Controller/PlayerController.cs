@@ -504,7 +504,7 @@ namespace Bang
             }
         }
 
-        public IEnumerator Hit(int attacker, int amount)
+        public IEnumerator Hit(int attacker, int amount = 1)
         {
             EnableTakeHitButton(false);
             HP -= amount;
