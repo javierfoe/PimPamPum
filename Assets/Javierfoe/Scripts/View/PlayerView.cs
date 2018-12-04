@@ -20,6 +20,7 @@ namespace Bang
         private List<ICardView> propertyCards;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
+        private DieButton dieButton;
 
         private int HiddenCards
         {
@@ -46,8 +47,10 @@ namespace Bang
         {
             endTurnButton = FindObjectOfType<EndTurnButton>();
             takeHitButton = FindObjectOfType<TakeHitButton>();
+            dieButton = FindObjectOfType<DieButton>();
             endTurnButton.Active = false;
             takeHitButton.Active = false;
+            dieButton.Active = false;
         }
 
         public void SetPlayerIndex(int index)
@@ -160,6 +163,11 @@ namespace Bang
         public void EnableTakeHitButton(bool value)
         {
             takeHitButton.Active = value;
+        }
+
+        public void EnableDieButton(bool value)
+        {
+            dieButton.Active = value;
         }
     }
 }

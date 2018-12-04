@@ -180,6 +180,13 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.DiscardCardUsed();
+            pc.Indians();
+        }
+
         public override string ToString()
         {
             return "Indians";
@@ -286,6 +293,13 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.DiscardCardUsed();
+            pc.Gatling();
+        }
+
         public override string ToString()
         {
             return "Gatling";
@@ -325,8 +339,7 @@ namespace Bang
         {
             base.PlayCard(pc, player, drop);
             pc.DiscardCardUsed();
-            pc.Heal();
-            Debug.Log("Beer used.");
+            pc.HealFromBeer();
         }
 
         public override string ToString()
@@ -342,6 +355,13 @@ namespace Bang
         public override void BeginCardDrag(PlayerController pc)
         {
             pc.SelfTargetCard();
+        }
+
+        public override void PlayCard(PlayerController pc, int player, int drop)
+        {
+            base.PlayCard(pc, player, drop);
+            pc.DiscardCardUsed();
+            pc.Saloon();
         }
 
         public override string ToString()

@@ -28,6 +28,7 @@ namespace Bang
         public static PlayerController LocalPlayer { get; private set; }
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
+        private const int NoOne = -1;
 
         private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp, maxHp;
@@ -255,7 +256,7 @@ namespace Bang
             }
         }
 
-        private void DyingFinished()
+        public void DyingFinished()
         {
             switch (hitState)
             {
@@ -274,7 +275,7 @@ namespace Bang
             if (d.CheckCondition(c))
             {
                 GameController.DiscardCard(d);
-                yield return Hit(3);
+                yield return Hit(NoOne, 3);
             }
             else
             {
@@ -344,6 +345,7 @@ namespace Bang
 
         protected virtual void EnableCardsDying()
         {
+            EnableDieButton(true);
             state = State.Dying;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
@@ -383,10 +385,27 @@ namespace Bang
             DiscardCardFromHandEndTurn(index);
         }
 
+        public void Saloon()
+        {
+            GameController.Saloon();
+        }
+
         public void ShotBang(int target)
         {
             DisableCards();
             StartCoroutine(GameController.WaitForBangResponse(playerNum, target, 1));
+        }
+
+        public void Indians()
+        {
+            DisableCards();
+            StartCoroutine(GameController.WaitForIndiansResponse(playerNum));
+        }
+
+        public void Gatling()
+        {
+            DisableCards();
+            StartCoroutine(GameController.WaitForGatlingResponse(playerNum));
         }
 
         public void ResponsesFinished()
@@ -503,7 +522,7 @@ namespace Bang
             }
         }
 
-        public IEnumerator Hit(int amount = 1)
+        public IEnumerator Hit(int attacker, int amount = 1)
         {
             EnableTakeHitButton(false);
             HP -= amount;
@@ -511,11 +530,9 @@ namespace Bang
             if (IsDead)
             {
                 EnableCardsDying();
-                yield return GameController.Dying(playerNum);
+                yield return GameController.Dying(playerNum, attacker);
                 DisableCards();
             }
-            if (IsDead) Die();
-            DyingFinished();
         }
 
         public virtual void HitTrigger() { }
@@ -533,9 +550,15 @@ namespace Bang
             DiscardWeapon();
         }
 
-        public virtual void Heal()
+        public virtual void HealFromBeer()
         {
-            if (HP < MaxHP) HP++;
+            if (!GameController.FinalDuel) Heal();
+        }
+
+        public void Heal(int amount = 1)
+        {
+            if (HP + amount < MaxHP) HP += amount;
+            else HP = MaxHP;
         }
 
         public void DiscardCardUsed()
@@ -607,19 +630,31 @@ namespace Bang
             }
         }
 
-        private void EnableTakeHitButton(bool value)
+        public void EnableTakeHitButton(bool value)
         {
             TargetEnableTakeHitButton(connectionToClient, value);
         }
 
-        private void EnableEndTurnButton(bool value)
+        public void EnableEndTurnButton(bool value)
         {
             TargetEnableEndTurnButton(connectionToClient, value);
+        }
+
+        public void EnableDieButton(bool value)
+        {
+            TargetEnableDieButton(connectionToClient, value);
         }
 
         private void MakeDecision(Decision decision)
         {
             GameController.MakeDecision(playerNum, decision);
+        }
+
+        [Client]
+        public void WillinglyDie()
+        {
+            PlayerView.EnableDieButton(false);
+            CmdMakeDecision(Decision.Die);
         }
 
         [Client]
@@ -819,6 +854,12 @@ namespace Bang
         private void TargetEnableEndTurnButton(NetworkConnection conn, bool value)
         {
             PlayerView.EnableEndTurnButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableDieButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableDieButton(value);
         }
 
     }
