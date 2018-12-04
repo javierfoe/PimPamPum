@@ -153,7 +153,7 @@ namespace Bang
                 decision = GetDecision(target);
                 misseds += decision == Decision.Avoid ? 1 : 0;
             } while (misseds < misses && decision != Decision.TakeHit);
-            
+
             targetPlayer.DisableCards();
 
             playerControllers[player].ResponsesFinished();
