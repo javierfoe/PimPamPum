@@ -103,15 +103,17 @@ namespace Bang
             decisionsMade[player] = decision;
         }
 
-        public IEnumerator Dying(int player)
+        public IEnumerator Dying(int target, int player)
         {
-            PlayerController pc = playerControllers[player];
+            PlayerController pc = playerControllers[target];
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime && pc.IsDead)
             {
                 time += Time.deltaTime;
                 yield return null;
             }
+            if (pc.IsDead) pc.Die();
+            if (player > -1) playerControllers[player].DyingFinished();
         }
 
         public IEnumerator WaitForBangResponse(int player, int target, int misses)
@@ -155,17 +157,17 @@ namespace Bang
                 for (int i = player + 1; i < maxPlayers; i++)
                 {
                     if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit();
+                        yield return playerControllers[i].Hit(player);
                 }
                 for (int i = 0; i < player; i++)
                 {
                     if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit();
+                        yield return playerControllers[i].Hit(player);
                 }
             }
             else if (decisionsMade[target] == Decision.TakeHit)
             {
-                yield return playerControllers[target].Hit();
+                yield return playerControllers[target].Hit(player);
             }
         }
 

@@ -28,6 +28,7 @@ namespace Bang
         public static PlayerController LocalPlayer { get; private set; }
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
+        private const int NoOne = -1;
 
         private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp, maxHp;
@@ -255,7 +256,7 @@ namespace Bang
             }
         }
 
-        private void DyingFinished()
+        public void DyingFinished()
         {
             switch (hitState)
             {
@@ -274,7 +275,7 @@ namespace Bang
             if (d.CheckCondition(c))
             {
                 GameController.DiscardCard(d);
-                yield return Hit(3);
+                yield return Hit(NoOne, 3);
             }
             else
             {
@@ -503,7 +504,7 @@ namespace Bang
             }
         }
 
-        public IEnumerator Hit(int amount = 1)
+        public IEnumerator Hit(int attacker, int amount)
         {
             EnableTakeHitButton(false);
             HP -= amount;
@@ -511,11 +512,9 @@ namespace Bang
             if (IsDead)
             {
                 EnableCardsDying();
-                yield return GameController.Dying(playerNum);
+                yield return GameController.Dying(playerNum, attacker);
                 DisableCards();
             }
-            if (IsDead) Die();
-            DyingFinished();
         }
 
         public virtual void HitTrigger() { }
