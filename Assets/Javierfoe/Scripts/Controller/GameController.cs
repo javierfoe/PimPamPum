@@ -32,7 +32,7 @@ namespace Bang
             get
             {
                 int res = 0;
-                for(int i = 0; i < maxPlayers; i++)
+                for (int i = 0; i < maxPlayers; i++)
                 {
                     res += playerControllers[i].IsDead ? 0 : 1;
                 }
@@ -126,8 +126,8 @@ namespace Bang
 
         public IEnumerator Dying(int target, int player)
         {
-            decisionsMade = new Decision[maxPlayers];
-            decisionMaker = player;
+            decisionMaker = target;
+            decisionsMade[target] = Decision.Pending;
             PlayerController pc = playerControllers[target];
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime && pc.IsDead)
@@ -136,25 +136,23 @@ namespace Bang
                 yield return null;
             }
             pc.EnableDieButton(false);
-            if (pc.IsDead) pc.Die();
+            if (pc.IsDead) pc.Die(player);
             if (player > -1) playerControllers[player].DyingFinished();
         }
 
         public IEnumerator WaitForBangResponse(int player, int target, int misses)
         {
-            PlayerController targetPlayer = playerControllers[target];
-            targetPlayer.EnableCardsResponse<Missed>();
-
             int misseds = 0;
             Decision decision;
             do
             {
-                yield return Response(player, target);
+                yield return Response<Missed>(player, target);
                 decision = GetDecision(target);
                 misseds += decision == Decision.Avoid ? 1 : 0;
             } while (misseds < misses && decision != Decision.TakeHit);
 
-            targetPlayer.DisableCards();
+            if (decisionsMade[target] == Decision.TakeHit)
+                yield return playerControllers[target].Hit(player);
 
             playerControllers[player].ResponsesFinished();
         }
@@ -171,32 +169,42 @@ namespace Bang
 
         private IEnumerator EveryonesResponse<T>(int player) where T : Card
         {
-            for (int i = 0; i < maxPlayers; i++)
-            {
-                if (i != player) playerControllers[i].EnableCardsResponse<T>();
-            }
-
-            yield return Response(player, Everyone);
+            yield return Response<T>(player, Everyone);
 
             for (int i = 0; i < maxPlayers; i++)
             {
-                if (i != player) playerControllers[i].DisableCards();
+                if (i != player && decisionsMade[i] == Decision.TakeHit)
+                    yield return playerControllers[i].Hit(player);
             }
 
             playerControllers[player].ResponsesFinished();
         }
 
-        private IEnumerator Response(int player, int target)
+        private IEnumerator Response<T>(int player, int target) where T : Card
         {
+            if (target == Everyone)
+            {
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    if (i != player) playerControllers[i].EnableCardsResponse<T>();
+                }
+            }
+            else
+            {
+                playerControllers[target].EnableCardsResponse<T>();
+            }
+
             decisionsMade = new Decision[maxPlayers];
             decisionsMade[player] = Decision.Source;
             decisionMaker = target;
+
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime)
             {
                 time += Time.deltaTime;
                 yield return null;
             }
+
             Decision ed;
             for (int i = 0; i < maxPlayers; i++)
             {
@@ -204,28 +212,16 @@ namespace Bang
                 ed = decisionsMade[i];
                 decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
             }
-            if (target == Everyone)
+
+            for (int i = 0; i < maxPlayers; i++)
             {
-                for (int i = player + 1; i < maxPlayers; i++)
-                {
-                    if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit(player);
-                }
-                for (int i = 0; i < player; i++)
-                {
-                    if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit(player);
-                }
-            }
-            else if (decisionsMade[target] == Decision.TakeHit)
-            {
-                yield return playerControllers[target].Hit(player);
+                if (i != player) playerControllers[i].DisableCards();
             }
         }
 
         public void Saloon()
         {
-            for(int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < maxPlayers; i++)
             {
                 playerControllers[i].Heal();
             }

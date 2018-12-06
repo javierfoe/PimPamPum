@@ -537,7 +537,7 @@ namespace Bang
 
         public virtual void HitTrigger() { }
 
-        public virtual void Die()
+        public virtual void Die(int killer)
         {
             for (int i = hand.Count - 1; i > -1; i--)
             {
