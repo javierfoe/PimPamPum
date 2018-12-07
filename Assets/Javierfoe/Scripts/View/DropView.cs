@@ -8,7 +8,7 @@ namespace Bang
 
         [SerializeField] private Color highlight = new Color();
 
-        protected int drop;
+        protected Drop drop;
         private Image background;
         private Color idle;
 
@@ -44,9 +44,14 @@ namespace Bang
             background.color = value ? highlight : idle;
         }
 
-        public virtual int GetDropEnum()
+        public Drop GetDropEnum()
         {
             return drop;
+        }
+
+        public virtual int GetDropIndex()
+        {
+            return -1;
         }
     }
 }

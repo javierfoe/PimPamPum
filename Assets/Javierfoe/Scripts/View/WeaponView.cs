@@ -7,10 +7,5 @@
             base.Start();
             drop = Drop.Weapon;
         }
-
-        public override int GetDropEnum()
-        {
-            return drop;
-        }
     }
 }

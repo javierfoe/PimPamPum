@@ -30,9 +30,9 @@ namespace Bang
 
         public virtual void BeginCardDrag(PlayerController pc) { }
 
-        public virtual void PlayCard(PlayerController pc, int player, int drop)
+        public virtual void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop);
+            Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
     }
@@ -104,10 +104,9 @@ namespace Bang
             pc.BangBeginCardDrag();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.ShotBang(player);
         }
 
@@ -180,10 +179,9 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.Indians();
         }
 
@@ -247,6 +245,17 @@ namespace Bang
             pc.CatBalouBeginCardDrag();
         }
 
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            base.PlayCard(pc, player, drop, cardIndex);
+            StealCard(pc, player, drop, cardIndex);
+        }
+
+        protected virtual void StealCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            pc.CatBalou(player, drop, cardIndex);
+        }
+
         public override string ToString()
         {
             return "Cat Balou";
@@ -278,6 +287,17 @@ namespace Bang
             pc.PanicBeginCardDrag();
         }
 
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            base.PlayCard(pc, player, drop, cardIndex);
+            pc.FinishCardUsed();
+        }
+
+        protected override void StealCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            pc.Panic(player, drop, cardIndex);
+        }
+
         public override string ToString()
         {
             return "Panic";
@@ -293,10 +313,9 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.Gatling();
         }
 
@@ -335,10 +354,9 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.HealFromBeer();
         }
 
@@ -357,10 +375,9 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.Saloon();
         }
 
@@ -402,12 +419,12 @@ namespace Bang
         protected Property(Suit suit, Rank rank) : base(suit, rank) { }
 
         public abstract override void BeginCardDrag(PlayerController pc);
-
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.UnequipDraggedCard();
-            EquipProperty(pc, player, drop);
+            EquipProperty(pc, player, cardIndex);
         }
 
         public virtual void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
@@ -601,7 +618,7 @@ namespace Bang
             pc.JailBeginCardDrag();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             pc.UnequipDraggedCard();
             pc.Imprison(player, this);
@@ -643,9 +660,9 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
+            base.PlayCard(pc, player, drop, cardIndex);
             pc.EquipWeapon(this);
         }
 
@@ -754,11 +771,10 @@ namespace Bang
             this.numberToDraw = numberToDraw;
         }
 
-        public override void PlayCard(PlayerController pc, int player, int drop)
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            base.PlayCard(pc, player, drop);
-            pc.Draw(numberToDraw);
-            pc.DiscardCardUsed();
+            base.PlayCard(pc, player, drop, cardIndex);
+            pc.DrawFromCard(numberToDraw);
             pc.FinishCardUsed();
         }
 

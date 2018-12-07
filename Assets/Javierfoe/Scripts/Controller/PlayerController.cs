@@ -141,6 +141,12 @@ namespace Bang
             DrawInitialCards();
         }
 
+        public void DrawFromCard(int amount)
+        {
+            DiscardCardUsed();
+            Draw(amount);
+        }
+
         public void Draw(int amount)
         {
             List<Card> cards = GameController.DrawCards(amount);
@@ -375,9 +381,9 @@ namespace Bang
             }
         }
 
-        public void PlayCard(int player, int drop)
+        public void PlayCard(int player, Drop drop, int cardIndex)
         {
-            hand[draggedCard].PlayCard(this, player, drop);
+            hand[draggedCard].PlayCard(this, player, drop, cardIndex);
         }
 
         public void DiscardCardEndTurn(int index)
@@ -387,23 +393,27 @@ namespace Bang
 
         public void Saloon()
         {
+            DiscardCardUsed();
             GameController.Saloon();
         }
 
         public void ShotBang(int target)
         {
+            DiscardCardUsed();
             DisableCards();
             StartCoroutine(GameController.WaitForBangResponse(playerNum, target, 1));
         }
 
         public void Indians()
         {
+            DiscardCardUsed();
             DisableCards();
             StartCoroutine(GameController.WaitForIndiansResponse(playerNum));
         }
 
         public void Gatling()
         {
+            DiscardCardUsed();
             DisableCards();
             StartCoroutine(GameController.WaitForGatlingResponse(playerNum));
         }
@@ -552,6 +562,7 @@ namespace Bang
 
         public virtual void HealFromBeer()
         {
+            DiscardCardUsed();
             if (!GameController.FinalDuel) Heal();
         }
 
@@ -561,7 +572,7 @@ namespace Bang
             else HP = MaxHP;
         }
 
-        public void DiscardCardUsed()
+        private void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
         }
@@ -577,18 +588,80 @@ namespace Bang
             GameController.DiscardCard(card);
         }
 
+        public void CatBalou(int player, Drop drop, int cardIndex)
+        {
+            PlayerController pc = GameController.GetPlayerController(player);
+            Card c = null;
+            switch (drop)
+            {
+                case Drop.Hand:
+                    if (playerNum == player && cardIndex < draggedCard) draggedCard--;
+                    c = pc.StealHandFromHand(cardIndex);
+                    break;
+                case Drop.Properties:
+                    c = pc.UnequipProperty(cardIndex);
+                    break;
+                case Drop.Weapon:
+                    c = pc.UnequipWeapon();
+                    break;
+            }
+            pc.StolenBy(this);
+            DiscardCardUsed();
+            GameController.DiscardCard(c);
+        }
+
+        public void Panic(int player, Drop drop, int cardIndex)
+        {
+            PlayerController pc = GameController.GetPlayerController(player);
+            Card c = null;
+            switch (drop)
+            {
+                case Drop.Hand:
+                    if (player == playerNum)
+                    {
+                        c = null;
+                    }
+                    else
+                    {
+                        c = pc.StealHandFromHand(cardIndex);
+                    }
+                    break;
+                case Drop.Properties:
+                    c = pc.UnequipProperty(cardIndex);
+                    break;
+                case Drop.Weapon:
+                    c = pc.UnequipWeapon();
+                    break;
+            }
+            pc.StolenBy(this);
+            DiscardCardUsed();
+            if (c != null) AddCard(c);
+        }
+
+        protected virtual void StolenBy(PlayerController thief) { }
+
         public void DiscardWeapon()
         {
             if (Weapon == colt45) return;
-            Weapon weapon = Weapon;
-            UnequipWeapon();
+            Weapon weapon = UnequipWeapon();
             GameController.DiscardCard(weapon);
         }
 
-        public void UnequipWeapon()
+        public Weapon UnequipWeapon()
         {
+            Weapon weapon = Weapon;
             Weapon.UnequipProperty(this);
             Weapon = colt45;
+            return weapon;
+        }
+
+        public Card StealHandFromHand(int index)
+        {
+            if (index < 0)
+            {
+                index = Random.Range(0, hand.Count - 1);
+            }
+            return UnequipHandCard(index);
         }
 
         public Card UnequipHandCard(int index)
@@ -671,9 +744,9 @@ namespace Bang
         }
 
         [Client]
-        public void UseCard(int index, int player, int drop)
+        public void UseCard(int index, int player, Drop drop, int cardIndex)
         {
-            CmdUseCard(index, player, drop);
+            CmdUseCard(index, player, drop, cardIndex);
             CmdStopTargeting();
         }
 
@@ -693,9 +766,8 @@ namespace Bang
         [Command]
         public void CmdBeginCardDrag(int index)
         {
-            if (state != State.Play) return;
             draggedCard = index;
-            hand[draggedCard].BeginCardDrag(this);
+            if (state == State.Play) hand[draggedCard].BeginCardDrag(this);
         }
 
         [Command]
@@ -719,13 +791,13 @@ namespace Bang
         }
 
         [Command]
-        private void CmdUseCard(int index, int player, int drop)
+        private void CmdUseCard(int index, int player, Drop drop, int cardIndex)
         {
             switch (state)
             {
                 case State.Play:
                     if (player > -1)
-                        PlayCard(player, drop);
+                        PlayCard(player, drop, cardIndex);
                     break;
                 case State.Discard:
                     if (drop == Drop.Trash)
@@ -733,7 +805,7 @@ namespace Bang
                     break;
                 case State.Dying:
                     if (drop == Drop.Trash)
-                        PlayCard(playerNum, drop);
+                        PlayCard(playerNum, drop, cardIndex);
                     break;
                 case State.Duel:
                     break;

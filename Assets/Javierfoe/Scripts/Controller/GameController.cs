@@ -8,7 +8,12 @@ namespace Bang
     public class GameController : NetworkBehaviour
     {
 
-        public static CardView CardPrefab
+        public static GameObject CardPrefab
+        {
+            get; private set;
+        }
+
+        public static GameObject PropertyPrefab
         {
             get; private set;
         }
@@ -16,6 +21,7 @@ namespace Bang
         private static readonly int Everyone = -1;
 
         [SerializeField] private CardView cardPrefab = null;
+        [SerializeField] private PropertyView propertyPrefab = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
         [SerializeField] private float decisionTime = 0;
@@ -251,7 +257,8 @@ namespace Bang
 
         public override void OnStartClient()
         {
-            CardPrefab = cardPrefab;
+            CardPrefab = cardPrefab.gameObject;
+            PropertyPrefab = propertyPrefab.gameObject;
             playerControllers = new PlayerController[maxPlayers];
         }
 

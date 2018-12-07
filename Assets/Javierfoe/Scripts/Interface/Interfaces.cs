@@ -14,18 +14,17 @@ namespace Bang
         GameObject GameObject();
         bool GetDroppable();
         void SetDroppable(bool value);
-        int GetDropEnum();
+        Drop GetDropEnum();
+        int GetDropIndex();
     }
 
     public interface ICardView : IDropView
     {
         void Playable(bool value);
-        int GetPlayerIndex();
         void SetIndex(int index);
         void SetRank(Rank rank);
         void SetSuit(Suit suit);
         void SetName(string name, Color color);
-        void SetPlayerView(IPlayerView playerView);
         void Empty();
     }
 

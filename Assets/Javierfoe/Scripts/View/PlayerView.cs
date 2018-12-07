@@ -104,7 +104,7 @@ namespace Bang
 
         public void EquipProperty(int index, string name, Suit suit, Rank rank, Color color)
         {
-            ICardView cv = InstantiateCard(index, name, suit, rank, color, properties);
+            ICardView cv = InstantiateProperty(index, name, suit, rank, color, properties);
             propertyCards.Add(cv);
         }
 
@@ -116,7 +116,17 @@ namespace Bang
 
         private ICardView InstantiateCard(int index, string name, Suit suit, Rank rank, Color color, Transform t)
         {
-            ICardView cv = Instantiate(GameController.CardPrefab, t);
+            return InstantiateCardView(GameController.CardPrefab, index, name, suit, rank, color, t);
+        }
+
+        private ICardView InstantiateProperty(int index, string name, Suit suit, Rank rank, Color color, Transform t)
+        {
+            return InstantiateCardView(GameController.PropertyPrefab, index, name, suit, rank, color, t);
+        }
+
+        private ICardView InstantiateCardView(GameObject prefab, int index, string name, Suit suit, Rank rank, Color color, Transform t)
+        {
+            ICardView cv = Instantiate(prefab, t).GetComponent<ICardView>();
             cv.SetIndex(index);
             cv.SetName(name, color);
             cv.SetSuit(suit);
@@ -149,7 +159,15 @@ namespace Bang
 
         public void SetStealable(bool value, bool weapon)
         {
-            if (handHidden) handHidden.SetDroppable(value);
+            if (handHidden.gameObject.activeSelf)
+            {
+                handHidden.SetDroppable(value);
+            }
+            else
+            {
+                foreach (ICardView cv in handCards)
+                    cv.SetDroppable(value);
+            }
             if (weapon) weaponCard.SetDroppable(value);
             foreach (ICardView cv in propertyCards)
                 cv.SetDroppable(value);

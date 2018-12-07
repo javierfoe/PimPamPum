@@ -17,11 +17,11 @@ namespace Bang
         private DropView currentDropView;
         private PlayerView currentPlayerView;
 
-        public IPlayerView PlayerView
+        public override int GetDropIndex()
         {
-            private get; set;
+            return index;
         }
-
+        
         public void Playable(bool value)
         {
             draggable = value;
@@ -48,26 +48,17 @@ namespace Bang
             this.suit.text = Suits[(int)suit];
         }
 
+        protected override void Start()
+        {
+            base.Start();
+            drop = Drop.Hand;
+        }
+
         public void Empty()
         {
             SetName("", Color.black);
             SetRank(0);
             SetSuit(0);
-        }
-
-        public int GetPlayerIndex()
-        {
-            return PlayerView.GetPlayerIndex();
-        }
-
-        public void SetPlayerView(IPlayerView playerView)
-        {
-            PlayerView = playerView;
-        }
-
-        public override int GetDropEnum()
-        {
-            return index;
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -89,7 +80,7 @@ namespace Bang
             {
                 hover = hovered[i];
                 drop = hover.GetComponent<DropView>();
-                drop = (drop != null && drop.Droppable) ? drop : null;
+                drop = ( drop != null && drop != this && drop.Droppable) ? drop : null;
             }
             if (drop != null)
             {
@@ -129,10 +120,12 @@ namespace Bang
             if (!draggable) return;
             Highlight(false);
             int player = -1;
-            int drop = Drop.Nothing;
+            Drop drop = Drop.Nothing;
+            int targetIndex = -1;
             if (currentDropView != null)
             {
                 drop = currentDropView.GetDropEnum();
+                targetIndex = currentDropView.GetDropIndex();
                 currentDropView.Highlight(false);
             }
             if (currentPlayerView != null)
@@ -140,7 +133,7 @@ namespace Bang
                 player = currentPlayerView.GetPlayerIndex();
                 currentPlayerView.Highlight(false);
             }
-            PlayerController.LocalPlayer.UseCard(index, player, drop);
+            PlayerController.LocalPlayer.UseCard(index, player, drop, targetIndex);
             currentPlayerView = null;
             currentDropView = null;
         }

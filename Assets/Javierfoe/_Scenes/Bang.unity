@@ -1473,6 +1473,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 114661478320802202, guid: ed5d6a119318871408507df8c5a0d9d1,
     type: 2}
+  propertyPrefab: {fileID: 114879204883358418, guid: f4810a6e25dbbcc4380086db3ca5588f,
+    type: 2}
   boardController: {fileID: 219958265}
   playerViews: {fileID: 2013262940}
   decisionTime: 10
