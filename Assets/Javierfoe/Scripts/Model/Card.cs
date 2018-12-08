@@ -214,6 +214,12 @@ namespace Bang
             pc.TargetOthers();
         }
 
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            base.PlayCard(pc, player, drop, cardIndex);
+            pc.Duel(player);
+        }
+
         public override string ToString()
         {
             return "Duel";
@@ -668,9 +674,9 @@ namespace Bang
 
         public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1) { }
 
-        public virtual void Bang(PlayerController pc)
+        public virtual bool Bang(PlayerController pc)
         {
-            pc.Bang();
+            return pc.Bang();
         }
     }
 
@@ -700,7 +706,13 @@ namespace Bang
             return null;
         }
 
-        public override void Bang(PlayerController pc) { }
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            base.PlayCard(pc, player, drop, cardIndex);
+            pc.FinishCardUsed();
+        }
+
+        public override bool Bang(PlayerController pc) { return true; }
 
         public override string ToString()
         {

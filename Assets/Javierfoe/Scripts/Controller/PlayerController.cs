@@ -247,7 +247,6 @@ namespace Bang
             Draw(2);
             bangsUsed = 0;
             Phase2();
-            EnableEndTurnButton(true);
         }
 
         private void Phase2()
@@ -255,12 +254,23 @@ namespace Bang
             if (!IsDead)
             {
                 EnableCardsPlay();
+                EnableEndTurnButton(true);
             }
             else
             {
                 ForceEndTurn();
             }
         }
+
+        public void FinishDuelTarget(int bangsUsed)
+        {
+            for (int i = 0; i < bangsUsed; i++) CardUsedOutOfTurn();
+            CheckNoCards();
+        }
+
+        public virtual void CheckNoCards() { }
+
+        protected virtual void CardUsedOutOfTurn() { }
 
         public void DyingFinished()
         {
@@ -322,6 +332,7 @@ namespace Bang
 
         public void DisableCards()
         {
+            EnableEndTurnButton(false);
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -342,42 +353,52 @@ namespace Bang
         protected virtual void EnableCardsPlay()
         {
             state = State.Play;
-            int length = hand.Count;
-            for (int i = 0; i < length; i++)
-            {
-                TargetEnableCard(connectionToClient, i, !(hand[i] is Missed));
-            }
+            EnableNotCards<Missed>();
         }
 
-        protected virtual void EnableCardsDying()
+        private void EnableCardsDying()
         {
             EnableDieButton(true);
             state = State.Dying;
-            int length = hand.Count;
-            for (int i = 0; i < length; i++)
-            {
-                TargetEnableCard(connectionToClient, i, hand[i] is Beer);
-            }
+            EnableCards<Beer>();
         }
 
-        public virtual void EnableCardsResponse<T>() where T : Card
+        public void EnableCardsResponse<T>() where T : Card
         {
             EnableTakeHitButton(true);
             state = State.Response;
+            EnableCards<T>();
+        }
+
+        public void EnableCardsDuelResponse()
+        {
+            EnableTakeHitButton(true);
+            state = State.Duel;
+            EnableCards<Bang>();
+        }
+
+        protected virtual void EnableNotCards<T>()
+        {
+            bool bangs = Weapon.Bang(this);
+            int length = hand.Count;
+            Card c;
+            bool isT;
+            bool isBang;
+            for (int i = 0; i < length; i++)
+            {
+                c = hand[i];
+                isT = c is T;
+                isBang = c is Bang;
+                TargetEnableCard(connectionToClient, i, !isBang && !isT || !isT && bangs);
+            }
+        }
+
+        protected virtual void EnableCards<T>()
+        {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, hand[i] is T);
-            }
-        }
-
-        public virtual void EnableCardsDuelResponse()
-        {
-            state = State.Duel;
-            int length = hand.Count;
-            for (int i = 0; i < length; i++)
-            {
-                TargetEnableCard(connectionToClient, i, hand[i] is Bang);
             }
         }
 
@@ -401,6 +422,7 @@ namespace Bang
         {
             DiscardCardUsed();
             DisableCards();
+            bangsUsed++;
             StartCoroutine(GameController.WaitForBangResponse(playerNum, target, 1));
         }
 
@@ -423,9 +445,11 @@ namespace Bang
             Phase2();
         }
 
-        public void Bang()
+        public virtual bool Bang()
         {
-            bangsUsed++;
+            bool res = true;
+            if (bangsUsed > 0) res = false;
+            return res;
         }
 
         public void EquipWeapon(Weapon weapon)
@@ -506,6 +530,7 @@ namespace Bang
 
         private IEnumerator OnStartTurn()
         {
+            bangsUsed = 0;
             if (dynamite)
             {
                 yield return DynamiteCheck();
@@ -575,6 +600,7 @@ namespace Bang
         private void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
+            CheckNoCards();
         }
 
         public void FinishCardUsed()
@@ -582,10 +608,24 @@ namespace Bang
             Phase2();
         }
 
+        public void DiscardCardResponse(int index)
+        {
+            DiscardCardFromHand(index);
+            CardUsedOutOfTurn();
+            CheckNoCards();
+        }
+
         public void DiscardCardFromHand(int index)
         {
             Card card = UnequipHandCard(index);
             GameController.DiscardCard(card);
+        }
+
+        public void Duel(int player)
+        {
+            DiscardCardUsed();
+            DisableCards();
+            StartCoroutine(GameController.StartDuel(playerNum, player));
         }
 
         public void CatBalou(int player, Drop drop, int cardIndex)
@@ -705,6 +745,7 @@ namespace Bang
 
         public void EnableTakeHitButton(bool value)
         {
+            Debug.Log("EnableTakeHitButton playerNum: " + playerNum + " value: " + value);
             TargetEnableTakeHitButton(connectionToClient, value);
         }
 
@@ -808,12 +849,17 @@ namespace Bang
                         PlayCard(playerNum, drop, cardIndex);
                     break;
                 case State.Duel:
+                    if (drop == Drop.Trash)
+                    {
+                        MakeDecision(Decision.Avoid);
+                        DiscardCardFromHand(index);
+                    }
                     break;
                 case State.Response:
                     if (drop == Drop.Trash)
                     {
                         MakeDecision(Decision.Avoid);
-                        DiscardCardFromHand(index);
+                        DiscardCardResponse(index);
                     }
                     break;
             }

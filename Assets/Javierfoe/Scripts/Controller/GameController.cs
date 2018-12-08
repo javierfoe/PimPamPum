@@ -130,6 +130,33 @@ namespace Bang
             decisionsMade[player] = decision;
         }
 
+        public IEnumerator StartDuel(int player, int target)
+        {
+            int next = player;
+            int bangsTarget = 0;
+            do
+            {
+                next = next == player ? target : player;
+                Debug.Log("Duel Pre-response: " + next);
+                yield return ResponseDuel(player, next);
+                Debug.Log("Duel Post-response: " + next);
+                if(decisionsMade[next] == Decision.Avoid)
+                {
+                    if(next == target)
+                    {
+                        bangsTarget++;
+                    }
+                }
+            } while (decisionsMade[next] != Decision.TakeHit);
+
+            playerControllers[player].CheckNoCards();
+            playerControllers[target].FinishDuelTarget(bangsTarget);
+
+            yield return playerControllers[next].Hit(player);
+
+            playerControllers[player].FinishCardUsed();
+        }
+
         public IEnumerator Dying(int target, int player)
         {
             decisionMaker = target;
@@ -177,16 +204,18 @@ namespace Bang
         {
             yield return Response<T>(player, Everyone);
 
-            for (int i = 0; i < maxPlayers; i++)
-            {
-                if (i != player && decisionsMade[i] == Decision.TakeHit)
+            for (int i = player + 1; i < maxPlayers; i++)
+                if (decisionsMade[i] == Decision.TakeHit)
                     yield return playerControllers[i].Hit(player);
-            }
+
+            for (int i = 0; i < player; i++)
+                if (decisionsMade[i] == Decision.TakeHit)
+                    yield return playerControllers[i].Hit(player);
 
             playerControllers[player].ResponsesFinished();
         }
 
-        private IEnumerator Response<T>(int player, int target) where T : Card
+        private void EnableResponse<T>(int player, int target) where T : Card
         {
             if (target == Everyone)
             {
@@ -199,7 +228,27 @@ namespace Bang
             {
                 playerControllers[target].EnableCardsResponse<T>();
             }
+        }
 
+        private void EnableResponseDuel(int player, int target)
+        {
+            playerControllers[target].EnableCardsDuelResponse();
+        }
+
+        private IEnumerator ResponseDuel(int player, int target)
+        {
+            EnableResponseDuel(player, target);
+            yield return PlayerDecisions(player, target);
+        }
+
+        private IEnumerator Response<T>(int player, int target) where T : Card
+        {
+            EnableResponse<T>(player, target);
+            yield return PlayerDecisions(player, target);
+        }
+
+        private IEnumerator PlayerDecisions(int player, int target)
+        {
             decisionsMade = new Decision[maxPlayers];
             decisionsMade[player] = Decision.Source;
             decisionMaker = target;

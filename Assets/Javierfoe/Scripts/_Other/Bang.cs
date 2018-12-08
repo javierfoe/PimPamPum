@@ -110,7 +110,6 @@ namespace Bang
         TakeHit,
         Die,
         Avoid,
-        Duel,
         Source
     }
 
