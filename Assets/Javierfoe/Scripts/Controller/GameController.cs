@@ -137,9 +137,7 @@ namespace Bang
             do
             {
                 next = next == player ? target : player;
-                Debug.Log("Duel Pre-response: " + next);
                 yield return ResponseDuel(player, next);
-                Debug.Log("Duel Post-response: " + next);
                 if(decisionsMade[next] == Decision.Avoid)
                 {
                     if(next == target)
@@ -230,14 +228,14 @@ namespace Bang
             }
         }
 
-        private void EnableResponseDuel(int player, int target)
+        private void EnableResponseDuel(int player)
         {
-            playerControllers[target].EnableCardsDuelResponse();
+            playerControllers[player].EnableCardsDuelResponse();
         }
 
         private IEnumerator ResponseDuel(int player, int target)
         {
-            EnableResponseDuel(player, target);
+            EnableResponseDuel(target);
             yield return PlayerDecisions(player, target);
         }
 
@@ -250,7 +248,7 @@ namespace Bang
         private IEnumerator PlayerDecisions(int player, int target)
         {
             decisionsMade = new Decision[maxPlayers];
-            decisionsMade[player] = Decision.Source;
+            if(target != player) decisionsMade[player] = Decision.Source;
             decisionMaker = target;
 
             float time = 0;
@@ -346,14 +344,12 @@ namespace Bang
                 players[random].SetRole(r);
                 players.RemoveAt(random);
             }
-            //Debug.Log("CurrentPlayer: " + currentPlayer);
             sheriff.StartTurn();
         }
 
         public void EndTurn()
         {
             currentPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
-            //Debug.Log("CurrentPlayer: " + currentPlayer);
             playerControllers[currentPlayer].StartTurn();
         }
 

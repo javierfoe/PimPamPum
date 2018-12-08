@@ -103,7 +103,6 @@ namespace Bang
             currentDropView = null;
             if (drop != null && drop.Droppable)
             {
-                //Debug.Log("Drag: " + drop.gameObject.name, drop.gameObject);
                 currentDropView = drop;
                 drop.Highlight(true);
             }
