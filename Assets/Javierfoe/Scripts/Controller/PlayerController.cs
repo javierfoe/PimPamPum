@@ -745,7 +745,6 @@ namespace Bang
 
         public void EnableTakeHitButton(bool value)
         {
-            Debug.Log("EnableTakeHitButton playerNum: " + playerNum + " value: " + value);
             TargetEnableTakeHitButton(connectionToClient, value);
         }
 

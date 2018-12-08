@@ -108,10 +108,24 @@ namespace Bang
             propertyCards.Add(cv);
         }
 
+        public void RemoveCard(int index)
+        {
+            RemoveCard(index, handCards);
+        }
+
         public void RemoveProperty(int index)
         {
-            Destroy(propertyCards[index].GameObject());
-            propertyCards.RemoveAt(index);
+            RemoveCard(index, propertyCards);
+        }
+
+        private void RemoveCard(int index, List<ICardView> list)
+        {
+            Destroy(list[index].GameObject());
+            list.RemoveAt(index);
+            for (int i = index; i < list.Count; i++)
+            {
+                list[i].SetIndex(i);
+            }
         }
 
         private ICardView InstantiateCard(int index, string name, Suit suit, Rank rank, Color color, Transform t)
@@ -132,17 +146,6 @@ namespace Bang
             cv.SetSuit(suit);
             cv.SetRank(rank);
             return cv;
-        }
-
-        public void RemoveCard(int index)
-        {
-            ICardView cv = handCards[index];
-            handCards.RemoveAt(index);
-            Destroy(cv.GameObject());
-            for (int i = index; i < handCards.Count; i++)
-            {
-                handCards[i].SetIndex(i);
-            }
         }
 
         public void EquipWeapon(string name, Suit suit, Rank rank, Color color)
