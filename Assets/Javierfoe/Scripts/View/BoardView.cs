@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Bang
@@ -9,11 +10,29 @@ namespace Bang
 
         [SerializeField] private CardView discardStackTop = null;
         [SerializeField] private Text deck = null;
+        [SerializeField] private CardListView generalStore = null;
+
+        private List<ICardView> generalStoreCards;
         private ICardView discardTopCard;
 
         void Start()
         {
             discardTopCard = discardStackTop;
+        }
+
+        public void EnableGeneralStore(bool value)
+        {
+            generalStore.gameObject.SetActive(value);
+        }
+
+        public void AddGeneralStoreCard(int index, string name, Suit suit, Rank rank, Color color)
+        {
+            generalStore.AddCardView(index, name, suit, rank, color);
+        }
+
+        public void RemoveGeneralStoreCard(int index)
+        {
+            generalStore.RemoveCardView(index);
         }
 
         public void SetDeckSize(int cards)

@@ -29,8 +29,7 @@ namespace Bang
         [SyncVar] private int maxPlayers;
 
         private Decision[] decisionsMade;
-        private int decisionMaker;
-        private int currentPlayer;
+        private int decisionMaker, currentPlayer, generalStoreChoice;
         private PlayerController[] playerControllers;
 
         public int PlayersAlive
@@ -130,6 +129,18 @@ namespace Bang
             decisionsMade[player] = decision;
         }
 
+        public IEnumerator GeneralStore(int player)
+        {
+            int next = player;
+            int players = PlayersAlive;
+            List<Card> cardChoices = boardController.DrawCards(players);
+            do
+            {
+                players--;
+            } while (players > -1);
+            yield return null;
+        }
+
         public IEnumerator StartDuel(int player, int target)
         {
             int next = player;
@@ -138,9 +149,9 @@ namespace Bang
             {
                 next = next == player ? target : player;
                 yield return ResponseDuel(player, next);
-                if(decisionsMade[next] == Decision.Avoid)
+                if (decisionsMade[next] == Decision.Avoid)
                 {
-                    if(next == target)
+                    if (next == target)
                     {
                         bangsTarget++;
                     }
@@ -248,7 +259,7 @@ namespace Bang
         private IEnumerator PlayerDecisions(int player, int target)
         {
             decisionsMade = new Decision[maxPlayers];
-            if(target != player) decisionsMade[player] = Decision.Source;
+            if (target != player) decisionsMade[player] = Decision.Source;
             decisionMaker = target;
 
             float time = 0;

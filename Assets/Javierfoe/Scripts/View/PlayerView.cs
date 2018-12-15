@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Bang
@@ -11,13 +10,11 @@ namespace Bang
         [SerializeField] private Text hp = null, info = null;
         [SerializeField] private HandView handHidden = null;
         [SerializeField] private GameObject weapon = null;
-        [SerializeField] private Transform hand = null, properties = null;
+        [SerializeField] private CardListView handCards = null, propertyCards = null;
 
         private int playerIndex;
         private int hiddenCards;
         private ICardView weaponCard;
-        private List<ICardView> handCards;
-        private List<ICardView> propertyCards;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
         private DieButton dieButton;
@@ -38,8 +35,6 @@ namespace Bang
         protected override void Start()
         {
             base.Start();
-            handCards = new List<ICardView>();
-            propertyCards = new List<ICardView>();
             weaponCard = weapon.GetComponent<ICardView>();
         }
 
@@ -98,54 +93,22 @@ namespace Bang
 
         public void AddCard(int index, string name, Suit suit, Rank rank, Color color)
         {
-            ICardView cv = InstantiateCard(index, name, suit, rank, color, hand);
-            handCards.Add(cv);
+            handCards.AddCardView(index, name, suit, rank, color);
         }
 
         public void EquipProperty(int index, string name, Suit suit, Rank rank, Color color)
         {
-            ICardView cv = InstantiateProperty(index, name, suit, rank, color, properties);
-            propertyCards.Add(cv);
+            propertyCards.AddCardView(index, name, suit, rank, color);
         }
 
         public void RemoveCard(int index)
         {
-            RemoveCard(index, handCards);
+            handCards.RemoveCardView(index);
         }
 
         public void RemoveProperty(int index)
         {
-            RemoveCard(index, propertyCards);
-        }
-
-        private void RemoveCard(int index, List<ICardView> list)
-        {
-            Destroy(list[index].GameObject());
-            list.RemoveAt(index);
-            for (int i = index; i < list.Count; i++)
-            {
-                list[i].SetIndex(i);
-            }
-        }
-
-        private ICardView InstantiateCard(int index, string name, Suit suit, Rank rank, Color color, Transform t)
-        {
-            return InstantiateCardView(GameController.CardPrefab, index, name, suit, rank, color, t);
-        }
-
-        private ICardView InstantiateProperty(int index, string name, Suit suit, Rank rank, Color color, Transform t)
-        {
-            return InstantiateCardView(GameController.PropertyPrefab, index, name, suit, rank, color, t);
-        }
-
-        private ICardView InstantiateCardView(GameObject prefab, int index, string name, Suit suit, Rank rank, Color color, Transform t)
-        {
-            ICardView cv = Instantiate(prefab, t).GetComponent<ICardView>();
-            cv.SetIndex(index);
-            cv.SetName(name, color);
-            cv.SetSuit(suit);
-            cv.SetRank(rank);
-            return cv;
+            propertyCards.RemoveCardView(index);
         }
 
         public void EquipWeapon(string name, Suit suit, Rank rank, Color color)
@@ -157,7 +120,7 @@ namespace Bang
 
         public void EnableCard(int index, bool enable)
         {
-            handCards[index].Playable(enable);
+            handCards.SetPlayable(index, enable);
         }
 
         public void SetStealable(bool value, bool weapon)
@@ -168,12 +131,10 @@ namespace Bang
             }
             else
             {
-                foreach (ICardView cv in handCards)
-                    cv.SetDroppable(value);
+                handCards.SetDroppable(value);
             }
             if (weapon) weaponCard.SetDroppable(value);
-            foreach (ICardView cv in propertyCards)
-                cv.SetDroppable(value);
+            propertyCards.SetDroppable(value);
         }
 
         public void EnableEndTurnButton(bool value)
