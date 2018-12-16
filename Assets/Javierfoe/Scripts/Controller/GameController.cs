@@ -112,6 +112,32 @@ namespace Bang
             }
         }
 
+        private int NextPlayerAlive(int player)
+        {
+            PlayerController pc;
+            int res = player;
+            do
+            {
+                res++;
+                res = res < maxPlayers ? res : 0;
+                pc = playerControllers[res];
+            } while (pc.IsDead);
+            return res;
+        }
+
+        private int PreviousPlayerAlive(int player)
+        {
+            PlayerController pc;
+            int res = player;
+            do
+            {
+                res--;
+                res = res > -1 ? res : maxPlayers - 1;
+                pc = playerControllers[res];
+            } while (pc.IsDead);
+            return res;
+        }
+
         public void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
@@ -247,7 +273,7 @@ namespace Bang
             {
                 yield return GeneralStoreChoice(next);
                 GetCardGeneralStore(next, generalStoreChoice);
-                next = next + 1 < maxPlayers ? next + 1 : 0;
+                next = NextPlayerAlive(next);
                 players--;
             } while (players > 1);
             GetCardGeneralStore(next, 0);
@@ -305,15 +331,6 @@ namespace Bang
 
         public IEnumerator WaitForBangResponse(int player, int target, int misses = 1)
         {
-            yield return BangResponse(player, target, misses);
-
-            yield return ResponsesFinished(player, target);
-
-            playerControllers[player].ResponsesFinished();
-        }
-
-        private IEnumerator BangResponse(int player, int target, int misses)
-        {
             if (target == Everyone)
             {
                 yield return GatlingResponse(player);
@@ -325,20 +342,21 @@ namespace Bang
 
                 while (misseds < misses && decision != Decision.TakeHit)
                 {
-                    yield return Response<Missed>(player, target);
+                    EnableResponse<Missed>(player, target);
+                    yield return PlayerDecisions(player, target);
                     decision = decisionsMade[target];
                     misseds += decision == Decision.Avoid ? 1 : 0;
                 }
             }
+
+            yield return ResponsesFinished(player, target);
+
+            playerControllers[player].FinishCardUsed();
         }
 
         public IEnumerator WaitForIndiansResponse(int player)
         {
-            yield return Response<Bang>(player, Everyone);
-
-            yield return ResponsesFinished(player, Everyone);
-
-            playerControllers[player].ResponsesFinished();
+            yield return IndiansResponse(player);
         }
 
         private IEnumerator ResponsesFinished(int player, int target)
@@ -384,6 +402,35 @@ namespace Bang
             }
 
             yield return DecisionTimer(player);
+
+            yield return ResponsesFinished(player, Everyone);
+
+            playerControllers[player].FinishCardUsed();
+        }
+
+        private IEnumerator IndiansResponse(int player)
+        {
+            RestartDecisions(player, Everyone);
+
+            PlayerController pc;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                pc = playerControllers[i];
+                if (player != i && !pc.IsDead)
+                {
+                    playerControllers[i].EnableCardsResponse<Bang>();
+                }
+                else
+                {
+                    decisionsMade[i] = Decision.Avoid;
+                }
+            }
+
+            yield return DecisionTimer(player);
+
+            yield return ResponsesFinished(player, Everyone);
+
+            playerControllers[player].FinishCardUsed();
         }
 
         private void EnableResponseDuel(int player)
@@ -409,12 +456,6 @@ namespace Bang
         private IEnumerator ResponseDuel(int player, int target)
         {
             EnableResponseDuel(target);
-            yield return PlayerDecisions(player, target);
-        }
-
-        private IEnumerator Response<T>(int player, int target) where T : Card
-        {
-            EnableResponse<T>(player, target);
             yield return PlayerDecisions(player, target);
         }
 
@@ -473,7 +514,7 @@ namespace Bang
         {
             for (int i = 0; i < maxPlayers; i++)
             {
-                playerControllers[i].Heal();
+                playerControllers[i].HealFromSaloon();
             }
         }
 
@@ -492,8 +533,7 @@ namespace Bang
             PlayerController pc;
             do
             {
-                playerAux++;
-                playerAux = playerAux > maxPlayers - 1 ? 0 : playerAux;
+                playerAux = NextPlayerAlive(playerAux);
                 pc = playerControllers[playerAux];
             } while (pc.HasProperty<Dynamite>());
             d.EquipProperty(pc);
@@ -554,41 +594,41 @@ namespace Bang
         public List<int> PlayersInRange(int player, int range)
         {
             List<int> res = new List<int>();
-            int add, sub;
-            for (int i = 0; i < range && i < maxPlayers; i++)
+
+            int auxRange = 0;
+            int forward = player;
+            int backward = player;
+            bool dead;
+            PlayerController pc;
+
+            do
             {
-                add = player + i + 1;
-                sub = player - i - 1;
-                add = add > maxPlayers - 1 ? add - maxPlayers : add;
-                sub = sub < 0 ? maxPlayers + sub : sub;
-                if (add == player || sub == player) continue;
-                AddToTargetList(res, player, add, range);
-                AddToTargetList(res, player, sub, range);
-            }
+                forward = NextPlayerAlive(forward);
+                pc = playerControllers[forward];
+                dead = pc.IsDead;
+                auxRange += dead ? 0 : 1;
+                if (!dead && pc.RangeModifier + auxRange < range + 1 && !res.Contains(forward)) res.Add(forward);
+            } while (forward != player);
+
+            auxRange = 0;
+
+            do
+            {
+                backward = PreviousPlayerAlive(backward);
+                pc = playerControllers[backward];
+                dead = pc.IsDead;
+                auxRange += dead ? 0 : 1;
+                if (!dead && pc.RangeModifier + auxRange < range + 1 && !res.Contains(backward)) res.Add(backward);
+            } while (backward != player);
+
             return res;
-        }
-
-        private void AddToTargetList(List<int> list, int attacker, int target, int range)
-        {
-            if (!list.Contains(target) && target < playerControllers.Length && target > -1 && CheckRangeBetweenPlayers(attacker, target, range)) list.Add(target);
-        }
-
-        private bool CheckRangeBetweenPlayers(int attacker, int target, int range)
-        {
-            int normalDistance = attacker - target;
-            if (normalDistance < 0) normalDistance = -normalDistance;
-            int reverseDistance = maxPlayers - attacker - target;
-            if (reverseDistance < 0) reverseDistance = -reverseDistance;
-            int distance = normalDistance < reverseDistance ? normalDistance : reverseDistance;
-            distance += playerControllers[target].RangeModifier;
-            return distance < range + 1;
         }
 
         public void TargetPrison(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>())
+                if (pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead)
                     pc.TargetSetTargetable(conn, true);
         }
 
@@ -596,7 +636,8 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                pc.SetStealable(conn, true);
+                if (!pc.IsDead)
+                    pc.SetStealable(conn, true);
         }
 
         public void TargetSelf(int player)
@@ -615,7 +656,7 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player)
+                if (pc.PlayerNumber != player && !pc.IsDead)
                     pc.TargetSetTargetable(conn, true);
         }
 
@@ -625,7 +666,8 @@ namespace Bang
             List<int> playersInRange = PlayersInRange(player, range);
             foreach (int i in playersInRange)
             {
-                playerControllers[i].SetStealable(conn, true);
+                if (!playerControllers[i].IsDead)
+                    playerControllers[i].SetStealable(conn, true);
             }
             playerControllers[player].SetStealable(conn, true);
         }

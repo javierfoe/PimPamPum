@@ -470,11 +470,6 @@ namespace Bang
             StartCoroutine(GameController.WaitForGatlingResponse(playerNum));
         }
 
-        public void ResponsesFinished()
-        {
-            Phase2();
-        }
-
         public virtual bool Bang()
         {
             bool res = true;
@@ -643,6 +638,12 @@ namespace Bang
         {
             DiscardCardUsed();
             if (!GameController.FinalDuel) Heal();
+        }
+
+        public virtual void HealFromSaloon()
+        {
+            if (IsDead) return;
+            Heal();
         }
 
         public void Heal(int amount = 1)
