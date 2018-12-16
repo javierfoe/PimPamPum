@@ -57,8 +57,9 @@ namespace Bang
             List<Card> result = DrawCards(cards);
 
             RpcEnableGeneralStore(true);
+            RpcEnableCards(false);
             Card c;
-            for(int i = 0; i < result.Count; i++)
+            for (int i = 0; i < result.Count; i++)
             {
                 c = result[i];
                 RpcAddCardGeneralStore(i, c.ToString(), c.Suit, c.Rank, c.Color);
@@ -112,6 +113,12 @@ namespace Bang
 
         [TargetRpc]
         private void TargetEnableCards(NetworkConnection conn, bool value)
+        {
+            boardView.EnableGeneralStoreCards(value);
+        }
+
+        [ClientRpc]
+        private void RpcEnableCards(bool value)
         {
             boardView.EnableGeneralStoreCards(value);
         }

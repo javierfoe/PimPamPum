@@ -31,7 +31,7 @@ namespace Bang
         private const int NoOne = -1;
 
         private Coroutine hit, jailCheck;
-        private int draggedCard, bangsUsed, hp, maxHp;
+        private int draggedCard, bangsUsed, hp, maxHp, barrels, missesToDodge;
         private State state;
         private HitState hitState;
         private Weapon weapon;
@@ -126,6 +126,7 @@ namespace Bang
 
         public virtual void SetRole(Role role)
         {
+            missesToDodge = 1;
             Role = role;
             if (role == Role.Sheriff)
             {
@@ -192,6 +193,16 @@ namespace Bang
         {
             properties.Add(c);
             RpcEquipProperty(properties.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
+        }
+
+        public void EquipBarrel()
+        {
+            barrels++;
+        }
+
+        public void UnequipBarrel()
+        {
+            barrels--;
         }
 
         public void EquipJail()
@@ -288,7 +299,7 @@ namespace Bang
             int index;
             Dynamite d = FindProperty<Dynamite>(out index);
             UnequipProperty(index);
-            if (d.CheckCondition(c))
+            if (Dynamite.CheckCondition(c))
             {
                 GameController.DiscardCard(d);
                 yield return Hit(NoOne, 3);
@@ -304,7 +315,7 @@ namespace Bang
             Card c = GameController.DrawDiscardCard();
             int index;
             Jail j = FindProperty<Jail>(out index);
-            endTurn = !j.CheckCondition(c);
+            endTurn = !Jail.CheckCondition(c);
             UnequipProperty(index);
             GameController.DiscardCard(j);
         }
@@ -418,12 +429,24 @@ namespace Bang
             GameController.Saloon();
         }
 
+        public int BarrelDodge(int misses = 1)
+        {
+            int dodged = 0;
+            Card c;
+            for(int i = 0; i < barrels && i < misses; i++)
+            {
+                c = GameController.DrawDiscardCard();
+                dodged += Barrel.CheckCondition(c) ? 1 : 0;
+            }
+            return dodged;
+        }
+
         public void ShotBang(int target)
         {
             DiscardCardUsed();
             DisableCards();
             bangsUsed++;
-            StartCoroutine(GameController.WaitForBangResponse(playerNum, target, 1));
+            StartCoroutine(GameController.WaitForBangResponse(playerNum, target, missesToDodge));
         }
 
         public void Indians()

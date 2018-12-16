@@ -506,6 +506,24 @@ namespace Bang
             pc.SelfTargetPropertyCard<Barrel>();
         }
 
+        public override void EquipProperty(PlayerController pc, int player = -1, int drop = -1)
+        {
+            base.EquipProperty(pc, player, drop);
+            pc.EquipBarrel();
+        }
+
+        public override void UnequipProperty(PlayerController pc)
+        {
+            pc.UnequipBarrel();
+        }
+
+        public static bool CheckCondition(Card c)
+        {
+            bool res = c.Suit == Suit.Hearts;
+            Debug.Log(res ? "Esquivado" : "No esquivado");
+            return res;
+        }
+
         public override string ToString()
         {
             return "Barrel";
@@ -538,38 +556,9 @@ namespace Bang
         }
     }
 
-    public abstract class NegativeProperty : Property
+    public class Dynamite : Property
     {
-        protected Suit Trigger
-        {
-            get; private set;
-        }
-
-        protected Rank Minimum
-        {
-            get; private set;
-        }
-
-        protected Rank Maximum
-        {
-            get; private set;
-        }
-
-        protected NegativeProperty(Suit suit, Rank rank, Suit trigger, Rank minimum, Rank maximum) : base(suit, rank)
-        {
-            Trigger = trigger;
-            Minimum = minimum;
-            Maximum = maximum;
-        }
-
-        protected NegativeProperty(Suit suit, Rank rank, Suit trigger) : this(suit, rank, trigger, Rank.Ace, Rank.Ace) { }
-
-        public abstract bool CheckCondition(Card c);
-    }
-
-    public class Dynamite : NegativeProperty
-    {
-        public Dynamite() : base(Suit.Hearts, Rank.Two, Suit.Spades, Rank.Two, Rank.Nine) { }
+        public Dynamite() : base(Suit.Hearts, Rank.Two) { }
 
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -587,9 +576,9 @@ namespace Bang
             pc.UnequipDynamite();
         }
 
-        public override bool CheckCondition(Card c)
+        public static bool CheckCondition(Card c)
         {
-            bool res = c.Suit == Trigger && c.Rank <= Maximum && c.Rank >= Minimum;
+            bool res = c.Suit == Suit.Spades && c.Rank <= Rank.Nine && c.Rank >= Rank.Two;
             Debug.Log(res ? "BOOOOOM! A pastar!" : "Toma patatita caliente");
             return res;
         }
@@ -600,9 +589,9 @@ namespace Bang
         }
     }
 
-    public class Jail : NegativeProperty
+    public class Jail : Property
     {
-        private Jail(Suit suit, Rank rank) : base(suit, rank, Suit.Hearts) { }
+        private Jail(Suit suit, Rank rank) : base(suit, rank) { }
 
         public static Jail CreateJail(int index)
         {
@@ -618,9 +607,9 @@ namespace Bang
             return null;
         }
 
-        public override bool CheckCondition(Card c)
+        public static bool CheckCondition(Card c)
         {
-            bool res = c.Suit == Trigger;
+            bool res = c.Suit == Suit.Hearts;
             Debug.Log(res ? "Me libro de la carcel" : "Hijoeputa malparido gonorrea, sigo en la carcel");
             return res;
         }

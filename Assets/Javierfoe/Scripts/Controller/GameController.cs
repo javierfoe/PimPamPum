@@ -201,61 +201,87 @@ namespace Bang
             if (player > -1) playerControllers[player].DyingFinished();
         }
 
-        public IEnumerator WaitForBangResponse(int player, int target, int misses)
+        public IEnumerator WaitForBangResponse(int player, int target, int misses = 1)
         {
-            int misseds = 0;
-            Decision decision;
-            do
-            {
-                yield return Response<Missed>(player, target);
-                decision = decisionsMade[target];
-                misseds += decision == Decision.Avoid ? 1 : 0;
-            } while (misseds < misses && decision != Decision.TakeHit);
+            yield return BangResponse(player, target, misses);
 
-            if (decisionsMade[target] == Decision.TakeHit)
-                yield return playerControllers[target].Hit(player);
+            yield return ResponsesFinished(player, target);
 
             playerControllers[player].ResponsesFinished();
+        }
+
+        private IEnumerator BangResponse(int player, int target, int misses)
+        {
+            if (target == Everyone)
+            {
+                yield return GatlingResponse(player);
+            }
+            else
+            {
+                int misseds = playerControllers[target].BarrelDodge(misses);
+                Decision decision = Decision.Pending;
+
+                while (misseds < misses && decision != Decision.TakeHit)
+                {
+                    yield return Response<Missed>(player, target);
+                    decision = decisionsMade[target];
+                    misseds += decision == Decision.Avoid ? 1 : 0;
+                }
+            }
         }
 
         public IEnumerator WaitForIndiansResponse(int player)
         {
-            yield return EveryonesResponse<Bang>(player);
-        }
+            yield return Response<Bang>(player, Everyone);
 
-        public IEnumerator WaitForGatlingResponse(int player)
-        {
-            yield return EveryonesResponse<Missed>(player);
-        }
-
-        private IEnumerator EveryonesResponse<T>(int player) where T : Card
-        {
-            yield return Response<T>(player, Everyone);
-
-            for (int i = player + 1; i < maxPlayers; i++)
-                if (decisionsMade[i] == Decision.TakeHit)
-                    yield return playerControllers[i].Hit(player);
-
-            for (int i = 0; i < player; i++)
-                if (decisionsMade[i] == Decision.TakeHit)
-                    yield return playerControllers[i].Hit(player);
+            yield return ResponsesFinished(player, Everyone);
 
             playerControllers[player].ResponsesFinished();
         }
 
-        private void EnableResponse<T>(int player, int target) where T : Card
+        private IEnumerator ResponsesFinished(int player, int target)
         {
             if (target == Everyone)
             {
-                for (int i = 0; i < maxPlayers; i++)
-                {
-                    if (i != player) playerControllers[i].EnableCardsResponse<T>();
-                }
+                for (int i = player + 1; i < maxPlayers; i++)
+                    if (decisionsMade[i] == Decision.TakeHit)
+                        yield return playerControllers[i].Hit(player);
+
+                for (int i = 0; i < player; i++)
+                    if (decisionsMade[i] == Decision.TakeHit)
+                        yield return playerControllers[i].Hit(player);
             }
             else
             {
-                playerControllers[target].EnableCardsResponse<T>();
+                if (decisionsMade[target] == Decision.TakeHit)
+                    yield return playerControllers[target].Hit(player);
             }
+        }
+
+        public IEnumerator WaitForGatlingResponse(int player)
+        {
+            yield return WaitForBangResponse(player, Everyone);
+        }
+
+        private IEnumerator GatlingResponse(int player)
+        {
+            RestartDecisions(player, Everyone);
+
+            PlayerController pc;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                pc = playerControllers[i];
+                if(player != i && !pc.IsDead && pc.BarrelDodge() < 1)
+                {
+                    playerControllers[i].EnableCardsResponse<Missed>();
+                }
+                else
+                {
+                    decisionsMade[i] = Decision.Avoid;
+                }
+            }
+
+            yield return DecisionTimer(player);
         }
 
         private void EnableResponseDuel(int player)
@@ -290,12 +316,30 @@ namespace Bang
             yield return PlayerDecisions(player, target);
         }
 
-        private IEnumerator PlayerDecisions(int player, int target)
+        private void EnableResponse<T>(int player, int target) where T : Card
+        {
+            if (target == Everyone)
+            {
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    if (i != player) playerControllers[i].EnableCardsResponse<T>();
+                }
+            }
+            else
+            {
+                playerControllers[target].EnableCardsResponse<T>();
+            }
+        }
+
+        private void RestartDecisions(int player, int target)
         {
             decisionsMade = new Decision[maxPlayers];
             if (target != player) decisionsMade[player] = Decision.Source;
             decisionMaker = target;
+        }
 
+        private IEnumerator DecisionTimer(int player)
+        {
             float time = 0;
             while (!AreDecisionsMade && time < decisionTime)
             {
@@ -315,6 +359,12 @@ namespace Bang
             {
                 if (i != player) playerControllers[i].DisableCards();
             }
+        }
+
+        private IEnumerator PlayerDecisions(int player, int target)
+        {
+            RestartDecisions(player, target);
+            yield return DecisionTimer(player);
         }
 
         public void Saloon()
