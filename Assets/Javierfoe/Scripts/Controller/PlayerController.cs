@@ -161,7 +161,7 @@ namespace Bang
             Draw(hp);
         }
 
-        private void AddCard(Card c)
+        public void AddCard(Card c)
         {
             hand.Add(c);
             TargetAddCard(connectionToClient, hand.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
@@ -621,6 +621,13 @@ namespace Bang
             GameController.DiscardCard(card);
         }
 
+        public void GeneralStore()
+        {
+            DiscardCardUsed();
+            DisableCards();
+            StartCoroutine(GameController.GeneralStore(playerNum));
+        }
+
         public void Duel(int player)
         {
             DiscardCardUsed();
@@ -764,6 +771,12 @@ namespace Bang
         }
 
         [Client]
+        public void ChooseGeneralStoreCard(int index)
+        {
+            CmdChooseGeneralStoreCard(index);
+        }
+
+        [Client]
         public void WillinglyDie()
         {
             PlayerView.EnableDieButton(false);
@@ -795,6 +808,12 @@ namespace Bang
         {
             PlayerView.EnableEndTurnButton(false);
             CmdEndTurn();
+        }
+
+        [Command]
+        private void CmdChooseGeneralStoreCard(int choice)
+        {
+            GameController.ChooseGeneralStoreCard(choice);
         }
 
         [Command]

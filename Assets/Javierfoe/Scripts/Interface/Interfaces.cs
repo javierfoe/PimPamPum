@@ -4,6 +4,10 @@ namespace Bang
 {
     public interface IBoardView
     {
+        void EnableGeneralStore(bool value);
+        void EnableGeneralStoreCards(bool value);
+        void AddGeneralStoreCard(int index, string name, Suit suit, Rank rank, Color color);
+        void RemoveGeneralStoreCard(int index);
         void SetDeckSize(int cards);
         void SetDiscardTop(string name, Suit suit, Rank rank, Color color);
         void EmptyDiscardStack();
@@ -26,6 +30,11 @@ namespace Bang
         void SetSuit(Suit suit);
         void SetName(string name, Color color);
         void Empty();
+    }
+
+    public interface IGeneralStoreCardView : ICardView
+    {
+        void Enable(bool value);
     }
 
     public interface IPlayerView : IDropView

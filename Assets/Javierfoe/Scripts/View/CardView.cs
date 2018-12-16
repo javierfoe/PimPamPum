@@ -12,7 +12,7 @@ namespace Bang
 
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
-        private int index;
+        protected int index;
         private bool draggable;
         private DropView currentDropView;
         private PlayerView currentPlayerView;

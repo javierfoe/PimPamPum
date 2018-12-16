@@ -414,6 +414,12 @@ namespace Bang
             pc.SelfTargetCard();
         }
 
+        public override void PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
+        {
+            base.PlayCard(pc, player, drop, cardIndex);
+            pc.GeneralStore();
+        }
+
         public override string ToString()
         {
             return "General Store";

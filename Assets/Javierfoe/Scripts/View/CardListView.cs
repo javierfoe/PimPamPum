@@ -3,46 +3,22 @@ using UnityEngine;
 
 namespace Bang
 {
-    public class CardListView : MonoBehaviour
+    public abstract class CardListView<T> : MonoBehaviour where T : ICardView
     {
 
-        private enum CardPrefab
-        {
-            Card,
-            Property,
-            GeneralStore
-        }
-
-        [SerializeField] private CardPrefab cardPrefab;
-
-        private List<ICardView> list;
+        protected List<T> list;
 
         private void Start()
         {
-            list = new List<ICardView>();
+            list = new List<T>();
         }
 
-        private ICardView InstantiateCardView()
-        {
-            GameObject prefab = null;
-            switch (cardPrefab)
-            {
-                case CardPrefab.Card:
-                    prefab = GameController.CardPrefab;
-                    break;
-                case CardPrefab.Property:
-                    prefab = GameController.PropertyPrefab;
-                    break;
-                case CardPrefab.GeneralStore:
-                    prefab = GameController.CardPrefab;
-                    break;
-            }
-            return Instantiate(prefab, transform).GetComponent<ICardView>();
-        }
+        protected abstract GameObject GetPrefab();
 
         public void AddCardView(int index, string name, Suit suit, Rank rank, Color color)
         {
-            ICardView cv = InstantiateCardView();
+            GameObject prefab = GetPrefab();
+            T cv = Instantiate(prefab, transform).GetComponent<T>();
             cv.SetIndex(index);
             cv.SetName(name, color);
             cv.SetSuit(suit);
@@ -59,7 +35,7 @@ namespace Bang
 
         public void SetDroppable(bool value)
         {
-            foreach(ICardView cv in list) cv.SetDroppable(value);
+            foreach(T cv in list) cv.SetDroppable(value);
         }
 
         public void SetPlayable(int index, bool value)

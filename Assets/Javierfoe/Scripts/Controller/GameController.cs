@@ -18,10 +18,16 @@ namespace Bang
             get; private set;
         }
 
+        public static GameObject GeneralStorePrefab
+        {
+            get; private set;
+        }
+
         private static readonly int Everyone = -1;
 
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
+        [SerializeField] private GeneralStoreCardView generalStoreCardView = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
         [SerializeField] private float decisionTime = 0;
@@ -31,6 +37,7 @@ namespace Bang
         private Decision[] decisionsMade;
         private int decisionMaker, currentPlayer, generalStoreChoice;
         private PlayerController[] playerControllers;
+        private List<Card> generalStoreChoices;
 
         public int PlayersAlive
         {
@@ -79,9 +86,9 @@ namespace Bang
             }
         }
 
-        private Decision GetDecision(int index)
+        public void ChooseGeneralStoreCard(int choice)
         {
-            return decisionsMade[index];
+            generalStoreChoice = choice;
         }
 
         public PlayerController GetPlayerController(int index)
@@ -133,12 +140,24 @@ namespace Bang
         {
             int next = player;
             int players = PlayersAlive;
-            List<Card> cardChoices = boardController.DrawCards(players);
+            generalStoreChoices = boardController.DrawGeneralStoreCards(players);
             do
             {
+                yield return GeneralStoreChoice(next);
+                GetCardGeneralStore(next, generalStoreChoice);
+                next = next + 1 < maxPlayers ? next + 1 : 0;
                 players--;
-            } while (players > -1);
-            yield return null;
+            } while (players > 1);
+            GetCardGeneralStore(next, 0);
+            boardController.DisableGeneralStore();
+            playerControllers[player].FinishCardUsed();
+        }
+
+        private void GetCardGeneralStore(int player, int choice)
+        {
+            boardController.RemoveGeneralStoreCard(choice);
+            playerControllers[player].AddCard(generalStoreChoices[choice]);
+            generalStoreChoices.RemoveAt(choice);
         }
 
         public IEnumerator StartDuel(int player, int target)
@@ -189,7 +208,7 @@ namespace Bang
             do
             {
                 yield return Response<Missed>(player, target);
-                decision = GetDecision(target);
+                decision = decisionsMade[target];
                 misseds += decision == Decision.Avoid ? 1 : 0;
             } while (misseds < misses && decision != Decision.TakeHit);
 
@@ -242,6 +261,21 @@ namespace Bang
         private void EnableResponseDuel(int player)
         {
             playerControllers[player].EnableCardsDuelResponse();
+        }
+
+        private IEnumerator GeneralStoreChoice(int player)
+        {
+            generalStoreChoice = -1;
+            float time = 0;
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            boardController.EnableCards(conn, true);
+            while (generalStoreChoice < 0 && time < decisionTime)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+            boardController.EnableCards(conn, false);
+            generalStoreChoice = generalStoreChoice < 0 ? Random.Range(0, generalStoreChoices.Count) : generalStoreChoice;
         }
 
         private IEnumerator ResponseDuel(int player, int target)
@@ -317,6 +351,7 @@ namespace Bang
         {
             CardPrefab = cardPrefab.gameObject;
             PropertyPrefab = propertyPrefab.gameObject;
+            GeneralStorePrefab = generalStoreCardView.gameObject;
             playerControllers = new PlayerController[maxPlayers];
         }
 

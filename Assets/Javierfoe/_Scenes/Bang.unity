@@ -453,7 +453,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &448819882
 RectTransform:
   m_ObjectHideFlags: 0
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 448819881}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4437e0264ca2a784aaf8bca37bdf24e8, type: 3}
+  m_Script: {fileID: 11500000, guid: c15c1aae00739354db24e929c07c6b10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &486509226
@@ -1580,6 +1580,8 @@ MonoBehaviour:
     type: 2}
   propertyPrefab: {fileID: 114879204883358418, guid: f4810a6e25dbbcc4380086db3ca5588f,
     type: 2}
+  generalStoreCardView: {fileID: 114791245530268174, guid: 2af8351a9d6c8504abf8489fe953d84a,
+    type: 2}
   boardController: {fileID: 219958265}
   playerViews: {fileID: 2013262940}
   decisionTime: 10
@@ -1782,7 +1784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   discardStackTop: {fileID: 542465307}
   deck: {fileID: 2009793248}
-  generalStore: {fileID: 0}
+  generalStore: {fileID: 448819886}
 --- !u!1 &1875783234
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,7 +10,8 @@ namespace Bang
         [SerializeField] private Text hp = null, info = null;
         [SerializeField] private HandView handHidden = null;
         [SerializeField] private GameObject weapon = null;
-        [SerializeField] private CardListView handCards = null, propertyCards = null;
+        [SerializeField] private HandCardListView handCards = null;
+        [SerializeField] private PropertyCardListView propertyCards = null;
 
         private int playerIndex;
         private int hiddenCards;

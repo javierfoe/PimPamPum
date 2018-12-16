@@ -38,7 +38,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224790599097442804}
   - component: {fileID: 114161945515736802}
-  - component: {fileID: 114643727075352616}
+  - component: {fileID: 114873486073680014}
   m_Layer: 5
   m_Name: Properties
   m_TagString: Untagged
@@ -72,7 +72,7 @@ GameObject:
   m_Component:
   - component: {fileID: 224128292832653772}
   - component: {fileID: 114637081515562220}
-  - component: {fileID: 114403223555384284}
+  - component: {fileID: 114051561526155490}
   m_Layer: 5
   m_Name: Hand
   m_TagString: Untagged
@@ -266,6 +266,17 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114051561526155490
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1141441758357850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d93b836b7f62c574d821de1471075d84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114052992191238756
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -350,8 +361,8 @@ MonoBehaviour:
   info: {fileID: 114419989799728440}
   handHidden: {fileID: 114173720284591736}
   weapon: {fileID: 1008839709338664}
-  handCards: {fileID: 114403223555384284}
-  propertyCards: {fileID: 114643727075352616}
+  handCards: {fileID: 114051561526155490}
+  propertyCards: {fileID: 114873486073680014}
 --- !u!114 &114242735307848072
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -406,18 +417,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114403223555384284
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1141441758357850}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 853c979e0cbabe549bd104acd229a1f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardPrefab: 0
 --- !u!114 &114407410556563284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -540,18 +539,6 @@ MonoBehaviour:
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 5
---- !u!114 &114643727075352616
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1072511573029250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 853c979e0cbabe549bd104acd229a1f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardPrefab: 1
 --- !u!114 &114675510857793648
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -627,6 +614,17 @@ MonoBehaviour:
   cardName: {fileID: 114896613605669552}
   suit: {fileID: 114035818257721444}
   rank: {fileID: 114731590806842470}
+--- !u!114 &114873486073680014
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1072511573029250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14da22ab6c6a3f5468e52229817bf912, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114896613605669552
 MonoBehaviour:
   m_ObjectHideFlags: 1

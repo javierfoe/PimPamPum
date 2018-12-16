@@ -10,19 +10,24 @@ namespace Bang
 
         [SerializeField] private CardView discardStackTop = null;
         [SerializeField] private Text deck = null;
-        [SerializeField] private CardListView generalStore = null;
+        [SerializeField] private GeneralStoreCardListView generalStore = null;
 
-        private List<ICardView> generalStoreCards;
         private ICardView discardTopCard;
 
         void Start()
         {
             discardTopCard = discardStackTop;
+            EnableGeneralStore(false);
         }
 
         public void EnableGeneralStore(bool value)
         {
             generalStore.gameObject.SetActive(value);
+        }
+
+        public void EnableGeneralStoreCards(bool value)
+        {
+            generalStore.EnableCards(value);
         }
 
         public void AddGeneralStoreCard(int index, string name, Suit suit, Rank rank, Color color)

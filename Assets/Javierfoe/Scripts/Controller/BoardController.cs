@@ -36,6 +36,11 @@ namespace Bang
             GenerateDeck();
         }
 
+        public void EnableCards(NetworkConnection conn, bool value)
+        {
+            TargetEnableCards(conn, value);
+        }
+
         public Card DrawCard()
         {
             if (deck.Count < 1) ShuffleCards(discardStack);
@@ -45,6 +50,31 @@ namespace Bang
             deck.RemoveAt(index);
             SetDeckSize();
             return c;
+        }
+
+        public List<Card> DrawGeneralStoreCards(int cards)
+        {
+            List<Card> result = DrawCards(cards);
+
+            RpcEnableGeneralStore(true);
+            Card c;
+            for(int i = 0; i < result.Count; i++)
+            {
+                c = result[i];
+                RpcAddCardGeneralStore(i, c.ToString(), c.Suit, c.Rank, c.Color);
+            }
+
+            return result;
+        }
+
+        public void DisableGeneralStore()
+        {
+            RpcEnableGeneralStore(false);
+        }
+
+        public void RemoveGeneralStoreCard(int index)
+        {
+            RpcRemoveCardGeneralStore(index);
         }
 
         public List<Card> DrawCards(int cards)
@@ -78,6 +108,30 @@ namespace Bang
         private void SetDeckSize()
         {
             RpcSetDeckSize(deck.Count);
+        }
+
+        [TargetRpc]
+        private void TargetEnableCards(NetworkConnection conn, bool value)
+        {
+            boardView.EnableGeneralStoreCards(value);
+        }
+
+        [ClientRpc]
+        private void RpcEnableGeneralStore(bool value)
+        {
+            boardView.EnableGeneralStore(value);
+        }
+
+        [ClientRpc]
+        private void RpcAddCardGeneralStore(int index, string name, Suit suit, Rank rank, Color color)
+        {
+            boardView.AddGeneralStoreCard(index, name, suit, rank, color);
+        }
+
+        [ClientRpc]
+        private void RpcRemoveCardGeneralStore(int index)
+        {
+            boardView.RemoveGeneralStoreCard(index);
         }
 
         [ClientRpc]
