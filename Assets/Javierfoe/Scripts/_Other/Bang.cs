@@ -95,6 +95,13 @@ namespace Bang
 
     }
 
+    public enum Team
+    {
+        Law,
+        Outlaw,
+        Renegade
+    }
+
     public enum Drop
     {
         Nothing,

@@ -16,6 +16,7 @@ namespace Bang
         private int playerIndex;
         private int hiddenCards;
         private ICardView weaponCard;
+        private EndGamePanelView endGamePanel;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
         private DieButton dieButton;
@@ -39,11 +40,13 @@ namespace Bang
             weaponCard = weapon.GetComponent<ICardView>();
         }
 
-        public void SetClientButtons()
+        public void SetLocalPlayer()
         {
             endTurnButton = FindObjectOfType<EndTurnButton>();
             takeHitButton = FindObjectOfType<TakeHitButton>();
             dieButton = FindObjectOfType<DieButton>();
+            endGamePanel = FindObjectOfType<EndGamePanelView>();
+            endGamePanel.gameObject.SetActive(false);
             endTurnButton.Active = false;
             takeHitButton.Active = false;
             dieButton.Active = false;
@@ -151,6 +154,16 @@ namespace Bang
         public void EnableDieButton(bool value)
         {
             dieButton.Active = value;
+        }
+
+        public void Win()
+        {
+            endGamePanel.Win();
+        }
+
+        public void Lose()
+        {
+            endGamePanel.Lose();
         }
     }
 }

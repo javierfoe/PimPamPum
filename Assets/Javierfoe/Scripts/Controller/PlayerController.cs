@@ -124,6 +124,13 @@ namespace Bang
             LocalPlayer = this;
         }
 
+        public bool BelongsToTeam(Team team)
+        {
+            return
+                (team == Team.Law && (Role == Role.Sheriff || Role == Role.Deputy)) ||
+                (team == Team.Outlaw && Role == Role.Outlaw);
+        }
+
         public virtual void SetRole(Role role)
         {
             missesToDodge = 1;
@@ -433,7 +440,7 @@ namespace Bang
         {
             int dodged = 0;
             Card c;
-            for(int i = 0; i < barrels && i < misses; i++)
+            for (int i = 0; i < barrels && i < misses; i++)
             {
                 c = GameController.DrawDiscardCard();
                 dodged += Barrel.CheckCondition(c) ? 1 : 0;
@@ -597,6 +604,25 @@ namespace Bang
 
         public virtual void Die(int killer)
         {
+            if (Role != Role.Sheriff) RpcSetRole();
+            List<Card> deadCards = new List<Card>();
+            for (int i = hand.Count - 1; i > -1; i--)
+            {
+                deadCards.Add(UnequipHandCard(i));
+            }
+            for (int i = properties.Count - 1; i > -1; i--)
+            {
+                deadCards.Add(UnequipProperty(i));
+            }
+            Card weapon = UnequipWeapon();
+            if (weapon != null) deadCards.Add(weapon);
+
+            GameController.CheckDeath(deadCards);
+            GameController.CheckMurder(killer, playerNum);
+        }
+
+        public void DiscardAll()
+        {
             for (int i = hand.Count - 1; i > -1; i--)
             {
                 DiscardCardFromHand(i);
@@ -606,6 +632,11 @@ namespace Bang
                 DiscardProperty(i);
             }
             DiscardWeapon();
+        }
+
+        public virtual bool CheckDeath(List<Card> list)
+        {
+            return false;
         }
 
         public virtual void HealFromBeer()
@@ -719,6 +750,7 @@ namespace Bang
 
         public Weapon UnequipWeapon()
         {
+            if (Weapon == colt45) return null;
             Weapon weapon = Weapon;
             Weapon.UnequipProperty(this);
             Weapon = colt45;
@@ -791,6 +823,16 @@ namespace Bang
         private void MakeDecision(Decision decision)
         {
             GameController.MakeDecision(playerNum, decision);
+        }
+
+        public void Win()
+        {
+            TargetWin(connectionToClient);
+        }
+
+        public void Lose()
+        {
+            TargetLose(connectionToClient);
         }
 
         [Client]
@@ -951,6 +993,12 @@ namespace Bang
             PlayerView.SetSheriff();
         }
 
+        [ClientRpc]
+        private void RpcSetRole()
+        {
+            PlayerView.SetRole(Role);
+        }
+
         [TargetRpc]
         public void TargetSetTargetable(NetworkConnection conn, bool value)
         {
@@ -994,7 +1042,7 @@ namespace Bang
             if (isLocalPlayer)
             {
                 ipv = GameController.GetPlayerView(0);
-                ipv.SetClientButtons();
+                ipv.SetLocalPlayer();
             }
             else
             {
@@ -1019,6 +1067,18 @@ namespace Bang
         private void TargetEnableDieButton(NetworkConnection conn, bool value)
         {
             PlayerView.EnableDieButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetWin(NetworkConnection conn)
+        {
+            PlayerView.Win();
+        }
+
+        [TargetRpc]
+        private void TargetLose(NetworkConnection conn)
+        {
+            PlayerView.Lose();
         }
 
     }

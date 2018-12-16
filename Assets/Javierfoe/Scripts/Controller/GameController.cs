@@ -52,6 +52,32 @@ namespace Bang
             }
         }
 
+        public int PlayerStandingAlone
+        {
+            get
+            {
+                int res = -1;
+                for (int i = 0; i < maxPlayers; i++)
+                {
+                    res = !playerControllers[i].IsDead ? i : res;
+                }
+                return res;
+            }
+        }
+
+        public bool SheriffFoesAlive
+        {
+            get
+            {
+                bool foes = false;
+                for (int i = 0; i < maxPlayers && !foes; i++)
+                {
+                    foes = playerControllers[i].Role == Role.Outlaw || playerControllers[i].Role == Role.Renegade;
+                }
+                return foes;
+            }
+        }
+
         public bool FinalDuel
         {
             get
@@ -83,6 +109,82 @@ namespace Bang
                     }
                 }
                 return res;
+            }
+        }
+
+        public void CheckDeath(List<Card> list)
+        {
+            bool listTaken = false;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                listTaken = playerControllers[i].CheckDeath(list);
+            }
+            if (!listTaken)
+            {
+                foreach (Card c in list)
+                {
+                    DiscardCard(c);
+                }
+            }
+        }
+
+        public void CheckMurder(int murderer, int killed)
+        {
+            Role killedRole = playerControllers[killed].Role;
+            if (killedRole == Role.Sheriff)
+            {
+                int alone = PlayerStandingAlone;
+                PlayerController alonePc = playerControllers[alone];
+                if (PlayersAlive == 1 && alonePc.Role == Role.Renegade)
+                {
+                    Win(alone);
+                }
+                else
+                {
+                    Win(Team.Outlaw);
+                }
+            }
+            else if (!SheriffFoesAlive)
+            {
+                Win(Team.Law);
+            }
+            else if (murderer > -1)
+            {
+                PlayerController pcMurderer = playerControllers[murderer];
+                if (killedRole == Role.Outlaw)
+                {
+                    pcMurderer.Draw(3);
+                }
+                else if (killedRole == Role.Deputy && pcMurderer.Role == Role.Sheriff)
+                {
+                    pcMurderer.DiscardAll();
+                }
+            }
+        }
+
+        private void Win(int player)
+        {
+            playerControllers[player].Win();
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                if (player != i) playerControllers[i].Lose();
+            }
+        }
+
+        private void Win(Team team)
+        {
+            PlayerController pc;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                pc = playerControllers[i];
+                if (pc.BelongsToTeam(team))
+                {
+                    pc.Win();
+                }
+                else
+                {
+                    pc.Lose();
+                }
             }
         }
 
@@ -271,7 +373,7 @@ namespace Bang
             for (int i = 0; i < maxPlayers; i++)
             {
                 pc = playerControllers[i];
-                if(player != i && !pc.IsDead && pc.BarrelDodge() < 1)
+                if (player != i && !pc.IsDead && pc.BarrelDodge() < 1)
                 {
                     playerControllers[i].EnableCardsResponse<Missed>();
                 }
