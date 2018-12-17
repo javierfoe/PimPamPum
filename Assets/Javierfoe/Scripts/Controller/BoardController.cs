@@ -62,7 +62,7 @@ namespace Bang
             for (int i = 0; i < result.Count; i++)
             {
                 c = result[i];
-                RpcAddCardGeneralStore(i, c.ToString(), c.Suit, c.Rank, c.Color);
+                RpcAddCardGeneralStore(i, c.Struct);
             }
 
             return result;
@@ -89,7 +89,7 @@ namespace Bang
         public void DiscardCard(Card card)
         {
             discardStack.Add(card);
-            RpcSetDiscardTop(card.ToString(), card.Suit, card.Rank, card.Color);
+            RpcSetDiscardTop(card.Struct);
         }
 
         public void ShuffleCards(List<Card> temp)
@@ -130,9 +130,9 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcAddCardGeneralStore(int index, string name, Suit suit, Rank rank, Color color)
+        private void RpcAddCardGeneralStore(int index, CardStruct cs)
         {
-            boardView.AddGeneralStoreCard(index, name, suit, rank, color);
+            boardView.AddGeneralStoreCard(index, cs);
         }
 
         [ClientRpc]
@@ -148,9 +148,9 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcSetDiscardTop(string name, Suit suit, Rank rank, Color color)
+        private void RpcSetDiscardTop(CardStruct cs)
         {
-            boardView.SetDiscardTop(name, suit, rank, color);
+            boardView.SetDiscardTop(cs);
         }
 
         [ClientRpc]

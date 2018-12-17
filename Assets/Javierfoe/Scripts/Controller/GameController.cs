@@ -70,9 +70,11 @@ namespace Bang
             get
             {
                 bool foes = false;
+                PlayerController pc;
                 for (int i = 0; i < maxPlayers && !foes; i++)
                 {
-                    foes = playerControllers[i].Role == Role.Outlaw || playerControllers[i].Role == Role.Renegade;
+                    pc = playerControllers[i];
+                    foes = (pc.Role == Role.Outlaw || pc.Role == Role.Renegade) && !pc.IsDead;
                 }
                 return foes;
             }

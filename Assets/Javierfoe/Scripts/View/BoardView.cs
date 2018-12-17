@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Bang
@@ -30,9 +29,9 @@ namespace Bang
             generalStore.EnableCards(value);
         }
 
-        public void AddGeneralStoreCard(int index, string name, Suit suit, Rank rank, Color color)
+        public void AddGeneralStoreCard(int index, CardStruct cs)
         {
-            generalStore.AddCardView(index, name, suit, rank, color);
+            generalStore.AddCardView(index, cs);
         }
 
         public void RemoveGeneralStoreCard(int index)
@@ -45,11 +44,11 @@ namespace Bang
             deck.text = cards.ToString();
         }
 
-        public void SetDiscardTop(string name, Suit suit, Rank rank, Color color)
+        public void SetDiscardTop(CardStruct cs)
         {
-            discardTopCard.SetName(name, color);
-            discardTopCard.SetRank(rank);
-            discardTopCard.SetSuit(suit);
+            discardTopCard.SetName(cs.name, cs.color);
+            discardTopCard.SetRank(cs.rank);
+            discardTopCard.SetSuit(cs.suit);
         }
 
         public void EmptyDiscardStack()

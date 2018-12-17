@@ -14,7 +14,21 @@ namespace Bang
             get; private set;
         }
 
-        public Color Color
+        public CardStruct Struct
+        {
+            get
+            {
+                return new CardStruct
+                {
+                    color = Color,
+                    name = ToString(),
+                    suit = Suit,
+                    rank = Rank
+                };
+            }
+        }
+
+        private Color Color
         {
             get
             {

@@ -95,6 +95,14 @@ namespace Bang
 
     }
 
+    public struct CardStruct
+    {
+        public string name;
+        public Suit suit;
+        public Rank rank;
+        public Color color;
+    }
+
     public enum Team
     {
         Law,

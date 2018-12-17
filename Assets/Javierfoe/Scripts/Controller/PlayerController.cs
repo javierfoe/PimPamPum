@@ -104,7 +104,7 @@ namespace Bang
             set
             {
                 weapon = value;
-                RpcEquipWeapon(weapon.ToString(), weapon.Suit, weapon.Rank, weapon.Color);
+                RpcEquipWeapon(weapon.Struct);
             }
         }
 
@@ -172,7 +172,7 @@ namespace Bang
         public void AddCard(Card c)
         {
             hand.Add(c);
-            TargetAddCard(connectionToClient, hand.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
+            TargetAddCard(connectionToClient, hand.Count - 1, c.Struct);
             RpcAddCard();
         }
 
@@ -199,7 +199,7 @@ namespace Bang
         public void EquipProperty(Property c)
         {
             properties.Add(c);
-            RpcEquipProperty(properties.Count - 1, c.ToString(), c.Suit, c.Rank, c.Color);
+            RpcEquipProperty(properties.Count - 1, c.Struct);
         }
 
         public void EquipBarrel()
@@ -599,7 +599,7 @@ namespace Bang
 
         public virtual void Die(int killer)
         {
-            if (Role != Role.Sheriff) RpcSetRole();
+            if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
             for (int i = hand.Count - 1; i > -1; i--)
             {
@@ -951,15 +951,15 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcEquipWeapon(string name, Suit suit, Rank rank, Color color)
+        private void RpcEquipWeapon(CardStruct cs)
         {
-            PlayerView.EquipWeapon(name, suit, rank, color);
+            PlayerView.EquipWeapon(cs);
         }
 
         [ClientRpc]
-        private void RpcEquipProperty(int index, string name, Suit suit, Rank rank, Color color)
+        private void RpcEquipProperty(int index, CardStruct cs)
         {
-            PlayerView.EquipProperty(index, name, suit, rank, color);
+            PlayerView.EquipProperty(index, cs);
         }
 
         [ClientRpc]
@@ -995,9 +995,9 @@ namespace Bang
         }
 
         [ClientRpc]
-        private void RpcSetRole()
+        private void RpcSetRole(Role role)
         {
-            PlayerView.SetRole(Role);
+            PlayerView.SetRole(role);
         }
 
         [TargetRpc]
@@ -1019,9 +1019,9 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetAddCard(NetworkConnection conn, int index, string name, Suit suit, Rank rank, Color color)
+        private void TargetAddCard(NetworkConnection conn, int index, CardStruct cs)
         {
-            PlayerView.AddCard(index, name, suit, rank, color);
+            PlayerView.AddCard(index, cs);
         }
 
         [TargetRpc]

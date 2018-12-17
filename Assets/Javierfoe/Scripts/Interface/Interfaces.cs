@@ -6,10 +6,10 @@ namespace Bang
     {
         void EnableGeneralStore(bool value);
         void EnableGeneralStoreCards(bool value);
-        void AddGeneralStoreCard(int index, string name, Suit suit, Rank rank, Color color);
+        void AddGeneralStoreCard(int index, CardStruct cs);
         void RemoveGeneralStoreCard(int index);
         void SetDeckSize(int cards);
-        void SetDiscardTop(string name, Suit suit, Rank rank, Color color);
+        void SetDiscardTop(CardStruct cs);
         void EmptyDiscardStack();
     }
 
@@ -51,12 +51,12 @@ namespace Bang
         void EnableDieButton(bool enable);
         void EnableCard(int index, bool enable);
         void AddCard();
-        void AddCard(int index, string name, Suit suit, Rank rank, Color color);
-        void EquipProperty(int index, string name, Suit suit, Rank rank, Color color);
+        void AddCard(int index, CardStruct cs);
+        void EquipProperty(int index, CardStruct cs);
         void RemoveProperty(int index);
         void RemoveCard();
         void RemoveCard(int index);
-        void EquipWeapon(string name, Suit suit, Rank rank, Color color);
+        void EquipWeapon(CardStruct cs);
         void Win();
         void Lose();
     }

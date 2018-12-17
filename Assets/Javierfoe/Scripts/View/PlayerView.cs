@@ -95,14 +95,14 @@ namespace Bang
             HiddenCards -= 1;
         }
 
-        public void AddCard(int index, string name, Suit suit, Rank rank, Color color)
+        public void AddCard(int index, CardStruct cs)
         {
-            handCards.AddCardView(index, name, suit, rank, color);
+            handCards.AddCardView(index, cs);
         }
 
-        public void EquipProperty(int index, string name, Suit suit, Rank rank, Color color)
+        public void EquipProperty(int index, CardStruct cs)
         {
-            propertyCards.AddCardView(index, name, suit, rank, color);
+            propertyCards.AddCardView(index, cs);
         }
 
         public void RemoveCard(int index)
@@ -115,11 +115,11 @@ namespace Bang
             propertyCards.RemoveCardView(index);
         }
 
-        public void EquipWeapon(string name, Suit suit, Rank rank, Color color)
+        public void EquipWeapon(CardStruct cs)
         {
-            weaponCard.SetName(name, color);
-            weaponCard.SetSuit(suit);
-            weaponCard.SetRank(rank);
+            weaponCard.SetName(cs.name, cs.color);
+            weaponCard.SetSuit(cs.suit);
+            weaponCard.SetRank(cs.rank);
         }
 
         public void EnableCard(int index, bool enable)

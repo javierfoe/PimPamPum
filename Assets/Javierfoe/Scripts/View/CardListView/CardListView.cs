@@ -15,14 +15,14 @@ namespace Bang
 
         protected abstract GameObject GetPrefab();
 
-        public void AddCardView(int index, string name, Suit suit, Rank rank, Color color)
+        public void AddCardView(int index, CardStruct cs)
         {
             GameObject prefab = GetPrefab();
             T cv = Instantiate(prefab, transform).GetComponent<T>();
             cv.SetIndex(index);
-            cv.SetName(name, color);
-            cv.SetSuit(suit);
-            cv.SetRank(rank);
+            cv.SetName(cs.name, cs.color);
+            cv.SetSuit(cs.suit);
+            cv.SetRank(cs.rank);
             list.Add(cv);
         }
 
