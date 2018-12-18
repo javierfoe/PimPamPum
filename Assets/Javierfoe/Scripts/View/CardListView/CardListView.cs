@@ -20,9 +20,7 @@ namespace Bang
             GameObject prefab = GetPrefab();
             T cv = Instantiate(prefab, transform).GetComponent<T>();
             cv.SetIndex(index);
-            cv.SetName(cs.name, cs.color);
-            cv.SetSuit(cs.suit);
-            cv.SetRank(cs.rank);
+            cv.SetCard(cs);
             list.Add(cv);
         }
 

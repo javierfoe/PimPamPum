@@ -32,18 +32,25 @@ namespace Bang
             this.index = index;
         }
 
-        public void SetName(string name, Color color)
+        public void SetCard(CardStruct cs)
+        {
+            SetName(cs.name, cs.color);
+            SetRank(cs.rank);
+            SetSuit(cs.suit);
+        }
+
+        private void SetName(string name, Color color)
         {
             cardName.color = color;
             cardName.text = name;
         }
 
-        public void SetRank(Rank rank)
+        private void SetRank(Rank rank)
         {
             this.rank.text = Ranks[(int)rank];
         }
 
-        public void SetSuit(Suit suit)
+        private void SetSuit(Suit suit)
         {
             this.suit.text = Suits[(int)suit];
         }

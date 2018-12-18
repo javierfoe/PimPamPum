@@ -26,9 +26,7 @@ namespace Bang
     {
         void Playable(bool value);
         void SetIndex(int index);
-        void SetRank(Rank rank);
-        void SetSuit(Suit suit);
-        void SetName(string name, Color color);
+        void SetCard(CardStruct cs);
         void Empty();
     }
 

@@ -4,4 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Javierfoe/_Scenes/Bang.unity
+    guid: 021aee8a51f6bd44daba7f9bd5d8dabe
+  m_configObjects: {}

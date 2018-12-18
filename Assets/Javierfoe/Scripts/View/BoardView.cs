@@ -11,6 +11,8 @@ namespace Bang
         [SerializeField] private Text deck = null;
         [SerializeField] private GeneralStoreCardListView generalStore = null;
 
+        private CardStruct defaultCard = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
+
         private ICardView discardTopCard;
 
         void Start()
@@ -46,16 +48,12 @@ namespace Bang
 
         public void SetDiscardTop(CardStruct cs)
         {
-            discardTopCard.SetName(cs.name, cs.color);
-            discardTopCard.SetRank(cs.rank);
-            discardTopCard.SetSuit(cs.suit);
+            discardTopCard.SetCard(cs);
         }
 
         public void EmptyDiscardStack()
         {
-            discardTopCard.SetName("", Color.black);
-            discardTopCard.SetRank(Rank.Null);
-            discardTopCard.SetSuit(Suit.Null);
+            discardTopCard.SetCard(defaultCard);
         }
     }
 }

@@ -117,9 +117,7 @@ namespace Bang
 
         public void EquipWeapon(CardStruct cs)
         {
-            weaponCard.SetName(cs.name, cs.color);
-            weaponCard.SetSuit(cs.suit);
-            weaponCard.SetRank(cs.rank);
+            weaponCard.SetCard(cs);
         }
 
         public void EnableCard(int index, bool enable)
