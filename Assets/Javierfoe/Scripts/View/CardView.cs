@@ -9,6 +9,7 @@ namespace Bang
     {
         private readonly string[] Suits = { "", "S", "H", "D", "C" };
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+        private static RectTransform canvas;
 
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
@@ -16,6 +17,8 @@ namespace Bang
         private bool draggable;
         private DropView currentDropView;
         private PlayerView currentPlayerView;
+        private GameObject ghostCard;
+        private MaskableGraphic[] maskableGraphics;
 
         public override int GetDropIndex()
         {
@@ -55,10 +58,17 @@ namespace Bang
             this.suit.text = Suits[(int)suit];
         }
 
+        private void SetVisibility(bool value)
+        {
+            foreach (MaskableGraphic t in maskableGraphics) t.enabled = value;
+        }
+
         protected override void Start()
         {
             base.Start();
             drop = Drop.Hand;
+            if (!canvas) canvas = FindObjectOfType<Canvas>().transform as RectTransform;
+            maskableGraphics = GetComponentsInChildren<MaskableGraphic>();
         }
 
         public void Empty()
@@ -72,7 +82,34 @@ namespace Bang
         {
             if (!draggable) return;
             PlayerController.LocalPlayer.BeginCardDrag(index);
-            Highlight(true);
+            CreateGhostCard(eventData);
+            SetVisibility(false);
+        }
+
+        private void CreateGhostCard(PointerEventData eventData)
+        {
+            ghostCard = Instantiate(gameObject, canvas.transform);
+
+            RectTransform rt = ghostCard.transform as RectTransform;
+            rt.sizeDelta = (transform as RectTransform).sizeDelta;
+
+            MaskableGraphic[] graphics = ghostCard.GetComponentsInChildren<MaskableGraphic>();
+            foreach (MaskableGraphic mg in graphics) mg.raycastTarget = false;
+
+            ghostCard.transform.SetAsLastSibling();
+
+            SetDraggedPosition(eventData);
+        }
+
+        private void SetDraggedPosition(PointerEventData data)
+        {
+            var rt = ghostCard.GetComponent<RectTransform>();
+            Vector3 globalMousePos;
+            if (RectTransformUtility.ScreenPointToWorldPointInRectangle(canvas, data.position, data.pressEventCamera, out globalMousePos))
+            {
+                rt.position = globalMousePos;
+                rt.rotation = canvas.rotation;
+            }
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -119,12 +156,13 @@ namespace Bang
                 currentPlayerView = pv;
                 pv.Highlight(true);
             }
+
+            SetDraggedPosition(eventData);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             if (!draggable) return;
-            Highlight(false);
             int player = -1;
             Drop drop = Drop.Nothing;
             int targetIndex = -1;
@@ -142,6 +180,9 @@ namespace Bang
             PlayerController.LocalPlayer.UseCard(index, player, drop, targetIndex);
             currentPlayerView = null;
             currentDropView = null;
+
+            SetVisibility(true);
+            Destroy(ghostCard);
         }
     }
 }

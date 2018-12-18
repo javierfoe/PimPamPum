@@ -271,13 +271,13 @@ namespace Bang
             int next = player;
             int players = PlayersAlive;
             generalStoreChoices = boardController.DrawGeneralStoreCards(players);
-            do
+            while(players > 1)
             {
                 yield return GeneralStoreChoice(next);
                 GetCardGeneralStore(next, generalStoreChoice);
                 next = NextPlayerAlive(next);
                 players--;
-            } while (players > 1);
+            }
             GetCardGeneralStore(next, 0);
             boardController.DisableGeneralStore();
             playerControllers[player].FinishCardUsed();
