@@ -6,18 +6,18 @@ namespace Bang
     public abstract class DropView : MonoBehaviour, IDropView
     {
 
-        [SerializeField] private Color highlight = new Color();
+        [SerializeField] protected Color highlight = new Color();
 
         protected Drop drop;
-        private Image background;
-        private Color idle;
+        protected Image background;
+        protected Color idle;
 
         public bool Droppable
         {
             get; protected set;
         }
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
             background = GetComponent<Image>();
             idle = background.color;
@@ -39,7 +39,7 @@ namespace Bang
             Droppable = value;
         }
 
-        public void Highlight(bool value)
+        public virtual void Highlight(bool value)
         {
             background.color = value ? highlight : idle;
         }

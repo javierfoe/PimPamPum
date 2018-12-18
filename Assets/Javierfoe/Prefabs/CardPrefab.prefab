@@ -218,6 +218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {r: 0.15143289, g: 0.25129318, b: 0.7830189, a: 0.7137255}
+  playable: {r: 0.13415523, g: 0.9056604, b: 0.10679956, a: 0.7254902}
   cardName: {fileID: 114305876096721160}
   suit: {fileID: 114589913148929834}
   rank: {fileID: 114105658321600032}

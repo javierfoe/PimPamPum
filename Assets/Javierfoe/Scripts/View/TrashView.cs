@@ -2,9 +2,9 @@
 {
     public class TrashView : DropView
     {
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             Droppable = true;
             drop = Drop.Trash;
         }

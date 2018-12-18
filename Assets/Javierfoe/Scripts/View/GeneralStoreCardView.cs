@@ -13,6 +13,7 @@ namespace Bang
                 button = GetComponent<Button>();
                 button.onClick.AddListener(ClickGeneralStoreCard);
             }
+            Playable(value);
             button.interactable = value;
         }
 

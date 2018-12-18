@@ -271,7 +271,7 @@ namespace Bang
             int next = player;
             int players = PlayersAlive;
             generalStoreChoices = boardController.DrawGeneralStoreCards(players);
-            while(players > 1)
+            while (players > 1)
             {
                 yield return GeneralStoreChoice(next);
                 GetCardGeneralStore(next, generalStoreChoice);
@@ -597,33 +597,26 @@ namespace Bang
         {
             List<int> res = new List<int>();
 
-            int auxRange = 0;
-            int forward = player;
-            int backward = player;
-            bool dead;
-            PlayerController pc;
-
-            do
-            {
-                forward = NextPlayerAlive(forward);
-                pc = playerControllers[forward];
-                dead = pc.IsDead;
-                auxRange += dead ? 0 : 1;
-                if (!dead && pc.RangeModifier + auxRange < range + 1 && !res.Contains(forward)) res.Add(forward);
-            } while (forward != player);
-
-            auxRange = 0;
-
-            do
-            {
-                backward = PreviousPlayerAlive(backward);
-                pc = playerControllers[backward];
-                dead = pc.IsDead;
-                auxRange += dead ? 0 : 1;
-                if (!dead && pc.RangeModifier + auxRange < range + 1 && !res.Contains(backward)) res.Add(backward);
-            } while (backward != player);
+            TraversePlayers(res, player, range, true);
+            TraversePlayers(res, player, range, false);
 
             return res;
+        }
+
+        private void TraversePlayers(List<int> players, int player, int range, bool forward)
+        {
+            int auxRange = 0;
+            int next = player;
+            PlayerController pc;
+            bool dead;
+            do
+            {
+                next = forward ? NextPlayerAlive(next) : PreviousPlayerAlive(next);
+                pc = playerControllers[next];
+                dead = pc.IsDead;
+                auxRange += dead ? 0 : 1;
+                if (!dead && next != player && pc.RangeModifier + auxRange < range + 1 && !players.Contains(next)) players.Add(next);
+            } while (next != player);
         }
 
         public void TargetPrison(int player)

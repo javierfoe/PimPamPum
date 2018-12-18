@@ -3,9 +3,9 @@ namespace Bang
 {
     public class PropertyView : CardView
     {
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             drop = Drop.Properties;
         }
     }

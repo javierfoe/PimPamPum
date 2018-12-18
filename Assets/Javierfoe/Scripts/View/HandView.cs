@@ -13,9 +13,9 @@ namespace Bang
             }
         }
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             text = GetComponentInChildren<Text>();
             drop = Drop.Hand;
         }

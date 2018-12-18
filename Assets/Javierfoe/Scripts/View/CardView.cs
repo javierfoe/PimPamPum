@@ -11,6 +11,7 @@ namespace Bang
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
         private static RectTransform canvas;
 
+        [SerializeField] private Color playable;
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         protected int index;
@@ -24,10 +25,21 @@ namespace Bang
         {
             return index;
         }
-        
+
         public void Playable(bool value)
         {
+            PlayableColor(value);
             draggable = value;
+        }
+
+        public override void Highlight(bool value)
+        {
+            background.color = value ? highlight : draggable ? playable : idle;
+        }
+
+        private void PlayableColor(bool value)
+        {
+            background.color = value ? playable : idle;
         }
 
         public void SetIndex(int index)
@@ -63,9 +75,9 @@ namespace Bang
             foreach (MaskableGraphic t in maskableGraphics) t.enabled = value;
         }
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
             drop = Drop.Hand;
             if (!canvas) canvas = FindObjectOfType<Canvas>().transform as RectTransform;
             maskableGraphics = GetComponentsInChildren<MaskableGraphic>();
@@ -82,6 +94,7 @@ namespace Bang
         {
             if (!draggable) return;
             PlayerController.LocalPlayer.BeginCardDrag(index);
+            PlayableColor(false);
             CreateGhostCard(eventData);
             SetVisibility(false);
         }
@@ -124,7 +137,7 @@ namespace Bang
             {
                 hover = hovered[i];
                 drop = hover.GetComponent<DropView>();
-                drop = ( drop != null && drop != this && drop.Droppable) ? drop : null;
+                drop = (drop != null && drop != this && drop.Droppable) ? drop : null;
             }
             if (drop != null)
             {
@@ -177,6 +190,9 @@ namespace Bang
                 player = currentPlayerView.GetPlayerIndex();
                 currentPlayerView.Highlight(false);
             }
+
+            PlayableColor(true);
+
             PlayerController.LocalPlayer.UseCard(index, player, drop, targetIndex);
             currentPlayerView = null;
             currentDropView = null;
