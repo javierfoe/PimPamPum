@@ -62,6 +62,22 @@ namespace Bang
             }
         }
 
+        public bool Stealable
+        {
+            get
+            {
+                return hand.Count > 0 || properties.Count > 0 || HasColt45;
+            }
+        }
+
+        public bool HasColt45
+        {
+            get
+            {
+                return Weapon == colt45;
+            }
+        }
+
         public bool IsDead
         {
             get { return HP < 1; }
@@ -345,6 +361,7 @@ namespace Bang
 
         public void ForceEndTurn()
         {
+            DisableCards();
             GameController.EndTurn();
         }
 
@@ -427,7 +444,8 @@ namespace Bang
 
         public void DiscardCardEndTurn(int index)
         {
-            DiscardCardFromHandEndTurn(index);
+            DiscardCardFromHand(index);
+            EndTurn();
         }
 
         public void Saloon()
@@ -479,7 +497,7 @@ namespace Bang
 
         public void EquipWeapon(Weapon weapon)
         {
-            if (Weapon != colt45)
+            if (!HasColt45)
             {
                 GameController.DiscardCard(Weapon);
             }
@@ -509,7 +527,8 @@ namespace Bang
 
         public void SetStealable(NetworkConnection conn, bool value)
         {
-            TargetSetStealable(conn, value, weapon != colt45);
+            if (!Stealable) return;
+            SetStealable(conn, value, hand.Count > 0, !HasColt45);
         }
 
         public void BangBeginCardDrag()
@@ -550,7 +569,7 @@ namespace Bang
         public void StopTargeting(NetworkConnection conn)
         {
             TargetSetTargetable(conn, false);
-            TargetSetStealable(conn, false, true);
+            SetStealable(conn, false);
         }
 
         private IEnumerator OnStartTurn()
@@ -744,14 +763,14 @@ namespace Bang
 
         public void DiscardWeapon()
         {
-            if (Weapon == colt45) return;
+            if (HasColt45) return;
             Weapon weapon = UnequipWeapon();
             GameController.DiscardCard(weapon);
         }
 
         public Weapon UnequipWeapon()
         {
-            if (Weapon == colt45) return null;
+            if (HasColt45) return null;
             Weapon weapon = Weapon;
             Weapon.UnequipProperty(this);
             Weapon = colt45;
@@ -796,16 +815,6 @@ namespace Bang
             GameController.DiscardCard(card);
         }
 
-        public void DiscardCardFromHandEndTurn(int index)
-        {
-            DiscardCardFromHand(index);
-            if (hand.Count < hp + 1)
-            {
-                GameController.EndTurn();
-                DisableCards();
-            }
-        }
-
         public void EnableTakeHitButton(bool value)
         {
             TargetEnableTakeHitButton(connectionToClient, value);
@@ -834,6 +843,23 @@ namespace Bang
         public void Lose()
         {
             TargetLose(connectionToClient);
+        }
+
+        private void SetStealable(NetworkConnection conn, bool value, bool hand = true, bool weapon = true)
+        {
+            TargetSetStealable(conn, value, hand, weapon);
+        }
+
+        protected virtual void EndTurn()
+        {
+            if (hand.Count < hp + 1)
+            {
+                ForceEndTurn();
+            }
+            else if(state != State.Discard)
+            {
+                DiscardEndTurn();
+            }
         }
 
         [Client]
@@ -870,7 +896,7 @@ namespace Bang
         }
 
         [Client]
-        public void EndTurn()
+        public void EndTurnButton()
         {
             PlayerView.EnableEndTurnButton(false);
             CmdEndTurn();
@@ -898,15 +924,7 @@ namespace Bang
         [Command]
         public void CmdEndTurn()
         {
-            DisableCards();
-            if (hand.Count < hp + 1)
-            {
-                GameController.EndTurn();
-            }
-            else
-            {
-                DiscardEndTurn();
-            }
+            EndTurn();
         }
 
         [Command]
@@ -1007,9 +1025,9 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetSetStealable(NetworkConnection conn, bool value, bool weapon)
+        private void TargetSetStealable(NetworkConnection conn, bool value, bool hand, bool weapon)
         {
-            PlayerView.SetStealable(value, weapon);
+            PlayerView.SetStealable(value, hand, weapon);
         }
 
         [TargetRpc]

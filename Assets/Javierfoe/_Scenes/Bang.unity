@@ -1990,6 +1990,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {r: 0.745283, g: 0.16898237, b: 0.1511659, a: 0.67058825}
+  target: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &1875783237
 MonoBehaviour:
   m_ObjectHideFlags: 0

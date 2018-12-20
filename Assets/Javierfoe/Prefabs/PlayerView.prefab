@@ -345,6 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {r: 0.3100347, g: 0.9622642, b: 0.14978641, a: 0.48235294}
+  target: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &114189482129884192
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -356,7 +357,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e463f54924ce354ea9148337502d494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlight: {r: 0, g: 0, b: 0, a: 0}
+  highlight: {r: 1, g: 0.427451, b: 0.80260396, a: 0.6}
+  target: {r: 1, g: 0.5087127, b: 0.427451, a: 0.6}
   hp: {fileID: 114052992191238756}
   info: {fileID: 114419989799728440}
   handHidden: {fileID: 114173720284591736}
@@ -551,7 +553,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0.95862055, b: 1, a: 0.528}
+  m_Color: {r: 0, g: 0.95862055, b: 1, a: 0.6}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -611,6 +613,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {r: 0.15143289, g: 0.25129318, b: 0.7830189, a: 0.7137255}
+  target: {r: 0.8988769, g: 1, b: 0, a: 0.7137255}
+  playable: {r: 0, g: 0, b: 0, a: 0}
   cardName: {fileID: 114896613605669552}
   suit: {fileID: 114035818257721444}
   rank: {fileID: 114731590806842470}

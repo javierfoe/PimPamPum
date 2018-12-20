@@ -16,6 +16,7 @@ namespace Bang
     public interface IDropView
     {
         GameObject GameObject();
+        void SetTargetable(bool value);
         bool GetDroppable();
         void SetDroppable(bool value);
         Drop GetDropEnum();
@@ -37,7 +38,7 @@ namespace Bang
 
     public interface IPlayerView : IDropView
     {
-        void SetStealable(bool value, bool weapon);
+        void SetStealable(bool value, bool hand, bool weapon);
         void SetPlayerIndex(int index);
         void SetLocalPlayer();
         int GetPlayerIndex();

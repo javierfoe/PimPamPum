@@ -125,17 +125,21 @@ namespace Bang
             handCards.SetPlayable(index, enable);
         }
 
-        public void SetStealable(bool value, bool weapon)
+        public void SetStealable(bool value, bool hand, bool weapon)
         {
-            if (handHidden.gameObject.activeSelf)
+            SetTargetable(value);
+            if (!value || hand)
             {
-                handHidden.SetDroppable(value);
+                if (handHidden.gameObject.activeSelf)
+                {
+                    handHidden.SetDroppable(value);
+                }
+                else
+                {
+                    handCards.SetDroppable(value);
+                }
             }
-            else
-            {
-                handCards.SetDroppable(value);
-            }
-            if (weapon) weaponCard.SetDroppable(value);
+            if (!value || weapon) weaponCard.SetDroppable(value);
             propertyCards.SetDroppable(value);
         }
 

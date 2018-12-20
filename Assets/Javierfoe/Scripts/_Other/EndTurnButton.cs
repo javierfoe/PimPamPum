@@ -6,7 +6,7 @@
 
         protected override void Click()
         {
-            PlayerController.LocalPlayer.EndTurn();
+            PlayerController.LocalPlayer.EndTurnButton();
         }
 
     }

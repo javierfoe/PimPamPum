@@ -15,26 +15,30 @@ namespace Bang
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         protected int index;
-        private bool draggable;
         private DropView currentDropView;
         private PlayerView currentPlayerView;
         private GameObject ghostCard;
         private MaskableGraphic[] maskableGraphics;
+
+        protected bool Draggable
+        {
+            get; set;
+        }
 
         public override int GetDropIndex()
         {
             return index;
         }
 
-        public void Playable(bool value)
+        public virtual void Playable(bool value)
         {
             PlayableColor(value);
-            draggable = value;
+            Draggable = value;
         }
 
-        public override void Highlight(bool value)
+        protected override Color GetColor(bool value)
         {
-            background.color = value ? highlight : draggable ? playable : idle;
+            return value ? this.highlight : Droppable ? target : Draggable ? playable : idle;
         }
 
         private void PlayableColor(bool value)
@@ -92,7 +96,7 @@ namespace Bang
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
+            if (!Draggable) return;
             PlayerController.LocalPlayer.BeginCardDrag(index);
             PlayableColor(false);
             CreateGhostCard(eventData);
@@ -127,7 +131,7 @@ namespace Bang
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
+            if (!Draggable) return;
 
             DropView drop = null;
             PlayerView pv = null;
@@ -175,7 +179,7 @@ namespace Bang
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!draggable) return;
+            if (!Draggable) return;
             int player = -1;
             Drop drop = Drop.Nothing;
             int targetIndex = -1;

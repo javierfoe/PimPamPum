@@ -659,10 +659,14 @@ namespace Bang
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             List<int> playersInRange = PlayersInRange(player, range);
+            PlayerController pc;
             foreach (int i in playersInRange)
             {
-                if (!playerControllers[i].IsDead)
-                    playerControllers[i].SetStealable(conn, true);
+                pc = playerControllers[i];
+                if (!pc.IsDead)
+                {
+                    pc.SetStealable(conn, true);
+                }
             }
             playerControllers[player].SetStealable(conn, true);
         }

@@ -17,6 +17,12 @@ namespace Bang
             button.interactable = value;
         }
 
+        public override void Playable(bool value)
+        {
+            base.Playable(value);
+            Draggable = false;
+        }
+
         private void ClickGeneralStoreCard()
         {
             PlayerController.LocalPlayer.ChooseGeneralStoreCard(index);
