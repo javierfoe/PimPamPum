@@ -404,10 +404,6 @@ namespace Bang
             }
 
             yield return DecisionTimer(player);
-
-            yield return ResponsesFinished(player, Everyone);
-
-            playerControllers[player].FinishCardUsed();
         }
 
         private IEnumerator IndiansResponse(int player)
@@ -564,33 +560,40 @@ namespace Bang
         public void StartGame()
         {
             boardController.ConstructorBoard();
-
+            currentPlayer = -1;
             Role[] roles = Roles.GetRoles(MaxPlayers);
             List<PlayerController> players = new List<PlayerController>();
             foreach (PlayerController pc in playerControllers)
                 players.Add(pc);
 
             int range, random;
-            PlayerController sheriff = null;
+            int sheriff = -1;
             foreach (Role r in roles)
             {
                 range = players.Count;
                 random = Random.Range(0, range);
-                if (sheriff == null)
+                if (sheriff < 0)
                 {
-                    sheriff = players[random];
+                    sheriff = random;
                     currentPlayer = random;
                 }
                 players[random].SetRole(r);
                 players.RemoveAt(random);
             }
-            sheriff.StartTurn();
+            StartTurn(sheriff);
         }
 
         public void EndTurn()
         {
-            currentPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
-            playerControllers[currentPlayer].StartTurn();
+            int nextPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
+            StartTurn(nextPlayer);
+        }
+
+        private void StartTurn(int player)
+        {
+            if (currentPlayer > -1) playerControllers[currentPlayer].SetTurn(false);
+            currentPlayer = player;
+            playerControllers[player].StartTurn();
         }
 
         public List<int> PlayersInRange(int player, int range)

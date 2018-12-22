@@ -9,7 +9,7 @@ namespace Bang
 
         [SerializeField] private Text hp = null, info = null;
         [SerializeField] private HandView handHidden = null;
-        [SerializeField] private GameObject weapon = null;
+        [SerializeField] private GameObject weapon = null, turn = null;
         [SerializeField] private HandCardListView handCards = null;
         [SerializeField] private PropertyCardListView propertyCards = null;
 
@@ -37,6 +37,7 @@ namespace Bang
         protected override void Awake()
         {
             base.Awake();
+            SetTurn(false);
             weaponCard = weapon.GetComponent<ICardView>();
         }
 
@@ -50,6 +51,11 @@ namespace Bang
             endTurnButton.Active = false;
             takeHitButton.Active = false;
             dieButton.Active = false;
+        }
+
+        public void SetTurn(bool value)
+        {
+            turn.SetActive(value);
         }
 
         public void SetPlayerIndex(int index)

@@ -11,7 +11,7 @@ namespace Bang
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
         private static RectTransform canvas;
 
-        [SerializeField] private Color playable;
+        [SerializeField] private Color playable = new Color();
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         protected int index;

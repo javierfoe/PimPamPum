@@ -532,6 +532,15 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114540241725426680, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
+        type: 2}
+      propertyPath: m_Text
+      value: YOUR TURN
+      objectReference: {fileID: 0}
+    - target: {fileID: 1980290107873928, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
   m_IsPrefabAsset: 0
@@ -2366,28 +2375,9 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1200586415814806, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
       propertyPath: m_Name
       value: PlayerView (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 1980290107873928, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}

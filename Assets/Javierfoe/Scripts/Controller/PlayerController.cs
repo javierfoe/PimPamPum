@@ -66,7 +66,7 @@ namespace Bang
         {
             get
             {
-                return hand.Count > 0 || properties.Count > 0 || HasColt45;
+                return hand.Count > 0 || properties.Count > 0 || !HasColt45;
             }
         }
 
@@ -272,7 +272,13 @@ namespace Bang
         {
             hitState = HitState.Draw;
             endTurn = false;
+            SetTurn(true);
             StartCoroutine(OnStartTurn());
+        }
+
+        public void SetTurn(bool value)
+        {
+            RpcSetTurn(value);
         }
 
         private void Phase1()
@@ -367,6 +373,7 @@ namespace Bang
 
         public void DisableCards()
         {
+            EnableTakeHitButton(false);
             EnableEndTurnButton(false);
             int length = hand.Count;
             for (int i = 0; i < length; i++)
@@ -527,7 +534,7 @@ namespace Bang
 
         public void SetStealable(NetworkConnection conn, bool value)
         {
-            if (!Stealable) return;
+            if (value && !Stealable) return;
             SetStealable(conn, value, hand.Count > 0, !HasColt45);
         }
 
@@ -832,6 +839,7 @@ namespace Bang
 
         private void MakeDecision(Decision decision)
         {
+            DisableCards();
             GameController.MakeDecision(playerNum, decision);
         }
 
@@ -1016,6 +1024,12 @@ namespace Bang
         private void RpcSetRole(Role role)
         {
             PlayerView.SetRole(role);
+        }
+
+        [ClientRpc]
+        private void RpcSetTurn(bool value)
+        {
+            PlayerView.SetTurn(value);
         }
 
         [TargetRpc]
