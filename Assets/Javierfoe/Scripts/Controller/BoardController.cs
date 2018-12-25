@@ -111,10 +111,32 @@ namespace Bang
             RpcSetDeckSize(deck.Count);
         }
 
+        public void SetTargetable(NetworkConnection conn, bool value)
+        {
+            TargetTargetableTrash(conn, value);
+        }
+
+        public void ShowBangEvent(BangEvent bangEvent)
+        {
+            RpcShowBangEvent(bangEvent);
+        }
+
+        [TargetRpc]
+        private void TargetTargetableTrash(NetworkConnection conn, bool value)
+        {
+            boardView.SetTargetable(value);
+        }
+
         [TargetRpc]
         private void TargetEnableCards(NetworkConnection conn, bool value)
         {
             boardView.EnableGeneralStoreCards(value);
+        }
+
+        [ClientRpc]
+        private void RpcShowBangEvent(BangEvent bangEvent)
+        {
+            boardView.ShowBangEvent(bangEvent);
         }
 
         [ClientRpc]

@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Bang
 {
-    public interface IBoardView
+    public interface IBoardView : IDropView
     {
+        void ShowBangEvent(BangEvent bangEvent);
         void EnableGeneralStore(bool value);
         void EnableGeneralStoreCards(bool value);
         void AddGeneralStoreCard(int index, CardStruct cs);

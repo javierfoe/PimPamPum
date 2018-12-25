@@ -35,7 +35,7 @@ namespace Bang
             Droppable = false;
         }
 
-        public void SetTargetable(bool value)
+        public virtual void SetTargetable(bool value)
         {
             Targetable = value;
             SetBackgroundColor();

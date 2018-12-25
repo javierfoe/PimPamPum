@@ -95,12 +95,42 @@ namespace Bang
 
     }
 
+    public struct BangEvent
+    {
+        public Event eventType;
+        public CardStruct usedCard, targetCard, drawnCard;
+        public int player, targetPlayer;
+        public bool condition;
+    }
+
     public struct CardStruct
     {
         public string name;
         public Suit suit;
         public Rank rank;
         public Color color;
+    }
+
+    public enum State
+    {
+        Play,
+        Response,
+        Duel,
+        Discard,
+        Dying
+    }
+
+    public enum Event
+    {
+        Hit,
+        Die,
+        Play,
+        Response,
+        Duel,
+        Panic,
+        CatBalou,
+        GeneralStore,
+        DrawEffect
     }
 
     public enum Team

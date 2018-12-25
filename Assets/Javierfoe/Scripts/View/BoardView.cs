@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Bang
 {
 
-    public class BoardView : MonoBehaviour, IBoardView
+    public class BoardView : DropView, IBoardView
     {
 
         [SerializeField] private CardView discardStackTop = null;
@@ -15,10 +16,18 @@ namespace Bang
 
         private ICardView discardTopCard;
 
-        void Start()
+        protected override void Awake()
         {
+            base.Awake();
+            drop = Drop.Trash;
             discardTopCard = discardStackTop;
             EnableGeneralStore(false);
+        }
+
+        public override void SetTargetable(bool value)
+        {
+            Droppable = value;
+            base.SetTargetable(value);
         }
 
         public void EnableGeneralStore(bool value)
@@ -54,6 +63,11 @@ namespace Bang
         public void EmptyDiscardStack()
         {
             discardTopCard.SetCard(defaultCard);
+        }
+
+        public void ShowBangEvent(BangEvent bangEvent)
+        {
+            Debug.Log("Player" + bangEvent.player + " used a card.");
         }
     }
 }

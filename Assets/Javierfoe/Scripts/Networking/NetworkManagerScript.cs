@@ -44,7 +44,7 @@ namespace Bang
 
             foreach (PlayerController pc in playerControllerComponents)
                 foreach (PlayerController pc2 in playerControllerComponents)
-                    pc.TargetSetup(pc2.connectionToClient, pc2.PlayerNumber);
+                    pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
 
             gameController.StartGame();
         }

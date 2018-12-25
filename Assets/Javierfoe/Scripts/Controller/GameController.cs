@@ -30,11 +30,12 @@ namespace Bang
         [SerializeField] private GeneralStoreCardView generalStoreCardView = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform playerViews = null;
-        [SerializeField] private float decisionTime = 0;
+        [SerializeField] private float decisionTime = 0, bangEventTime = 0;
 
         [SyncVar] private int maxPlayers;
 
         private Decision[] decisionsMade;
+        private Card[] cardsUsed;
         private int decisionMaker, currentPlayer, generalStoreChoice;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
@@ -261,8 +262,9 @@ namespace Bang
             boardController.DiscardCard(card);
         }
 
-        public void MakeDecision(int player, Decision decision)
+        public void MakeDecision(int player, Card card, Decision decision)
         {
+            cardsUsed[player] = card;
             decisionsMade[player] = decision;
         }
 
@@ -366,18 +368,25 @@ namespace Bang
             if (target == Everyone)
             {
                 for (int i = player + 1; i < maxPlayers; i++)
-                    if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit(player);
+                {
+                    yield return DecisionConsequence(i, player);
+                }
 
                 for (int i = 0; i < player; i++)
-                    if (decisionsMade[i] == Decision.TakeHit)
-                        yield return playerControllers[i].Hit(player);
+                {
+                    yield return DecisionConsequence(i, player);
+                }
             }
             else
             {
-                if (decisionsMade[target] == Decision.TakeHit)
-                    yield return playerControllers[target].Hit(player);
+                yield return DecisionConsequence(target, player);
             }
+        }
+
+        private IEnumerator DecisionConsequence(int target, int player)
+        {
+            if (decisionsMade[target] == Decision.TakeHit)
+                yield return playerControllers[target].Hit(player);
         }
 
         public IEnumerator WaitForGatlingResponse(int player)
@@ -474,6 +483,7 @@ namespace Bang
 
         private void RestartDecisions(int player, int target)
         {
+            cardsUsed = new Card[maxPlayers];
             decisionsMade = new Decision[maxPlayers];
             if (target != player) decisionsMade[player] = Decision.Source;
             decisionMaker = target;
@@ -627,7 +637,7 @@ namespace Bang
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 if (pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead)
-                    pc.TargetSetTargetable(conn, true);
+                    pc.SetTargetable(conn, true);
         }
 
         public void TargetAllCards(int player)
@@ -641,13 +651,13 @@ namespace Bang
         public void TargetSelf(int player)
         {
             PlayerController pc = playerControllers[player];
-            pc.TargetSetTargetable(pc.connectionToClient, true);
+            pc.SetTargetable(pc.connectionToClient, true);
         }
 
         public void TargetSelfProperty<T>(int player) where T : Property
         {
             PlayerController pc = playerControllers[player];
-            pc.TargetSetTargetable(pc.connectionToClient, !pc.HasProperty<T>());
+            pc.SetTargetable(pc.connectionToClient, !pc.HasProperty<T>());
         }
 
         public void TargetOthers(int player)
@@ -655,7 +665,7 @@ namespace Bang
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 if (pc.PlayerNumber != player && !pc.IsDead)
-                    pc.TargetSetTargetable(conn, true);
+                    pc.SetTargetable(conn, true);
         }
 
         public void TargetAllRangeCards(int player, int range)
@@ -680,7 +690,7 @@ namespace Bang
             List<int> playersInRange = PlayersInRange(player, range);
             foreach (int i in playersInRange)
             {
-                playerControllers[i].TargetSetTargetable(conn, true);
+                playerControllers[i].SetTargetable(conn, true);
             }
         }
 
@@ -689,6 +699,18 @@ namespace Bang
             NetworkConnection conn = playerControllers[playerNum].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 pc.StopTargeting(conn);
+            boardController.SetTargetable(conn, false);
+        }
+
+        public void HighlightTrash(int player, bool value)
+        {
+            boardController.SetTargetable(playerControllers[player].connectionToClient, value);
+        }
+
+        private IEnumerator ShowBangEvent(BangEvent bangEvent)
+        {
+            boardController.ShowBangEvent(bangEvent);
+            yield return new WaitForSeconds(bangEventTime);
         }
 
         [ClientRpc]

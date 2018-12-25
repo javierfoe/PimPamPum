@@ -8,15 +8,6 @@ namespace Bang
     public class PlayerController : NetworkBehaviour
     {
 
-        private enum State
-        {
-            Play,
-            Response,
-            Duel,
-            Discard,
-            Dying
-        }
-
         private enum HitState
         {
             Draw,
@@ -32,12 +23,16 @@ namespace Bang
 
         private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp, maxHp, barrels, missesToDodge;
-        private State state;
         private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
+
+        public State State
+        {
+            get; private set;
+        }
 
         public IPlayerView PlayerView
         {
@@ -314,12 +309,8 @@ namespace Bang
 
         public void DyingFinished()
         {
-            switch (hitState)
-            {
-                case HitState.Play:
-                    Phase2();
-                    break;
-            }
+            if (hitState == HitState.Play)
+                Phase2();
         }
 
         private IEnumerator DynamiteCheck()
@@ -384,7 +375,7 @@ namespace Bang
 
         private void DiscardEndTurn()
         {
-            state = State.Discard;
+            State = State.Discard;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -394,28 +385,28 @@ namespace Bang
 
         protected virtual void EnableCardsPlay()
         {
-            state = State.Play;
+            State = State.Play;
             EnableNotCards<Missed>();
         }
 
         private void EnableCardsDying()
         {
             EnableDieButton(true);
-            state = State.Dying;
+            State = State.Dying;
             EnableCards<Beer>();
         }
 
         public void EnableCardsResponse<T>() where T : Card
         {
             EnableTakeHitButton(true);
-            state = State.Response;
+            State = State.Response;
             EnableCards<T>();
         }
 
         public void EnableCardsDuelResponse()
         {
             EnableTakeHitButton(true);
-            state = State.Duel;
+            State = State.Duel;
             EnableCards<Bang>();
         }
 
@@ -837,10 +828,11 @@ namespace Bang
             TargetEnableDieButton(connectionToClient, value);
         }
 
-        private void MakeDecision(Decision decision)
+        private void MakeDecision(Decision decision, int index = -1)
         {
             DisableCards();
-            GameController.MakeDecision(playerNum, decision);
+            Card card = index > -1 ? hand[index] : null;
+            GameController.MakeDecision(playerNum, card, decision);
         }
 
         public void Win()
@@ -864,10 +856,20 @@ namespace Bang
             {
                 ForceEndTurn();
             }
-            else if(state != State.Discard)
+            else if (State != State.Discard)
             {
                 DiscardEndTurn();
             }
+        }
+
+        public void SetTargetable(NetworkConnection conn, bool value)
+        {
+            TargetSetTargetable(conn, value);
+        }
+
+        public void Setup(NetworkConnection conn, int playerIndex)
+        {
+            TargetSetup(conn, playerIndex);
         }
 
         [Client]
@@ -917,26 +919,30 @@ namespace Bang
         }
 
         [Command]
-        public void CmdMakeDecision(Decision decision)
+        private void CmdMakeDecision(Decision decision)
         {
             MakeDecision(decision);
         }
 
         [Command]
-        public void CmdBeginCardDrag(int index)
+        private void CmdBeginCardDrag(int index)
         {
             draggedCard = index;
-            if (state == State.Play) hand[draggedCard].BeginCardDrag(this);
+            GameController.HighlightTrash(playerNum, true);
+            if (State == State.Play)
+            {
+                hand[draggedCard].BeginCardDrag(this);
+            }
         }
 
         [Command]
-        public void CmdEndTurn()
+        private void CmdEndTurn()
         {
             EndTurn();
         }
 
         [Command]
-        public void CmdStopTargeting()
+        private void CmdStopTargeting()
         {
             GameController.StopTargeting(playerNum);
         }
@@ -944,7 +950,7 @@ namespace Bang
         [Command]
         private void CmdUseCard(int index, int player, Drop drop, int cardIndex)
         {
-            switch (state)
+            switch (State)
             {
                 case State.Play:
                     if (player > -1)
@@ -961,14 +967,14 @@ namespace Bang
                 case State.Duel:
                     if (drop == Drop.Trash)
                     {
-                        MakeDecision(Decision.Avoid);
+                        MakeDecision(Decision.Avoid, index);
                         DiscardCardFromHand(index);
                     }
                     break;
                 case State.Response:
                     if (drop == Drop.Trash)
                     {
-                        MakeDecision(Decision.Avoid);
+                        MakeDecision(Decision.Avoid, index);
                         DiscardCardResponse(index);
                     }
                     break;
@@ -1033,7 +1039,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetSetTargetable(NetworkConnection conn, bool value)
+        private void TargetSetTargetable(NetworkConnection conn, bool value)
         {
             PlayerView.SetDroppable(value);
         }
@@ -1069,7 +1075,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        public void TargetSetup(NetworkConnection conn, int playerNumber)
+        private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             IPlayerView ipv = null;
             if (isLocalPlayer)
