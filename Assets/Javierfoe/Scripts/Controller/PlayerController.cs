@@ -75,6 +75,11 @@ namespace Bang
 
         public bool IsDead
         {
+            get; private set;
+        }
+
+        public bool IsDying
+        {
             get { return HP < 1; }
         }
 
@@ -603,8 +608,8 @@ namespace Bang
         {
             EnableTakeHitButton(false);
             HP -= amount;
-            for (int i = 0; i < amount; i++) HitTrigger();
-            if (IsDead)
+            for (int i = 0; i < amount; i++) HitTrigger(attacker);
+            if (IsDying)
             {
                 EnableCardsDying();
                 yield return GameController.Dying(playerNum, attacker);
@@ -612,10 +617,11 @@ namespace Bang
             }
         }
 
-        public virtual void HitTrigger() { }
+        public virtual void HitTrigger(int attacker) { }
 
         public virtual void Die(int killer)
         {
+            IsDead = true;
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
             for (int i = hand.Count - 1; i > -1; i--)

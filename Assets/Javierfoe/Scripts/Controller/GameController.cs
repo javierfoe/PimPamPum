@@ -323,13 +323,13 @@ namespace Bang
             decisionsMade[target] = Decision.Pending;
             PlayerController pc = playerControllers[target];
             float time = 0;
-            while (!AreDecisionsMade && time < decisionTime && pc.IsDead)
+            while (!AreDecisionsMade && time < decisionTime && pc.IsDying)
             {
                 time += Time.deltaTime;
                 yield return null;
             }
             pc.EnableDieButton(false);
-            if (pc.IsDead) pc.Die(player);
+            if (pc.IsDying) pc.Die(player);
             if (player > -1) playerControllers[player].DyingFinished();
         }
 

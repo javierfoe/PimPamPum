@@ -56,14 +56,15 @@ namespace Bang
         {
             List<Card> result = DrawCards(cards);
 
-            RpcEnableGeneralStore(true);
-            RpcEnableCards(false);
             Card c;
             for (int i = 0; i < result.Count; i++)
             {
                 c = result[i];
                 RpcAddCardGeneralStore(i, c.Struct);
             }
+
+            RpcEnableGeneralStore(true);
+            RpcEnableCards(false);
 
             return result;
         }

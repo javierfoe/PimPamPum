@@ -8,7 +8,7 @@ namespace Bang
 
         protected List<T> list;
 
-        private void Start()
+        private void Awake()
         {
             list = new List<T>();
         }
