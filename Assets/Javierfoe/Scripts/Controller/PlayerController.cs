@@ -165,10 +165,11 @@ namespace Bang
             DrawInitialCards();
         }
 
-        public void DrawFromCard(int amount)
+        public IEnumerator DrawFromCard(int amount)
         {
             DiscardCardUsed();
             Draw(amount);
+            yield return null;
         }
 
         public void Draw(int amount)
@@ -206,10 +207,15 @@ namespace Bang
             RpcRemoveCard();
         }
 
-        public void Imprison(int target, Jail c)
+        public void EquipPropertyTo(int target, Property p)
         {
+            if (target == playerNum)
+            {
+                p.EquipProperty(this);
+                return;
+            }
             PlayerController pc = GameController.GetPlayerController(target);
-            c.EquipProperty(pc);
+            p.EquipProperty(pc);
         }
 
         public void EquipProperty(Property c)
@@ -440,9 +446,9 @@ namespace Bang
             }
         }
 
-        public void PlayCard(int player, Drop drop, int cardIndex)
+        private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
-            hand[draggedCard].PlayCard(this, player, drop, cardIndex);
+            yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
         }
 
         public void DiscardCardEndTurn(int index)
@@ -451,10 +457,10 @@ namespace Bang
             EndTurn();
         }
 
-        public void Saloon()
+        public IEnumerator Saloon()
         {
-            DiscardCardUsed();
             GameController.Saloon();
+            yield return null;
         }
 
         public int BarrelDodge(int misses = 1)
@@ -469,26 +475,20 @@ namespace Bang
             return dodged;
         }
 
-        public void ShotBang(int target)
+        public IEnumerator ShotBang(int target)
         {
-            DiscardCardUsed();
-            DisableCards();
             bangsUsed++;
-            StartCoroutine(GameController.WaitForBangResponse(playerNum, target, missesToDodge));
+            yield return GameController.WaitForBangResponse(playerNum, target, missesToDodge);
         }
 
-        public void Indians()
+        public IEnumerator Indians()
         {
-            DiscardCardUsed();
-            DisableCards();
-            StartCoroutine(GameController.WaitForIndiansResponse(playerNum));
+            yield return GameController.WaitForIndiansResponse(playerNum);
         }
 
-        public void Gatling()
+        public IEnumerator Gatling()
         {
-            DiscardCardUsed();
-            DisableCards();
-            StartCoroutine(GameController.WaitForGatlingResponse(playerNum));
+            yield return GameController.WaitForGatlingResponse(playerNum);
         }
 
         public virtual bool Bang()
@@ -657,10 +657,10 @@ namespace Bang
             return false;
         }
 
-        public virtual void HealFromBeer()
+        public virtual IEnumerator HealFromBeer()
         {
-            DiscardCardUsed();
             if (!GameController.FinalDuel) Heal();
+            yield return null;
         }
 
         public virtual void HealFromSaloon()
@@ -675,7 +675,7 @@ namespace Bang
             else HP = MaxHP;
         }
 
-        private void DiscardCardUsed()
+        public void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
             CheckNoCards();
@@ -699,21 +699,17 @@ namespace Bang
             GameController.DiscardCard(card);
         }
 
-        public void GeneralStore()
+        public IEnumerator GeneralStore()
         {
-            DiscardCardUsed();
-            DisableCards();
-            StartCoroutine(GameController.GeneralStore(playerNum));
+            yield return GameController.GeneralStore(playerNum);
         }
 
-        public void Duel(int player)
+        public IEnumerator Duel(int player)
         {
-            DiscardCardUsed();
-            DisableCards();
-            StartCoroutine(GameController.StartDuel(playerNum, player));
+            yield return GameController.StartDuel(playerNum, player);
         }
 
-        public void CatBalou(int player, Drop drop, int cardIndex)
+        public IEnumerator CatBalou(int player, Drop drop, int cardIndex)
         {
             PlayerController pc = GameController.GetPlayerController(player);
             Card c = null;
@@ -733,9 +729,10 @@ namespace Bang
             pc.StolenBy(this);
             DiscardCardUsed();
             GameController.DiscardCard(c);
+            yield return null;
         }
 
-        public void Panic(int player, Drop drop, int cardIndex)
+        public IEnumerator Panic(int player, Drop drop, int cardIndex)
         {
             PlayerController pc = GameController.GetPlayerController(player);
             Card c = null;
@@ -761,6 +758,7 @@ namespace Bang
             pc.StolenBy(this);
             DiscardCardUsed();
             if (c != null) AddCard(c);
+            yield return null;
         }
 
         protected virtual void StolenBy(PlayerController thief) { }
@@ -960,7 +958,7 @@ namespace Bang
             {
                 case State.Play:
                     if (player > -1)
-                        PlayCard(player, drop, cardIndex);
+                        StartCoroutine(PlayCard(player, drop, cardIndex));
                     break;
                 case State.Discard:
                     if (drop == Drop.Trash)
@@ -968,7 +966,7 @@ namespace Bang
                     break;
                 case State.Dying:
                     if (drop == Drop.Trash)
-                        PlayCard(playerNum, drop, cardIndex);
+                        StartCoroutine(PlayCard(playerNum, drop, cardIndex));
                     break;
                 case State.Duel:
                     if (drop == Drop.Trash)
@@ -985,7 +983,6 @@ namespace Bang
                     }
                     break;
             }
-            draggedCard = -1;
         }
 
         [ClientRpc]

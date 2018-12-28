@@ -282,7 +282,6 @@ namespace Bang
             }
             GetCardGeneralStore(next, 0);
             boardController.DisableGeneralStore();
-            playerControllers[player].FinishCardUsed();
         }
 
         private void GetCardGeneralStore(int player, int choice)
@@ -313,8 +312,6 @@ namespace Bang
             playerControllers[target].FinishDuelTarget(bangsTarget);
 
             yield return playerControllers[next].Hit(player);
-
-            playerControllers[player].FinishCardUsed();
         }
 
         public IEnumerator Dying(int target, int player)
@@ -354,8 +351,6 @@ namespace Bang
             }
 
             yield return ResponsesFinished(player, target);
-
-            playerControllers[player].FinishCardUsed();
         }
 
         public IEnumerator WaitForIndiansResponse(int player)
@@ -436,8 +431,6 @@ namespace Bang
             yield return DecisionTimer(player);
 
             yield return ResponsesFinished(player, Everyone);
-
-            playerControllers[player].FinishCardUsed();
         }
 
         private void EnableResponseDuel(int player)
