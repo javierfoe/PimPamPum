@@ -61,8 +61,7 @@ namespace Bang
 
         protected IEnumerator CardEvent(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            Debug.Log("Card: " + ToString() + " Target: " + player + " Drop: " + drop + " CardIndex: " + cardIndex);
-            yield return new WaitForSeconds(1);
+            yield return pc.BangEvent("Card: " + ToString() + " Target: " + player + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
     }
@@ -637,9 +636,7 @@ namespace Bang
 
         public static bool CheckCondition(Card c)
         {
-            bool res = c.Suit == Suit.Hearts;
-            Debug.Log(res ? "Me libro de la carcel" : "Hijoeputa malparido gonorrea, sigo en la carcel");
-            return res;
+            return c.Suit == Suit.Hearts;
         }
 
         public override void BeginCardDrag(PlayerController pc)

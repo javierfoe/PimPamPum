@@ -155,6 +155,7 @@ namespace Bang
         TakeHit,
         Die,
         Avoid,
+        Barrel,
         Source
     }
 

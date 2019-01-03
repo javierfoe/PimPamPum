@@ -2648,7 +2648,7 @@ MonoBehaviour:
   boardController: {fileID: 219958265}
   playerViews: {fileID: 2013262940}
   decisionTime: 10
-  bangEventTime: 0
+  bangEventTime: 1
 --- !u!114 &1588766674
 MonoBehaviour:
   m_ObjectHideFlags: 0

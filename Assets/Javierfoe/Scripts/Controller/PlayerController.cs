@@ -22,7 +22,7 @@ namespace Bang
         private const int NoOne = -1;
 
         private Coroutine hit, jailCheck;
-        private int draggedCard, bangsUsed, hp, maxHp, barrels, missesToDodge;
+        private int draggedCard, bangsUsed, hp, maxHp, missesToDodge;
         private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
@@ -109,6 +109,11 @@ namespace Bang
             get; private set;
         }
 
+        public int Barrels
+        {
+            get; private set;
+        }
+
         public Role Role
         {
             private set; get;
@@ -167,7 +172,6 @@ namespace Bang
 
         public IEnumerator DrawFromCard(int amount)
         {
-            DiscardCardUsed();
             Draw(amount);
             yield return null;
         }
@@ -226,12 +230,12 @@ namespace Bang
 
         public void EquipBarrel()
         {
-            barrels++;
+            Barrels++;
         }
 
         public void UnequipBarrel()
         {
-            barrels--;
+            Barrels--;
         }
 
         public void EquipJail()
@@ -332,22 +336,25 @@ namespace Bang
             UnequipProperty(index);
             if (Dynamite.CheckCondition(c))
             {
+                yield return BangEvent("Player" + playerNum + ": Dynamite exploded. 3 damage inflicted");
                 GameController.DiscardCard(d);
                 yield return Hit(NoOne, 3);
             }
             else
             {
+                yield return BangEvent("Player" + playerNum + ": Avoids the dynamite and passes it to the next player");
                 GameController.PassDynamite(playerNum, d);
             }
         }
 
-        public void JailCheck()
+        public IEnumerator JailCheck()
         {
             Card c = GameController.DrawDiscardCard();
             int index;
             Jail j = FindProperty<Jail>(out index);
             endTurn = !Jail.CheckCondition(c);
             UnequipProperty(index);
+            yield return BangEvent("Player" + playerNum + (endTurn ? " has escaped the prison. " : " stays in prison."));
             GameController.DiscardCard(j);
         }
 
@@ -463,18 +470,6 @@ namespace Bang
             yield return null;
         }
 
-        public int BarrelDodge(int misses = 1)
-        {
-            int dodged = 0;
-            Card c;
-            for (int i = 0; i < barrels && i < misses; i++)
-            {
-                c = GameController.DrawDiscardCard();
-                dodged += Barrel.CheckCondition(c) ? 1 : 0;
-            }
-            return dodged;
-        }
-
         public IEnumerator ShotBang(int target)
         {
             bangsUsed++;
@@ -588,7 +583,7 @@ namespace Bang
             }
             else if (jail)
             {
-                JailCheck();
+                yield return JailCheck();
                 if (endTurn)
                 {
                     ForceEndTurn();
@@ -606,6 +601,8 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
+            if(attacker != NoOne) yield return BangEvent("Player " + playerNum + " has been hit by: " + attacker + " amount: " + amount);
+
             EnableTakeHitButton(false);
             HP -= amount;
             for (int i = 0; i < amount; i++) HitTrigger(attacker);
@@ -678,11 +675,11 @@ namespace Bang
         public void DiscardCardUsed()
         {
             DiscardCardFromHand(draggedCard);
-            CheckNoCards();
         }
 
         public void FinishCardUsed()
         {
+            CheckNoCards();
             Phase2();
         }
 
@@ -876,6 +873,11 @@ namespace Bang
             TargetSetup(conn, playerIndex);
         }
 
+        public IEnumerator BangEvent(string bangEvent)
+        {
+            yield return GameController.BangEvent(bangEvent);
+        }
+
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
@@ -979,7 +981,7 @@ namespace Bang
                     if (drop == Drop.Trash)
                     {
                         MakeDecision(Decision.Avoid, index);
-                        DiscardCardResponse(index);
+                        UnequipHandCard(index);
                     }
                     break;
             }
