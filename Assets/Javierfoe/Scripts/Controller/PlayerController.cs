@@ -616,8 +616,9 @@ namespace Bang
 
         public virtual void HitTrigger(int attacker) { }
 
-        public virtual void Die(int killer)
+        public virtual IEnumerator Die(int killer)
         {
+            yield return BangEvent("Player" + playerNum + " has died.");
             IsDead = true;
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();

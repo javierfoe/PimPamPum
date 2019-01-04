@@ -308,7 +308,7 @@ namespace Bang
                     yield return BangEvent("Player: " + next + " has used a card to avoid the hit: " + cardsUsed[next]);
                 }
             } while (decisionsMade[next] != Decision.TakeHit);
-            
+
             playerControllers[player].CheckNoCards();
             playerControllers[target].FinishDuelTarget(bangsTarget);
 
@@ -327,7 +327,7 @@ namespace Bang
                 yield return null;
             }
             pc.EnableDieButton(false);
-            if (pc.IsDying) pc.Die(player);
+            if (pc.IsDying) yield return pc.Die(player);
             if (player > -1) playerControllers[player].DyingFinished();
         }
 
@@ -439,7 +439,7 @@ namespace Bang
                 {
                     playerControllers[i].EnableCardsResponse<Missed>();
                 }
-                else if(dodges > 0)
+                else if (dodges > 0)
                 {
                     decisionsMade[i] = Decision.Barrel;
                 }
