@@ -8,6 +8,14 @@ public abstract class NetworkManagerButton : MonoBehaviour
     protected static InputField playerName;
     protected static NetworkManagerScript networkManager;
 
+    public static string PlayerName
+    {
+        get
+        {
+            return playerName.text;
+        }
+    }
+
     protected const float errorTime = 0.5f;
 
     private bool playerNameError;

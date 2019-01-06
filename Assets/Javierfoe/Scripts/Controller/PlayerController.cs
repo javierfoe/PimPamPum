@@ -14,7 +14,7 @@ namespace Bang
             Play
         }
 
-        [SyncVar] private int playerNum;
+        [SyncVar] private int playerNum; 
 
         public static PlayerController LocalPlayer { get; private set; }
         private static GameController GameController { get; set; }
@@ -28,6 +28,7 @@ namespace Bang
         private List<Card> hand, properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
+        private string playerName;
 
         public State State
         {
@@ -44,6 +45,16 @@ namespace Bang
             {
                 playerView = value;
                 playerView.SetPlayerIndex(playerNum);
+            }
+        }
+
+        private string PlayerName
+        {
+            get { return playerName; }
+            set
+            {
+                playerName = value;
+                CmdSetPlayerName(value);
             }
         }
 
@@ -146,6 +157,8 @@ namespace Bang
             GameController.SetPlayerViews();
             PlayerView = GameController.GetPlayerView(0);
             PlayerView.SetLocalPlayer();
+            PlayerName = NetworkManagerButton.PlayerName;
+            PlayerView.SetPlayerName(PlayerName);
         }
 
         public bool BelongsToTeam(Team team)
@@ -894,6 +907,11 @@ namespace Bang
             return "Player" + playerNum;
         }
 
+        public void SetPlayerName()
+        {
+            RpcSetPlayerName(playerName);
+        }
+
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
@@ -1002,6 +1020,13 @@ namespace Bang
             }
         }
 
+        [Command]
+        private void CmdSetPlayerName(string name)
+        {
+            playerName = name;
+            GameController.SetPlayerNames(playerNum);
+        }
+
         [ClientRpc]
         private void RpcEquipWeapon(CardStruct cs)
         {
@@ -1056,6 +1081,13 @@ namespace Bang
         private void RpcSetTurn(bool value)
         {
             PlayerView.SetTurn(value);
+        }
+
+        [ClientRpc]
+        public void RpcSetPlayerName(string name)
+        {
+            playerName = name;
+            PlayerView.SetPlayerName(name);
         }
 
         [TargetRpc]

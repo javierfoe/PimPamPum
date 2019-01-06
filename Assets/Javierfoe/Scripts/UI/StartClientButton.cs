@@ -15,7 +15,7 @@ public class StartClientButton : NetworkManagerButton
         get
         {
             string text = hostAddress.text;
-            return !string.IsNullOrEmpty(text) && Regex.IsMatch(text, "localhost|[0-9]{1-3}.[0-9]{1-3}.[0-9]{1-3}.[0.9]{1-3}");
+            return !string.IsNullOrEmpty(text) && Regex.IsMatch(text, "localhost|[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0.9]{1,3}");
         }
     }
 

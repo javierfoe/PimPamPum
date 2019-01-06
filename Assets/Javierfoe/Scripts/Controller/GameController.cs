@@ -799,6 +799,13 @@ namespace Bang
             boardController.SetTargetable(playerControllers[player].connectionToClient, value);
         }
 
+        public void SetPlayerNames(int playerNum)
+        {
+            if (playerNum < maxPlayers - 1) return;
+            foreach (PlayerController pc in playerControllers)
+                pc.SetPlayerName();
+        }
+
         [ClientRpc]
         private void RpcAddPlayerControllers(GameObject[] gos)
         {

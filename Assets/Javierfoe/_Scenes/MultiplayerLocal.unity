@@ -1230,21 +1230,6 @@ Prefab:
       propertyPath: m_Name
       value: PlayerView (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.x
-      value: 0.7500063
-      objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.y
-      value: 0.7000059
-      objectReference: {fileID: 0}
-    - target: {fileID: 224787546108811774, guid: fac7c8fe073cb6b47a107535ee0f5dd3,
-        type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fac7c8fe073cb6b47a107535ee0f5dd3, type: 2}
   m_IsPrefabAsset: 0
@@ -4559,7 +4544,7 @@ MonoBehaviour:
   m_LineType: 0
   m_HideMobileInput: 0
   m_CharacterValidation: 0
-  m_CharacterLimit: 0
+  m_CharacterLimit: 16
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
