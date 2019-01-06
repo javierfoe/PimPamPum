@@ -117,11 +117,6 @@ namespace Bang
             TargetTargetableTrash(conn, value);
         }
 
-        public void ShowBangEvent(BangEvent bangEvent)
-        {
-            RpcShowBangEvent(bangEvent);
-        }
-
         [TargetRpc]
         private void TargetTargetableTrash(NetworkConnection conn, bool value)
         {
@@ -132,12 +127,6 @@ namespace Bang
         private void TargetEnableCards(NetworkConnection conn, bool value)
         {
             boardView.EnableGeneralStoreCards(value);
-        }
-
-        [ClientRpc]
-        private void RpcShowBangEvent(BangEvent bangEvent)
-        {
-            boardView.ShowBangEvent(bangEvent);
         }
 
         [ClientRpc]

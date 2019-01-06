@@ -25,15 +25,17 @@ namespace Bang
 
         private static readonly int Everyone = -1;
 
+        [SerializeField] private GameObject game = null, mainMenu = null;
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
         [SerializeField] private GeneralStoreCardView generalStoreCardView = null;
         [SerializeField] private BoardController boardController = null;
-        [SerializeField] private Transform playerViews = null;
+        [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, bangEventTime = 0;
 
         [SyncVar] private int maxPlayers;
 
+        private IPlayerView[] playerViews;
         private Decision[] decisionsMade;
         private Card[] cardsUsed;
         private int decisionMaker, currentPlayer, generalStoreChoice, dodges;
@@ -229,14 +231,8 @@ namespace Bang
 
         public int MaxPlayers
         {
-            private get { return maxPlayers; }
+            get { return maxPlayers; }
             set { maxPlayers = value; }
-        }
-
-        public Transform PlayerViews
-        {
-            get { return playerViews; }
-            set { playerViews = value; }
         }
 
         public Card DrawDiscardCard()
@@ -276,16 +272,17 @@ namespace Bang
             while (players > 1)
             {
                 yield return GeneralStoreChoice(next);
-                GetCardGeneralStore(next, generalStoreChoice);
+                yield return GetCardGeneralStore(next, generalStoreChoice);
                 next = NextPlayerAlive(next);
                 players--;
             }
-            GetCardGeneralStore(next, 0);
+            yield return GetCardGeneralStore(next, 0);
             boardController.DisableGeneralStore();
         }
 
-        private void GetCardGeneralStore(int player, int choice)
+        private IEnumerator GetCardGeneralStore(int player, int choice)
         {
+            yield return BangEvent(playerControllers[player] + " has chosen the card: " + generalStoreChoices[choice]);
             boardController.RemoveGeneralStoreCard(choice);
             playerControllers[player].AddCard(generalStoreChoices[choice]);
             generalStoreChoices.RemoveAt(choice);
@@ -305,7 +302,6 @@ namespace Bang
                     {
                         bangsTarget++;
                     }
-                    yield return BangEvent("Player: " + next + " has used a card to avoid the hit: " + cardsUsed[next]);
                 }
             } while (decisionsMade[next] != Decision.TakeHit);
 
@@ -366,12 +362,14 @@ namespace Bang
             dodges = 0;
             Card c;
             bool dodge;
-            for (int i = 0; i < playerControllers[target].Barrels && dodges < misses; i++)
+            PlayerController pc = playerControllers[target];
+            int barrels = pc.Barrels;
+            for (int i = 0; i < barrels && dodges < misses; i++)
             {
                 c = DrawDiscardCard();
                 dodge = Barrel.CheckCondition(c);
                 dodges += dodge ? 1 : 0;
-                yield return BangEvent("Player" + target + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + c);
+                yield return BangEvent(pc + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + c);
             }
         }
 
@@ -408,14 +406,15 @@ namespace Bang
 
         private IEnumerator DecisionConsequence(int target, int player)
         {
+            PlayerController pc = playerControllers[target];
             switch (decisionsMade[target])
             {
                 case Decision.TakeHit:
-                    yield return playerControllers[target].Hit(player);
+                    yield return pc.Hit(player);
                     break;
                 case Decision.Avoid:
                     Card used = cardsUsed[target];
-                    yield return BangEvent("Player" + target + " has avoided the hit with: " + cardsUsed[target]);
+                    yield return BangEvent(pc + " has avoided the hit with: " + cardsUsed[target]);
                     DiscardCard(used);
                     break;
             }
@@ -434,18 +433,21 @@ namespace Bang
             for (int i = 0; i < maxPlayers; i++)
             {
                 pc = playerControllers[i];
-                yield return BarrelDodge(i);
-                if (player != i && !pc.IsDead && dodges < 1)
+                if (player != i && !pc.IsDead)
                 {
-                    playerControllers[i].EnableCardsResponse<Missed>();
-                }
-                else if (dodges > 0)
-                {
-                    decisionsMade[i] = Decision.Barrel;
+                    yield return BarrelDodge(i);
+                    if (dodges < 1)
+                    {
+                        playerControllers[i].EnableCardsResponse<Missed>();
+                    }
+                    else if (dodges > 0)
+                    {
+                        decisionsMade[i] = Decision.Barrel;
+                    }
                 }
                 else
                 {
-                    decisionsMade[i] = Decision.Avoid;
+                    decisionsMade[i] = Decision.Source;
                 }
             }
 
@@ -466,7 +468,7 @@ namespace Bang
                 }
                 else
                 {
-                    decisionsMade[i] = Decision.Avoid;
+                    decisionsMade[i] = Decision.Source;
                 }
             }
 
@@ -493,8 +495,6 @@ namespace Bang
             }
             boardController.EnableCards(conn, false);
             generalStoreChoice = generalStoreChoice < 0 ? Random.Range(0, generalStoreChoices.Count) : generalStoreChoice;
-
-            yield return BangEvent("Player: " + player + " has chosen the card: " + generalStoreChoices[generalStoreChoice]);
         }
 
         private IEnumerator ResponseDuel(int player, int target)
@@ -563,7 +563,62 @@ namespace Bang
             }
         }
 
-        public void AddPlayerControllers(GameObject[] gos)
+        public void SetMatch(int maxPlayers, GameObject[] playerControllerGOs)
+        {
+            MaxPlayers = maxPlayers;
+            AddPlayerControllers(playerControllerGOs);
+
+            foreach (PlayerController pc in playerControllers)
+                foreach (PlayerController pc2 in playerControllers)
+                    pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
+
+            StartGame();
+        }
+
+        public void SetPlayerViews()
+        {
+            mainMenu.SetActive(false);
+            game.SetActive(true);
+            playerViews = new IPlayerView[MaxPlayers];
+            int j = 0;
+            int i = 0;
+            foreach (Transform player in players)
+            {
+                if (ValidPlayer(i))
+                {
+                    playerViews[j++] = player.GetComponent<IPlayerView>();
+                }
+                else
+                {
+                    player.gameObject.SetActive(false);
+                }
+                i++;
+            }
+        }
+
+        private bool ValidPlayer(int player)
+        {
+            bool res = true;
+            switch (player)
+            {
+                case 1:
+                    goto case 7;
+                case 3:
+                    goto case 5;
+                case 4:
+                    res = MaxPlayers % 2 == 0;
+                    break;
+                case 5:
+                    res = MaxPlayers > 4;
+                    break;
+                case 7:
+                    res = MaxPlayers > 6;
+                    break;
+            }
+            return res;
+        }
+
+        private void AddPlayerControllers(GameObject[] gos)
         {
             int i = 0;
             foreach (GameObject go in gos)
@@ -594,7 +649,7 @@ namespace Bang
 
         public IPlayerView GetPlayerView(int index)
         {
-            return playerViews.GetChild(index).GetComponent<IPlayerView>();
+            return playerViews[index];
         }
 
         public IPlayerView GetPlayerView(int localPlayer, int remotePlayer)

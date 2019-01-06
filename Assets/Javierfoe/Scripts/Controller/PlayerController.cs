@@ -143,6 +143,9 @@ namespace Bang
         public override void OnStartLocalPlayer()
         {
             LocalPlayer = this;
+            GameController.SetPlayerViews();
+            PlayerView = GameController.GetPlayerView(0);
+            PlayerView.SetLocalPlayer();
         }
 
         public bool BelongsToTeam(Team team)
@@ -336,13 +339,13 @@ namespace Bang
             UnequipProperty(index);
             if (Dynamite.CheckCondition(c))
             {
-                yield return BangEvent("Player" + playerNum + ": Dynamite exploded. 3 damage inflicted");
+                yield return BangEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.DiscardCard(d);
                 yield return Hit(NoOne, 3);
             }
             else
             {
-                yield return BangEvent("Player" + playerNum + ": Avoids the dynamite and passes it to the next player");
+                yield return BangEvent(this + ": Avoids the dynamite and passes it to the next player");
                 GameController.PassDynamite(playerNum, d);
             }
         }
@@ -354,7 +357,7 @@ namespace Bang
             Jail j = FindProperty<Jail>(out index);
             endTurn = !Jail.CheckCondition(c);
             UnequipProperty(index);
-            yield return BangEvent("Player" + playerNum + (endTurn ? " has escaped the prison. " : " stays in prison."));
+            yield return BangEvent(this + (endTurn ? " has escaped the prison. " : " stays in prison."));
             GameController.DiscardCard(j);
         }
 
@@ -456,6 +459,13 @@ namespace Bang
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
             yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
+        }
+
+        private IEnumerator DuelResponse(int index)
+        {
+            yield return BangEvent(this + " keeps dueling with: " + hand[index]);
+            MakeDecision(Decision.Avoid, index);
+            DiscardCardFromHand(index);
         }
 
         public void DiscardCardEndTurn(int index)
@@ -601,7 +611,7 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if(attacker != NoOne) yield return BangEvent("Player " + playerNum + " has been hit by: " + attacker + " amount: " + amount);
+            if(attacker != NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
 
             EnableTakeHitButton(false);
             HP -= amount;
@@ -618,7 +628,7 @@ namespace Bang
 
         public virtual IEnumerator Die(int killer)
         {
-            yield return BangEvent("Player" + playerNum + " has died.");
+            yield return BangEvent(this + " has died.");
             IsDead = true;
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
@@ -879,6 +889,11 @@ namespace Bang
             yield return GameController.BangEvent(bangEvent);
         }
 
+        public override string ToString()
+        {
+            return "Player" + playerNum;
+        }
+
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
@@ -974,8 +989,7 @@ namespace Bang
                 case State.Duel:
                     if (drop == Drop.Trash)
                     {
-                        MakeDecision(Decision.Avoid, index);
-                        DiscardCardFromHand(index);
+                        StartCoroutine(DuelResponse(index));
                     }
                     break;
                 case State.Response:
@@ -1083,17 +1097,10 @@ namespace Bang
         [TargetRpc]
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
-            IPlayerView ipv = null;
-            if (isLocalPlayer)
+            if (!isLocalPlayer)
             {
-                ipv = GameController.GetPlayerView(0);
-                ipv.SetLocalPlayer();
+                PlayerView = GameController.GetPlayerView(playerNumber, this.PlayerNumber);
             }
-            else
-            {
-                ipv = GameController.GetPlayerView(playerNumber, this.PlayerNumber);
-            }
-            PlayerView = ipv;
         }
 
         [TargetRpc]

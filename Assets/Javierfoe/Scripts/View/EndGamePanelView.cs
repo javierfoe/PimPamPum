@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class EndGamePanelView : MonoBehaviour {
@@ -8,7 +6,7 @@ public class EndGamePanelView : MonoBehaviour {
     private Text endGameText;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         endGameText = GetComponentInChildren<Text>();
 	}
 

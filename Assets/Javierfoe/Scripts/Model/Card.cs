@@ -61,7 +61,7 @@ namespace Bang
 
         protected IEnumerator CardEvent(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            yield return pc.BangEvent("Card: " + ToString() + " Target: " + player + " Drop: " + drop + " CardIndex: " + cardIndex);
+            yield return pc.BangEvent(pc + " Card: " + this + " Target: " + player + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
     }

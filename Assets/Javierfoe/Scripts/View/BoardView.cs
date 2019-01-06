@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace Bang
@@ -21,7 +20,6 @@ namespace Bang
             base.Awake();
             drop = Drop.Trash;
             discardTopCard = discardStackTop;
-            EnableGeneralStore(false);
         }
 
         public override void SetTargetable(bool value)
@@ -63,11 +61,6 @@ namespace Bang
         public void EmptyDiscardStack()
         {
             discardTopCard.SetCard(defaultCard);
-        }
-
-        public void ShowBangEvent(BangEvent bangEvent)
-        {
-            Debug.Log("Player" + bangEvent.player + " used a card.");
         }
     }
 }
