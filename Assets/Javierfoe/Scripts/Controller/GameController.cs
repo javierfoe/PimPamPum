@@ -28,7 +28,7 @@ namespace Bang
         [SerializeField] private GameObject game = null, mainMenu = null;
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
-        [SerializeField] private GeneralStoreCardView generalStoreCardView = null;
+        [SerializeField] private GeneralStoreView generalStoreCardView = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, bangEventTime = 0;
