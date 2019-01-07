@@ -70,25 +70,20 @@ namespace Bang
 
         public void SetSheriff()
         {
-            SetRole(Roles.SheriffName, Roles.SheriffColor);
+            SetRole(Role.Sheriff);
         }
 
         public void SetRole(Role role)
         {
             Color color = Roles.GetColorFromRole(role);
             string name = Roles.GetNameFromRole(role);
-            SetRole(name, color);
+            info.text = name;
+            info.color = color;
         }
 
         public void UpdateHP(int hp)
         {
             this.hp.text = hp.ToString();
-        }
-
-        private void SetRole(string name, Color color)
-        {
-            info.text = name;
-            info.color = color;
         }
 
         public void AddCard()

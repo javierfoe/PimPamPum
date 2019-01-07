@@ -22,31 +22,38 @@ namespace Bang
         public const int NoOne = -1;
     }
 
-    public class Roles
+    public static class Roles
     {
 
-        public const string SheriffName = "SHERIFF";
+        private const string SheriffName = "SHERIFF";
         private const string DeputyName = "DEPUTY";
         private const string OutlawName = "OUTLAW";
         private const string RenegadeName = "RENEGADE";
 
-        public readonly static Color SheriffColor = Color.yellow;
+        private readonly static Color SheriffColor = Color.yellow;
         private readonly static Color DeputyColor = Color.green;
         private readonly static Color OutlawColor = Color.red;
         private readonly static Color RenegadeColor = Color.blue;
 
         public static string GetNameFromRole(Role role)
         {
+            string res = null;
             switch (role)
             {
+                case Role.Sheriff:
+                    res = SheriffName;
+                    break;
                 case Role.Outlaw:
-                    return OutlawName;
+                    res = OutlawName;
+                    break;
                 case Role.Deputy:
-                    return DeputyName;
+                    res = DeputyName;
+                    break;
                 case Role.Renegade:
-                    return RenegadeName;
+                    res = RenegadeName;
+                    break;
             }
-            return null;
+            return res;
         }
 
         public static Role[] GetRoles(int players)
@@ -82,26 +89,24 @@ namespace Bang
 
         public static Color GetColorFromRole(Role role)
         {
+            Color res = new Color();
             switch (role)
             {
+                case Role.Sheriff:
+                    res = SheriffColor;
+                    break;
                 case Role.Outlaw:
-                    return OutlawColor;
+                    res = OutlawColor;
+                    break;
                 case Role.Deputy:
-                    return DeputyColor;
+                    res = DeputyColor;
+                    break;
                 case Role.Renegade:
-                    return RenegadeColor;
+                    res = RenegadeColor;
+                    break;
             }
-            return new Color();
+            return res;
         }
-
-    }
-
-    public struct BangEvent
-    {
-        public Event eventType;
-        public CardStruct usedCard, targetCard, drawnCard;
-        public int player, targetPlayer;
-        public bool condition;
     }
 
     public struct CardStruct
