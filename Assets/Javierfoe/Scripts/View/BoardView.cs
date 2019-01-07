@@ -9,7 +9,7 @@ namespace Bang
 
         [SerializeField] private CardView discardStackTop = null;
         [SerializeField] private Text deck = null;
-        [SerializeField] private GeneralStoreCardListView generalStore = null;
+        [SerializeField] private GeneralStoreListView generalStore = null;
 
         private CardStruct defaultCard = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
 

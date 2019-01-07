@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class StartClientButton : NetworkManagerButton
 {
-    [SerializeField] private InputField hostAddress = null;
+    private InputField hostAddress;
 
     private bool hostAddressError;
     private string errorAddress;
@@ -22,6 +22,7 @@ public class StartClientButton : NetworkManagerButton
     protected override void Start()
     {
         base.Start();
+        hostAddress = FindObjectOfType<HostAdressInputField>().Input;
         StartCoroutine(InputEmptyHostAddress());
     }
 

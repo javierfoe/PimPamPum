@@ -769,7 +769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aba9e83656c1b774b84f517f76391d7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hostAddress: {fileID: 1118113862}
 --- !u!114 &189476353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3064,6 +3063,7 @@ GameObject:
   - component: {fileID: 1118113864}
   - component: {fileID: 1118113863}
   - component: {fileID: 1118113862}
+  - component: {fileID: 1118113865}
   m_Layer: 5
   m_Name: HostAddress
   m_TagString: Untagged
@@ -3199,6 +3199,17 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1118113860}
   m_CullTransparentMesh: 0
+--- !u!114 &1118113865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1118113860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 329e2fb707fc0fc4da7dcbd01938edaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1202136533
 GameObject:
   m_ObjectHideFlags: 0
@@ -4814,7 +4825,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 72
+  m_Text: 
 --- !u!222 &2009793249
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -32,7 +32,7 @@ public abstract class NetworkManagerButton : MonoBehaviour
     private void InitializeStaticVariables()
     {
         if (!networkManager) networkManager = FindObjectOfType<NetworkManagerScript>();
-        if (!playerName) playerName = FindObjectOfType<PlayerNameInput>().InputField;
+        if (!playerName) playerName = FindObjectOfType<PlayerNameInput>().Input;
     }
 
     private void Click()

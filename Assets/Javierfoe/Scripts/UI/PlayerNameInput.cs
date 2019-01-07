@@ -1,30 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-[RequireComponent(typeof(InputField))]
-public class PlayerNameInput : MonoBehaviour
+﻿
+public class PlayerNameInput : MultiplayerLocal.InputField
 {
-
     private const string nameKey = "PlayerName";
 
-    public InputField InputField
+    protected override void Awake()
     {
-        get; private set;
-    }
-
-    // Use this for initialization
-    void Awake()
-    {
-        InputField = GetComponent<InputField>();
-        if (PlayerPrefs.HasKey(nameKey))
-        {
-            InputField.text = PlayerPrefs.GetString(nameKey);
-        }
-        InputField.onValueChanged.AddListener(NameChanged);
-    }
-
-    private void NameChanged(string name)
-    {
-        PlayerPrefs.SetString(nameKey, name);
+        key = nameKey;
+        base.Awake();
     }
 }

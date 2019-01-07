@@ -904,12 +904,12 @@ namespace Bang
 
         public override string ToString()
         {
-            return "Player" + playerNum;
+            return PlayerName;
         }
 
         public void SetPlayerName()
         {
-            RpcSetPlayerName(playerName);
+            RpcSetPlayerName(PlayerName);
         }
 
         [Client]

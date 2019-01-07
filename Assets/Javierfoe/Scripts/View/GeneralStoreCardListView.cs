@@ -2,7 +2,7 @@
 
 namespace Bang
 {
-    public class GeneralStoreCardListView : CardListView<IGeneralStoreCardView>
+    public class GeneralStoreListView : CardListView<IGeneralStoreCardView>
     {
         protected override void Awake()
         {
