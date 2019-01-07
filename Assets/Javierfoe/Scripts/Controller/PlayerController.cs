@@ -19,7 +19,6 @@ namespace Bang
         public static PlayerController LocalPlayer { get; private set; }
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
-        private const int NoOne = -1;
 
         private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp, maxHp, missesToDodge;
@@ -354,7 +353,7 @@ namespace Bang
             {
                 yield return BangEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.DiscardCard(d);
-                yield return Hit(NoOne, 3);
+                yield return Hit(BangConstants.NoOne, 3);
             }
             else
             {
@@ -624,7 +623,7 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if(attacker != NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
+            if(attacker != BangConstants.NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
 
             EnableTakeHitButton(false);
             HP -= amount;
@@ -900,6 +899,12 @@ namespace Bang
         public IEnumerator BangEvent(string bangEvent)
         {
             yield return GameController.BangEvent(bangEvent);
+        }
+
+        public IEnumerator BangEventPlayedCard(Card card, int target, Drop drop, int cardIndex)
+        {
+            PlayerController targetPc = GameController.GetPlayerController(target);
+            yield return GameController.BangEvent(this + " Card: " + card + " Target: " + targetPc + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
         public override string ToString()

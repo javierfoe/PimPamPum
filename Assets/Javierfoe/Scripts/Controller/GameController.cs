@@ -179,7 +179,7 @@ namespace Bang
             {
                 Win(Team.Law);
             }
-            else if (murderer > -1)
+            else if (murderer != BangConstants.NoOne)
             {
                 PlayerController pcMurderer = playerControllers[murderer];
                 if (killedRole == Role.Outlaw)
@@ -324,7 +324,7 @@ namespace Bang
             }
             pc.EnableDieButton(false);
             if (pc.IsDying) yield return pc.Die(player);
-            if (player > -1) playerControllers[player].DyingFinished();
+            if (player != BangConstants.NoOne) playerControllers[player].DyingFinished();
         }
 
         public IEnumerator WaitForBangResponse(int player, int target, int misses = 1)
@@ -693,7 +693,7 @@ namespace Bang
 
         private void StartTurn(int player)
         {
-            if (currentPlayer > -1) playerControllers[currentPlayer].SetTurn(false);
+            if (currentPlayer != BangConstants.NoOne) playerControllers[currentPlayer].SetTurn(false);
             currentPlayer = player;
             playerControllers[player].StartTurn();
         }

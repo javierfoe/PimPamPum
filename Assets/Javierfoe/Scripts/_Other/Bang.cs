@@ -3,7 +3,7 @@
 namespace Bang
 {
 
-    public static class Number
+    public static class BangConstants
     {
         public const int Bangs = 25;
         public const int Misseds = 12;
@@ -19,6 +19,7 @@ namespace Bang
         public const int Volcanics = 2;
         public const int Stagecoaches = 2;
         public const int Indians = 2;
+        public const int NoOne = -1;
     }
 
     public class Roles
