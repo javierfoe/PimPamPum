@@ -2,70 +2,73 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
-public abstract class NetworkManagerButton : MonoBehaviour
+namespace Bang
 {
-    protected static InputField playerName;
-    protected static NetworkManagerScript networkManager;
-
-    public static string PlayerName
+    [RequireComponent(typeof(Button))]
+    public abstract class NetworkManagerButton : MonoBehaviour
     {
-        get
+        protected static UnityEngine.UI.InputField playerName;
+        protected static NetworkManager networkManager;
+
+        public static string PlayerName
         {
-            return playerName.text;
-        }
-    }
-
-    protected const float errorTime = 0.5f;
-
-    private bool playerNameError;
-
-    // Use this for initialization
-    protected virtual void Start()
-    {
-        InitializeStaticVariables();
-        networkManager = FindObjectOfType<NetworkManagerScript>();
-        GetComponent<Button>().onClick.AddListener(Click);
-        StartCoroutine(InputEmpty());
-    }
-
-    private void InitializeStaticVariables()
-    {
-        if (!networkManager) networkManager = FindObjectOfType<NetworkManagerScript>();
-        if (!playerName) playerName = FindObjectOfType<PlayerNameInput>().Input;
-    }
-
-    private void Click()
-    {
-        if (!playerNameError && string.IsNullOrEmpty(playerName.text) || playerNameError)
-        {
-            if(!playerNameError) playerNameError = true;
-            return;
-        }
-        NetworkManagerAction();
-    }
-
-    private IEnumerator InputEmpty()
-    {
-        while (true)
-        {
-            if (playerNameError)
+            get
             {
-                ErrorEnable(true);
-                yield return new WaitForSeconds(errorTime);
-                ErrorEnable(false);
-                playerNameError = false;
+                return playerName.text;
             }
-            yield return null;
         }
+
+        protected const float errorTime = 0.5f;
+
+        private bool playerNameError;
+
+        // Use this for initialization
+        protected virtual void Start()
+        {
+            InitializeStaticVariables();
+            networkManager = FindObjectOfType<NetworkManager>();
+            GetComponent<Button>().onClick.AddListener(Click);
+            StartCoroutine(InputEmpty());
+        }
+
+        private void InitializeStaticVariables()
+        {
+            if (!networkManager) networkManager = FindObjectOfType<NetworkManager>();
+            if (!playerName) playerName = FindObjectOfType<PlayerNameInput>().Input;
+        }
+
+        private void Click()
+        {
+            if (!playerNameError && string.IsNullOrEmpty(playerName.text) || playerNameError)
+            {
+                if (!playerNameError) playerNameError = true;
+                return;
+            }
+            NetworkManagerAction();
+        }
+
+        private IEnumerator InputEmpty()
+        {
+            while (true)
+            {
+                if (playerNameError)
+                {
+                    ErrorEnable(true);
+                    yield return new WaitForSeconds(errorTime);
+                    ErrorEnable(false);
+                    playerNameError = false;
+                }
+                yield return null;
+            }
+        }
+
+        private void ErrorEnable(bool value)
+        {
+            playerName.interactable = !value;
+            playerName.text = value ? "Type your name" : "";
+        }
+
+        protected abstract void NetworkManagerAction();
+
     }
-
-    private void ErrorEnable(bool value)
-    {
-        playerName.interactable = !value;
-        playerName.text = value ? "Type your name" : "";
-    }
-
-    protected abstract void NetworkManagerAction();
-
 }

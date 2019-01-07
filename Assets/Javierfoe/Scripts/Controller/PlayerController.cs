@@ -21,13 +21,15 @@ namespace Bang
         private static Colt45 colt45 = new Colt45();
 
         private Coroutine hit, jailCheck;
-        private int draggedCard, bangsUsed, hp, maxHp, missesToDodge;
+        private int draggedCard, bangsUsed, hp, maxHp;
         private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
         private string playerName;
+
+        protected int characterHP = 4, characterMissesToDodge = 1;
 
         public State State
         {
@@ -109,24 +111,29 @@ namespace Bang
             set { playerNum = value; }
         }
 
+        public int MissesToDodge
+        {
+            get; protected set;
+        }
+
         public int Scope
         {
-            get; private set;
+            get; protected set;
         }
 
         public int RangeModifier
         {
-            get; private set;
+            get; protected set;
         }
 
         public int Barrels
         {
-            get; private set;
+            get; protected set;
         }
 
         public Role Role
         {
-            private set; get;
+            get; private set;
         }
 
         public Weapon Weapon
@@ -157,6 +164,7 @@ namespace Bang
             PlayerView = GameController.GetPlayerView(0);
             PlayerView.SetLocalPlayer();
             PlayerName = NetworkManagerButton.PlayerName;
+            PlayerName = ToString();
             PlayerView.SetPlayerName(PlayerName);
         }
 
@@ -169,16 +177,16 @@ namespace Bang
 
         public virtual void SetRole(Role role)
         {
-            missesToDodge = 1;
+            MissesToDodge = characterMissesToDodge;
             Role = role;
+            MaxHP = characterHP;
             if (role == Role.Sheriff)
             {
-                MaxHP = 5;
+                MaxHP++;
                 RpcSheriff();
             }
             else
             {
-                MaxHP = 4;
                 TargetSetRole(connectionToClient, role);
             }
             Weapon = colt45;
@@ -495,7 +503,7 @@ namespace Bang
         public IEnumerator ShotBang(int target)
         {
             bangsUsed++;
-            yield return GameController.WaitForBangResponse(playerNum, target, missesToDodge);
+            yield return GameController.WaitForBangResponse(playerNum, target, MissesToDodge);
         }
 
         public IEnumerator Indians()

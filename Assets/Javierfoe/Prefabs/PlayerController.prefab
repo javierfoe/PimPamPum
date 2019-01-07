@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4012407082129968}
   - component: {fileID: 114643703605808482}
-  - component: {fileID: 114006928502360590}
+  - component: {fileID: 114552362895206834}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -41,7 +41,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114006928502360590
+--- !u!114 &114552362895206834
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}

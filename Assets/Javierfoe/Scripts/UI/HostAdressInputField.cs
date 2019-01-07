@@ -1,5 +1,5 @@
 ﻿
-public class HostAdressInputField : MultiplayerLocal.InputField {
+public class HostAdressInputField : Bang.InputField {
 
     private const string hostAddressKey = "HostAddress";
 

@@ -1,11 +1,14 @@
 ﻿
-public class PlayerNameInput : MultiplayerLocal.InputField
+namespace Bang
 {
-    private const string nameKey = "PlayerName";
-
-    protected override void Awake()
+    public class PlayerNameInput : InputField
     {
-        key = nameKey;
-        base.Awake();
+        private const string nameKey = "PlayerName";
+
+        protected override void Awake()
+        {
+            key = nameKey;
+            base.Awake();
+        }
     }
 }

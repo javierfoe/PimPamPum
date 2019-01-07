@@ -1,8 +1,10 @@
-﻿
-public class StartHostButton : NetworkManagerButton
+﻿namespace Bang
 {
-    protected override void NetworkManagerAction()
+    public class StartHostButton : NetworkManagerButton
     {
-        networkManager.StartHost();
+        protected override void NetworkManagerAction()
+        {
+            networkManager.StartHost();
+        }
     }
 }
