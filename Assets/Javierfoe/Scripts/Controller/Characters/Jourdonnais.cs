@@ -4,7 +4,7 @@ namespace Bang
     public class Jourdonnais : PlayerController
     {
 
-        private const int barrels = 2;
+        private const int barrels = 1;
 
         public override void OnStartServer()
         {

@@ -164,6 +164,8 @@ namespace Bang
 
         public override void OnStartServer()
         {
+            Phase1CardsDrawn = 2;
+            MissesToDodge = 1;
             MaxHP = characterHP;
             hand = new List<Card>();
             properties = new List<Card>();
@@ -363,6 +365,11 @@ namespace Bang
             CheckNoCards();
         }
 
+        public void Response()
+        {
+            FinishDuelTarget(1);
+        }
+
         public virtual void CheckNoCards() { }
 
         protected virtual void CardUsedOutOfTurn() { }
@@ -399,7 +406,7 @@ namespace Bang
             Jail j = FindProperty<Jail>(out index);
             endTurn = !Jail.CheckCondition(c);
             UnequipProperty(index);
-            yield return BangEvent(this + (endTurn ? " has escaped the prison. " : " stays in prison."));
+            yield return BangEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
             GameController.DiscardCard(j);
         }
 
@@ -525,17 +532,17 @@ namespace Bang
         public IEnumerator ShotBang(int target)
         {
             bangsUsed++;
-            yield return GameController.WaitForBangResponse(playerNum, target, MissesToDodge);
+            yield return GameController.Bang(playerNum, target, MissesToDodge);
         }
 
         public IEnumerator Indians()
         {
-            yield return GameController.WaitForIndiansResponse(playerNum);
+            yield return GameController.Indians(playerNum);
         }
 
         public IEnumerator Gatling()
         {
-            yield return GameController.WaitForGatlingResponse(playerNum);
+            yield return GameController.Gatling(playerNum);
         }
 
         public virtual bool Bang()
@@ -736,13 +743,6 @@ namespace Bang
             Phase2();
         }
 
-        public void DiscardCardResponse(int index)
-        {
-            DiscardCardFromHand(index);
-            CardUsedOutOfTurn();
-            CheckNoCards();
-        }
-
         public void DiscardCardFromHand(int index)
         {
             Card card = UnequipHandCard(index);
@@ -811,7 +811,9 @@ namespace Bang
             yield return null;
         }
 
-        protected virtual void StolenBy(PlayerController thief) { }
+        protected virtual void StolenBy(PlayerController thief) {
+            CheckNoCards();
+        }
 
         public void DiscardWeapon()
         {

@@ -121,6 +121,7 @@ namespace Bang
     {
         Play,
         Response,
+        Bang,
         Duel,
         Discard,
         Dying

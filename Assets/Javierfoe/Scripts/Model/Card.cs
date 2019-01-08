@@ -546,9 +546,7 @@ namespace Bang
 
         public static bool CheckCondition(Card c)
         {
-            bool res = c.Suit == Suit.Hearts;
-            Debug.Log(res ? "Esquivado" : "No esquivado");
-            return res;
+            return c.Suit == Suit.Hearts;
         }
 
         public override string ToString()
@@ -605,9 +603,7 @@ namespace Bang
 
         public static bool CheckCondition(Card c)
         {
-            bool res = c.Suit == Suit.Spades && c.Rank <= Rank.Nine && c.Rank >= Rank.Two;
-            Debug.Log(res ? "BOOOOOM! A pastar!" : "Toma patatita caliente");
-            return res;
+            return c.Suit == Suit.Spades && c.Rank <= Rank.Nine && c.Rank >= Rank.Two;
         }
 
         public override string ToString()

@@ -6,7 +6,10 @@ namespace Bang
 
         public override void CheckNoCards()
         {
-            Draw(1);
+            if (!HasCards)
+            {
+                Draw(1);
+            }
         }
 
         protected override string Character()

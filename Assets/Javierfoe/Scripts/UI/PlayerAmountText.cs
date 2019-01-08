@@ -1,17 +1,22 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerAmountText : MonoBehaviour {
-
-    private Text text;
-
-	// Use this for initialization
-	void Awake () {
-        text = GetComponent<Text>();
-	}
-
-    public void SetText(float value)
+namespace Bang
+{
+    public class PlayerAmountText : MonoBehaviour
     {
-        text.text = ((int)value).ToString();
+
+        private Text text;
+
+        // Use this for initialization
+        void Awake()
+        {
+            text = GetComponent<Text>();
+        }
+
+        public void SetText(float value)
+        {
+            text.text = ((int)value).ToString();
+        }
     }
 }
