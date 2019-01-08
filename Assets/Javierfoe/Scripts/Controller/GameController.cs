@@ -240,8 +240,9 @@ namespace Bang
         {
             get
             {
-                int res = Random.Range(0, availableCharacters.Count - 1);
-                availableCharacters.Remove(res);
+                int index = Random.Range(0, availableCharacters.Count - 1);
+				int res = availableCharacters[index];
+                availableCharacters.Remove(index);
                 return res;
             }
             set
