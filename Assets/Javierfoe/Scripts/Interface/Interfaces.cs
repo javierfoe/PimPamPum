@@ -38,6 +38,7 @@ namespace Bang
 
     public interface IPlayerView : IDropView
     {
+        void SetCharacter(string character);
         void SetPlayerName(string name);
         void SetTurn(bool value);
         void SetStealable(bool value, bool hand, bool weapon);

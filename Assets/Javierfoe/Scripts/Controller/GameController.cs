@@ -41,6 +41,7 @@ namespace Bang
         private int decisionMaker, currentPlayer, generalStoreChoice, dodges;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
+        private List<int> availableCharacters;
 
         public int PlayersAlive
         {
@@ -233,6 +234,24 @@ namespace Bang
         {
             get { return maxPlayers; }
             set { maxPlayers = value; }
+        }
+
+        public int AvailableCharacter
+        {
+            get
+            {
+                int res = Random.Range(0, availableCharacters.Count - 1);
+                availableCharacters.Remove(res);
+                return res;
+            }
+            set
+            {
+                availableCharacters = new List<int>();
+                for (int i = 0; i < value; i++)
+                {
+                    availableCharacters.Add(i);
+                }
+            }
         }
 
         public Card DrawDiscardCard()

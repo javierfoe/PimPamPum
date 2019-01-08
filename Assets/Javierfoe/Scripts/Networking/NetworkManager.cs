@@ -24,6 +24,7 @@ namespace Bang
             playerControllerComponents = new PlayerController[maxPlayers];
             currentPlayers = 0;
             gameController.MaxPlayers = maxPlayers;
+            gameController.AvailableCharacter = spawnPrefabs.Count;
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
@@ -33,8 +34,8 @@ namespace Bang
                 conn.Disconnect();
                 return;
             }
-
-            PlayerController playerController = Instantiate(playerPrefab).GetComponent<PlayerController>();
+            int character = gameController.AvailableCharacter;
+            PlayerController playerController = Instantiate(spawnPrefabs[character]).GetComponent<PlayerController>();
             playerController.PlayerNumber = currentPlayers;
             NetworkServer.AddPlayerForConnection(conn, playerController.gameObject, playerControllerId);
 
@@ -45,7 +46,6 @@ namespace Bang
             {
                 SetupPlayers();
             }
-
         }
 
         private void SetupPlayers()

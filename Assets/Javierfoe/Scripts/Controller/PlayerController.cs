@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 namespace Bang
 {
-    public class PlayerController : NetworkBehaviour
+    public abstract class PlayerController : NetworkBehaviour
     {
 
         private enum HitState
@@ -14,22 +14,22 @@ namespace Bang
             Play
         }
 
-        [SyncVar] private int playerNum; 
-
         public static PlayerController LocalPlayer { get; private set; }
         private static GameController GameController { get; set; }
         private static Colt45 colt45 = new Colt45();
 
+        [SyncVar] private int playerNum;
+
+        [SerializeField] private int characterHP = 4;
+
         private Coroutine hit, jailCheck;
-        private int draggedCard, bangsUsed, hp, maxHp;
+        private int draggedCard, bangsUsed, hp;
         private HitState hitState;
         private Weapon weapon;
         private List<Card> hand, properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
         private string playerName;
-
-        protected int characterHP = 4, characterMissesToDodge = 1;
 
         public State State
         {
@@ -59,10 +59,10 @@ namespace Bang
             }
         }
 
-        private int HP
+        protected int HP
         {
             get { return hp; }
-            set
+            private set
             {
                 hp = value;
                 RpcUpdateHP(hp);
@@ -73,7 +73,23 @@ namespace Bang
         {
             get
             {
-                return hand.Count > 0 || properties.Count > 0 || !HasColt45;
+                return HasCards || HasProperties || !HasColt45;
+            }
+        }
+
+        public bool HasCards
+        {
+            get
+            {
+                return hand.Count > 0;
+            }
+        }
+
+        public bool HasProperties
+        {
+            get
+            {
+                return properties.Count > 0;
             }
         }
 
@@ -95,14 +111,14 @@ namespace Bang
             get { return HP < 1; }
         }
 
-        private int MaxHP
+        protected int MaxHP
         {
-            get { return maxHp; }
-            set
-            {
-                maxHp = value;
-                HP = value;
-            }
+            get; set;
+        }
+
+        protected int Phase1CardsDrawn
+        {
+            get; set;
         }
 
         public int PlayerNumber
@@ -148,6 +164,7 @@ namespace Bang
 
         public override void OnStartServer()
         {
+            MaxHP = characterHP;
             hand = new List<Card>();
             properties = new List<Card>();
         }
@@ -177,9 +194,7 @@ namespace Bang
 
         public virtual void SetRole(Role role)
         {
-            MissesToDodge = characterMissesToDodge;
             Role = role;
-            MaxHP = characterHP;
             if (role == Role.Sheriff)
             {
                 MaxHP++;
@@ -189,6 +204,8 @@ namespace Bang
             {
                 TargetSetRole(connectionToClient, role);
             }
+            HP = MaxHP;
+            RpcSetCharacter(Character());
             Weapon = colt45;
             DrawInitialCards();
         }
@@ -206,6 +223,11 @@ namespace Bang
             {
                 AddCard(card);
             }
+        }
+
+        protected virtual void DrawPhase1()
+        {
+            Draw(Phase1CardsDrawn);
         }
 
         protected virtual void DrawInitialCards()
@@ -314,16 +336,16 @@ namespace Bang
             RpcSetTurn(value);
         }
 
-        private void Phase1()
+        protected virtual IEnumerator Phase1()
         {
-            hitState = HitState.Play;
-            Draw(2);
-            bangsUsed = 0;
+            DrawPhase1();
             Phase2();
+            yield return null;
         }
 
         private void Phase2()
         {
+            hitState = HitState.Play;
             if (!IsDead)
             {
                 EnableCardsPlay();
@@ -620,18 +642,18 @@ namespace Bang
                 }
                 else
                 {
-                    Phase1();
+                    yield return Phase1();
                 }
             }
             else
             {
-                Phase1();
+                yield return Phase1();
             }
         }
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if(attacker != BangConstants.NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
+            if (attacker != BangConstants.NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
 
             EnableTakeHitButton(false);
             HP -= amount;
@@ -920,6 +942,8 @@ namespace Bang
             return PlayerName;
         }
 
+        protected abstract string Character();
+
         public void SetPlayerName()
         {
             RpcSetPlayerName(PlayerName);
@@ -1088,6 +1112,12 @@ namespace Bang
         private void RpcSetRole(Role role)
         {
             PlayerView.SetRole(role);
+        }
+
+        [ClientRpc]
+        private void RpcSetCharacter(string character)
+        {
+            PlayerView.SetCharacter(character);
         }
 
         [ClientRpc]

@@ -7,7 +7,7 @@ namespace Bang
     public class PlayerView : DropView, IPlayerView
     {
 
-        [SerializeField] private Text hp = null, playerName = null, info = null;
+        [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
         [SerializeField] private HandView handHidden = null;
         [SerializeField] private GameObject weapon = null, turn = null;
         [SerializeField] private HandCardListView handCards = null;
@@ -79,6 +79,11 @@ namespace Bang
             string name = Roles.GetNameFromRole(role);
             info.text = name;
             info.color = color;
+        }
+
+        public void SetCharacter(string character)
+        {
+            this.character.text = character;
         }
 
         public void UpdateHP(int hp)
