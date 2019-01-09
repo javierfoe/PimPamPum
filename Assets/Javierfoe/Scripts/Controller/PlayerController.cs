@@ -15,7 +15,9 @@ namespace Bang
         }
 
         public static PlayerController LocalPlayer { get; private set; }
-        private static GameController GameController { get; set; }
+
+        protected static GameController GameController { get; set; }
+
         private static Colt45 colt45 = new Colt45();
 
         [SyncVar] private int playerNum;
@@ -218,7 +220,7 @@ namespace Bang
             yield return null;
         }
 
-        public void Draw(int amount)
+        public void Draw(int amount = 1)
         {
             List<Card> cards = GameController.DrawCards(amount);
             foreach (Card card in cards)
@@ -681,7 +683,7 @@ namespace Bang
             }
         }
 
-        public virtual void HitTrigger(int attacker) { }
+        protected virtual void HitTrigger(int attacker) { }
 
         public virtual IEnumerator Die(int killer)
         {
@@ -775,7 +777,7 @@ namespace Bang
             {
                 case Drop.Hand:
                     if (playerNum == player && cardIndex < draggedCard) draggedCard--;
-                    c = pc.StealHandFromHand(cardIndex);
+                    c = pc.StealCardFromHand(cardIndex);
                     break;
                 case Drop.Properties:
                     c = pc.UnequipProperty(cardIndex);
@@ -803,7 +805,7 @@ namespace Bang
                     }
                     else
                     {
-                        c = pc.StealHandFromHand(cardIndex);
+                        c = pc.StealCardFromHand(cardIndex);
                     }
                     break;
                 case Drop.Properties:
@@ -840,7 +842,7 @@ namespace Bang
             return weapon;
         }
 
-        public Card StealHandFromHand(int index)
+        public Card StealCardFromHand(int index = -1)
         {
             if (index < 0)
             {

@@ -14,7 +14,7 @@ namespace Bang
 
         protected override string Character()
         {
-            return "SlabTheKiller";
+            return "Slab the Killer";
         }
 
     }

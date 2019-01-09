@@ -1,19 +1,18 @@
 ﻿
 namespace Bang
 {
-    public class SuzyLafayette : PlayerController
+    public class BartCassidy : PlayerController
     {
 
-        protected override void NoCardTrigger()
+        protected override void HitTrigger(int attacker)
         {
             Draw();
         }
 
         protected override string Character()
         {
-            return "Suzy Lafayette";
+            return "Bart Cassidy";
         }
 
     }
 }
-

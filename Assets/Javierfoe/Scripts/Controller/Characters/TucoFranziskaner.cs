@@ -15,7 +15,7 @@ namespace Bang
 
         protected override string Character()
         {
-            return "TucoFranziskaner";
+            return "Tuco Franziskaner";
         }
 
     }
