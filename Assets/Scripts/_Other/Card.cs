@@ -64,6 +64,19 @@ namespace Bang
             yield return pc.BangEventPlayedCard(this, player, drop, cardIndex);
         }
 
+        public Card ConvertTo<T>() where T : Card, new()
+        {
+            Card res = CreateNew<T>();
+            res.Suit = Suit;
+            res.Rank = Rank;
+            return res;
+        }
+
+        private static T CreateNew<T>() where T: Card, new()
+        {
+            return new T();
+        }
+
     }
 
     public class Bang : Card
