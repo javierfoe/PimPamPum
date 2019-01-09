@@ -370,7 +370,15 @@ namespace Bang
             FinishDuelTarget(1);
         }
 
-        public virtual void CheckNoCards() { }
+        public void CheckNoCards()
+        {
+            if (!HasCards)
+            {
+                NoCardTrigger();
+            }
+        }
+
+        protected virtual void NoCardTrigger() { }
 
         protected virtual void CardUsedOutOfTurn() { }
 
@@ -811,7 +819,8 @@ namespace Bang
             yield return null;
         }
 
-        protected virtual void StolenBy(PlayerController thief) {
+        protected virtual void StolenBy(PlayerController thief)
+        {
             CheckNoCards();
         }
 
