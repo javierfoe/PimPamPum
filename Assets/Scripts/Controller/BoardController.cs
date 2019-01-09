@@ -8,6 +8,27 @@ namespace Bang
     public class BoardController : NetworkBehaviour
     {
         [SerializeField] private GameObject boardViewGO = null;
+        [SerializeField] private DeckDefinition deckCards;
+
+        [System.Serializable]
+        private struct DeckDefinition
+        {
+            public CardDefinition[] cardTypes;
+        }
+
+        [System.Serializable]
+        private struct CardDefinition
+        {
+            public string name;
+            public CardType type;
+            public CardSuitRank[] suitRanks;
+        }
+
+        [System.Serializable]
+        private struct CardSuitRank{
+            public Suit suit;
+            public Rank rank;
+        }
 
         private IBoardView boardView;
         private List<Card> deck;
@@ -117,6 +138,96 @@ namespace Bang
             TargetTargetableTrash(conn, value);
         }
 
+        private void GenerateDeck()
+        {
+            List<Card> temp = new List<Card>();
+
+            CardSuitRank[] cardSuitRanks;
+            foreach (CardDefinition cardDef in deckCards.cardTypes)
+            {
+                cardSuitRanks = cardDef.suitRanks;
+                switch (cardDef.type)
+                {
+                    case CardType.Bang:
+                        GenerateCards<Bang>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Barrel:
+                        GenerateCards<Barrel>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Beer:
+                        GenerateCards<Beer>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Carabine:
+                        GenerateCards<Carabine>(cardSuitRanks, temp);
+                        break;
+                    case CardType.CatBalou:
+                        GenerateCards<CatBalou>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Duel:
+                        GenerateCards<Duel>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Dynamite:
+                        GenerateCards<Dynamite>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Gatling:
+                        GenerateCards<Gatling>(cardSuitRanks, temp);
+                        break;
+                    case CardType.GeneralStore:
+                        GenerateCards<GeneralStore>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Indians:
+                        GenerateCards<Indians>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Jail:
+                        GenerateCards<Jail>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Missed:
+                        GenerateCards<Missed>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Mustang:
+                        GenerateCards<Mustang>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Panic:
+                        GenerateCards<Panic>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Remington:
+                        GenerateCards<Remington>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Saloon:
+                        GenerateCards<Saloon>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Schofield:
+                        GenerateCards<Schofield>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Scope:
+                        GenerateCards<Scope>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Stagecoach:
+                        GenerateCards<Stagecoach>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Volcanic:
+                        GenerateCards<Volcanic>(cardSuitRanks, temp);
+                        break;
+                    case CardType.WellsFargo:
+                        GenerateCards<WellsFargo>(cardSuitRanks, temp);
+                        break;
+                    case CardType.Winchester:
+                        GenerateCards<Winchester>(cardSuitRanks, temp);
+                        break;
+                }
+            }
+
+            ShuffleCards(temp);
+        }
+
+        private void GenerateCards<T>(CardSuitRank[] suitRanks, List<Card> list) where T : Card, new()
+        {
+            foreach (CardSuitRank suitRank in suitRanks)
+            {
+                list.Add(Card.CreateNew<T>(suitRank.suit, suitRank.rank));
+            }
+        }
+
         [TargetRpc]
         private void TargetTargetableTrash(NetworkConnection conn, bool value)
         {
@@ -170,176 +281,6 @@ namespace Bang
         {
             boardView.EmptyDiscardStack();
         }
-
-        #region GenerateDeck
-        private void GenerateDeck()
-        {
-            List<Card> temp = new List<Card>();
-
-            GenerateBangs(temp);
-            GenerateBarrels(temp);
-            GenerateBeers(temp);
-            GenerateCarabines(temp);
-            GenerateCatBalous(temp);
-            GenerateDuels(temp);
-            GenerateDynamites(temp);
-            GenerateGatlings(temp);
-            GenerateGeneralStores(temp);
-            GenerateIndians(temp);
-            GenerateJails(temp);
-            GenerateMisseds(temp);
-            GenerateMustangs(temp);
-            GeneratePanics(temp);
-            GenerateRemingtons(temp);
-            GenerateSaloons(temp);
-            GenerateSchofields(temp);
-            GenerateScopes(temp);
-            GenerateStagecoaches(temp);
-            GenerateVolcanics(temp);
-            GenerateWellsFargos(temp);
-            GenerateWinchesters(temp);
-
-            ShuffleCards(temp);
-        }
-
-        private void GenerateBangs(List<Card> temp)
-        {
-            int length = BangConstants.Bangs;
-            for (int i = 0; i < length; i++)
-                temp.Add(Bang.CreateBang(i));
-        }
-
-        private void GenerateMisseds(List<Card> temp)
-        {
-            int length = BangConstants.Misseds;
-            for (int i = 0; i < length; i++)
-                temp.Add(Missed.CreateMissed(i));
-        }
-
-        private void GenerateBeers(List<Card> temp)
-        {
-            int length = BangConstants.Beers;
-            for (int i = 0; i < length; i++)
-                temp.Add(Beer.CreateBeer(i));
-        }
-
-        private void GeneratePanics(List<Card> temp)
-        {
-            int length = BangConstants.Panics;
-            for (int i = 0; i < length; i++)
-                temp.Add(Panic.CreatePanic(i));
-        }
-
-        private void GenerateCatBalous(List<Card> temp)
-        {
-            int length = BangConstants.CatBalous;
-            for (int i = 0; i < length; i++)
-                temp.Add(CatBalou.CreateCatBalou(i));
-        }
-
-        private void GenerateJails(List<Card> temp)
-        {
-            int length = BangConstants.Jails;
-            for (int i = 0; i < length; i++)
-                temp.Add(Jail.CreateJail(i));
-        }
-
-        private void GenerateMustangs(List<Card> temp)
-        {
-            int length = BangConstants.Mustangs;
-            for (int i = 0; i < length; i++)
-                temp.Add(Mustang.CreateMustang(i));
-        }
-
-        private void GenerateBarrels(List<Card> temp)
-        {
-            int length = BangConstants.Barrels;
-            for (int i = 0; i < length; i++)
-                temp.Add(Barrel.CreateBarrel(i));
-        }
-
-        private void GenerateStagecoaches(List<Card> temp)
-        {
-            int length = BangConstants.Stagecoaches;
-            for (int i = 0; i < length; i++)
-                temp.Add(new Stagecoach());
-        }
-
-        private void GenerateSchofields(List<Card> temp)
-        {
-            int length = BangConstants.Schofields;
-            for (int i = 0; i < length; i++)
-                temp.Add(Schofield.CreateSchofield(i));
-        }
-
-        private void GenerateVolcanics(List<Card> temp)
-        {
-            int length = BangConstants.Volcanics;
-            for (int i = 0; i < length; i++)
-                temp.Add(Volcanic.CreateVolcanic(i));
-        }
-
-        private void GenerateGeneralStores(List<Card> temp)
-        {
-            int length = BangConstants.GeneralStores;
-            for (int i = 0; i < length; i++)
-                temp.Add(GeneralStore.CreateGeneralStore(i));
-        }
-
-        private void GenerateIndians(List<Card> temp)
-        {
-            int length = BangConstants.Indians;
-            for (int i = 0; i < length; i++)
-                temp.Add(Indians.CreateIndians(i));
-        }
-
-        private void GenerateRemingtons(List<Card> temp)
-        {
-            temp.Add(new Remington());
-        }
-
-        private void GenerateCarabines(List<Card> temp)
-        {
-            temp.Add(new Carabine());
-        }
-
-        private void GenerateWinchesters(List<Card> temp)
-        {
-            temp.Add(new Winchester());
-        }
-
-        private void GenerateGatlings(List<Card> temp)
-        {
-            temp.Add(new Gatling());
-        }
-
-        private void GenerateWellsFargos(List<Card> temp)
-        {
-            temp.Add(new WellsFargo());
-        }
-
-        private void GenerateSaloons(List<Card> temp)
-        {
-            temp.Add(new Saloon());
-        }
-
-        private void GenerateScopes(List<Card> temp)
-        {
-            temp.Add(new Scope());
-        }
-
-        private void GenerateDynamites(List<Card> temp)
-        {
-            temp.Add(new Dynamite());
-        }
-
-        private void GenerateDuels(List<Card> temp)
-        {
-            int length = BangConstants.Duels;
-            for (int i = 0; i < length; i++)
-                temp.Add(Duel.CreateDuel(i));
-        }
-        #endregion
 
     }
 }

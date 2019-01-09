@@ -5,20 +5,6 @@ namespace Bang
 
     public static class BangConstants
     {
-        public const int Bangs = 25;
-        public const int Misseds = 12;
-        public const int Beers = 6;
-        public const int Panics = 4;
-        public const int CatBalous = 4;
-        public const int Duels = 3;
-        public const int Jails = 3;
-        public const int Schofields = 3;
-        public const int GeneralStores = 2;
-        public const int Mustangs = 2;
-        public const int Barrels = 2;
-        public const int Volcanics = 2;
-        public const int Stagecoaches = 2;
-        public const int Indians = 2;
         public const int NoOne = -1;
     }
 

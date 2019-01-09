@@ -835,6 +835,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardViewGO: {fileID: 1719175174}
+  deckCards:
+    cardTypes: []
 --- !u!114 &219958266
 MonoBehaviour:
   m_ObjectHideFlags: 0
