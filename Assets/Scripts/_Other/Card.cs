@@ -305,7 +305,10 @@ namespace Bang
         public virtual void EquipProperty(PlayerController pc)
         {
             pc.EquipProperty(this);
+            AddPropertyEffect(pc);
         }
+
+        public virtual void AddPropertyEffect(PlayerController pc) { }
 
         public virtual void UnequipProperty(PlayerController pc) { }
     }
@@ -318,9 +321,8 @@ namespace Bang
             pc.SelfTargetPropertyCard<Mustang>();
         }
 
-        public override void EquipProperty(PlayerController pc)
+        public override void AddPropertyEffect(PlayerController pc)
         {
-            base.EquipProperty(pc);
             pc.EquipMustang();
         }
 
@@ -343,9 +345,8 @@ namespace Bang
             pc.SelfTargetPropertyCard<Barrel>();
         }
 
-        public override void EquipProperty(PlayerController pc)
+        public override void AddPropertyEffect(PlayerController pc)
         {
-            base.EquipProperty(pc);
             pc.EquipBarrel();
         }
 
@@ -373,9 +374,8 @@ namespace Bang
             pc.SelfTargetPropertyCard<Scope>();
         }
 
-        public override void EquipProperty(PlayerController pc)
+        public override void AddPropertyEffect(PlayerController pc)
         {
-            base.EquipProperty(pc);
             pc.EquipScope();
         }
 
@@ -398,9 +398,8 @@ namespace Bang
             pc.SelfTargetPropertyCard<Dynamite>();
         }
 
-        public override void EquipProperty(PlayerController pc)
+        public override void AddPropertyEffect(PlayerController pc)
         {
-            base.EquipProperty(pc);
             pc.EquipDynamite();
         }
 
@@ -433,9 +432,8 @@ namespace Bang
             pc.JailBeginCardDrag();
         }
 
-        public override void EquipProperty(PlayerController pc)
+        public override void AddPropertyEffect(PlayerController pc)
         {
-            base.EquipProperty(pc);
             pc.EquipJail();
         }
 
