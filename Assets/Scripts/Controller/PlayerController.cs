@@ -231,9 +231,10 @@ namespace Bang
             }
         }
 
-        protected virtual void DrawPhase1()
+        protected virtual IEnumerator DrawPhase1()
         {
             Draw(Phase1CardsDrawn);
+            yield return null;
         }
 
         protected virtual void DrawInitialCards()

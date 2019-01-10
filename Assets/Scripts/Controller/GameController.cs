@@ -147,7 +147,7 @@ namespace Bang
         public void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
-            for (int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < maxPlayers && !listTaken; i++)
             {
                 listTaken = playerControllers[i].CheckDeath(list);
             }

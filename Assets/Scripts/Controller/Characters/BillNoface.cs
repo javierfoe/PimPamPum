@@ -1,12 +1,14 @@
-﻿
+﻿using System.Collections;
+
 namespace Bang
 {
     public class BillNoface : PlayerController
     {
 
-        protected override void DrawPhase1()
+        protected override IEnumerator DrawPhase1()
         {
             Draw(1 + MaxHP - HP);
+            yield return null;
         }
 
         protected override string Character()
