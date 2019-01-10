@@ -1017,9 +1017,14 @@ namespace Bang
             TargetSetStealable(conn, value, hand, weapon);
         }
 
+        protected virtual int CardLimit()
+        {
+            return HP;
+        }
+
         protected virtual void EndTurn()
         {
-            if (hand.Count < hp + 1)
+            if (hand.Count <= CardLimit())
             {
                 ForceEndTurn();
             }
