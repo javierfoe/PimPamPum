@@ -444,6 +444,15 @@ namespace Bang
             GameController.EndTurn();
         }
 
+        protected void ConvertHandTo<T>() where T : Card, new()
+        {
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                hand[i] = hand[i].ConvertTo<T>();
+            }
+        }
+
         protected void ConvertHandCardTo<O, D>() where O : Card, new() where D : Card, new()
         {
             Card c;
