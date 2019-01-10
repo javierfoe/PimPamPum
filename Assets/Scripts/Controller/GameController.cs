@@ -363,7 +363,7 @@ namespace Bang
                 while (dodges < misses && decision != Decision.TakeHit)
                 {
                     RestartDecisions(player, target);
-                    EnableResponse<Missed>(player, target);
+                    playerControllers[target].EnableCardsBangResponse();
                     yield return DecisionTimer(player);
                     decision = decisionsMade[target];
                     dodge = decision == Decision.Avoid;
@@ -412,7 +412,7 @@ namespace Bang
                 pc = playerControllers[i];
                 if (player != i && !pc.IsDead)
                 {
-                    playerControllers[i].EnableCardsResponse<Bang>();
+                    playerControllers[i].EnableCardsIndiansResponse();
                 }
                 else
                 {
@@ -481,7 +481,7 @@ namespace Bang
                     yield return BarrelDodge(i);
                     if (dodges < 1)
                     {
-                        playerControllers[i].EnableCardsResponse<Missed>();
+                        playerControllers[i].EnableCardsBangResponse();
                     }
                     else if (dodges > 0)
                     {
@@ -524,21 +524,6 @@ namespace Bang
             EnableResponseDuel(target);
             RestartDecisions(player, target);
             yield return DecisionTimer(player);
-        }
-
-        private void EnableResponse<T>(int player, int target) where T : Card
-        {
-            if (target == Everyone)
-            {
-                for (int i = 0; i < maxPlayers; i++)
-                {
-                    if (i != player) playerControllers[i].EnableCardsResponse<T>();
-                }
-            }
-            else
-            {
-                playerControllers[target].EnableCardsResponse<T>();
-            }
         }
 
         private void RestartDecisions(int player, int target)

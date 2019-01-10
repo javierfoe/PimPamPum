@@ -466,28 +466,62 @@ namespace Bang
         protected virtual void EnableCardsPlay()
         {
             State = State.Play;
-            EnableNotCards<Missed>();
+            EnableCards();
         }
 
         private void EnableCardsDying()
         {
             EnableDieButton(true);
             State = State.Dying;
-            EnableCards<Beer>();
+            EnableCards();
         }
 
-        public void EnableCardsResponse<T>() where T : Card
+        public void EnableCardsBangResponse()
         {
             EnableTakeHitButton(true);
             State = State.Response;
-            EnableCards<T>();
+            EnableCards(CardType.Missed);
+        }
+
+        public void EnableCardsIndiansResponse()
+        {
+            EnableTakeHitButton(true);
+            State = State.Response;
+            EnableCards(CardType.Bang);
         }
 
         public void EnableCardsDuelResponse()
         {
             EnableTakeHitButton(true);
             State = State.Duel;
-            EnableCards<Bang>();
+            EnableCards();
+        }
+
+        protected virtual void EnableCards(CardType card = 0)
+        {
+            switch (State)
+            {
+                case State.Play:
+                    EnableNotCards<Missed>();
+                    break;
+                case State.Dying:
+                    EnableCards<Beer>();
+                    break;
+                case State.Duel:
+                    EnableCards<Bang>();
+                    break;
+                case State.Response:
+                    switch (card)
+                    {
+                        case CardType.Bang:
+                            EnableCards<Bang>();
+                            break;
+                        case CardType.Missed:
+                            EnableCards<Missed>();
+                            break;
+                    }
+                    break;
+            }
         }
 
         protected virtual void EnableNotCards<T>()
