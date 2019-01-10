@@ -28,10 +28,12 @@ namespace Bang
         private int draggedCard, bangsUsed, hp;
         private HitState hitState;
         private Weapon weapon;
-        private List<Card> hand, properties;
+        private List<Card> properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
         private string playerName;
+
+        protected List<Card> hand;
 
         public State State
         {
@@ -361,7 +363,7 @@ namespace Bang
             }
         }
 
-        public void FinishDuelTarget(int bangsUsed)
+        public void FinishDuelTarget(int bangsUsed = 1)
         {
             for (int i = 0; i < bangsUsed; i++) CardUsedOutOfTurn();
             CheckNoCards();
@@ -369,7 +371,7 @@ namespace Bang
 
         public void Response()
         {
-            FinishDuelTarget(1);
+            FinishDuelTarget();
         }
 
         public void CheckNoCards()
@@ -442,6 +444,35 @@ namespace Bang
             GameController.EndTurn();
         }
 
+        protected void ConvertHandCardTo<O, D>() where O : Card, new() where D : Card, new()
+        {
+            Card c;
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                c = hand[i];
+                if (c is O)
+                {
+                    hand[i] = c.ConvertTo<D>();
+                }
+            }
+        }
+
+        private void OriginalHand()
+        {
+            Card c, original;
+            int length = hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                c = hand[i];
+                original = c.Original;
+                if (original != null)
+                {
+                    hand[i] = original;
+                }
+            }
+        }
+
         public void DisableCards()
         {
             EnableTakeHitButton(false);
@@ -502,45 +533,45 @@ namespace Bang
             switch (State)
             {
                 case State.Play:
-                    EnableNotCards<Missed>();
+                    EnablePhase2Cards();
                     break;
                 case State.Dying:
-                    EnableCards<Beer>();
+                    EnableReactionCards<Beer>();
                     break;
                 case State.Duel:
-                    EnableCards<Bang>();
+                    EnableReactionCards<Bang>();
                     break;
                 case State.Response:
                     switch (card)
                     {
                         case CardType.Bang:
-                            EnableCards<Bang>();
+                            EnableReactionCards<Bang>();
                             break;
                         case CardType.Missed:
-                            EnableCards<Missed>();
+                            EnableReactionCards<Missed>();
                             break;
                     }
                     break;
             }
         }
 
-        protected virtual void EnableNotCards<T>()
+        protected virtual void EnablePhase2Cards()
         {
             bool bangs = Weapon.Bang(this);
             int length = hand.Count;
             Card c;
-            bool isT;
+            bool isMissed;
             bool isBang;
             for (int i = 0; i < length; i++)
             {
                 c = hand[i];
-                isT = c is T;
+                isMissed = c is Missed;
                 isBang = c is Bang;
-                TargetEnableCard(connectionToClient, i, !isBang && !isT || !isT && bangs);
+                TargetEnableCard(connectionToClient, i, !isBang && !isMissed || !isMissed && bangs);
             }
         }
 
-        protected virtual void EnableCards<T>()
+        protected virtual void EnableReactionCards<T>()
         {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
