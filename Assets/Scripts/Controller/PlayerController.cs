@@ -458,7 +458,7 @@ namespace Bang
             }
         }
 
-        private void OriginalHand()
+        protected void OriginalHand()
         {
             Card c, original;
             int length = hand.Count;
@@ -473,7 +473,7 @@ namespace Bang
             }
         }
 
-        public void DisableCards()
+        public virtual void DisableCards()
         {
             EnableTakeHitButton(false);
             EnableEndTurnButton(false);

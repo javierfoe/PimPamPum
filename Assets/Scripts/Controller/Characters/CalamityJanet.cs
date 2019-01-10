@@ -2,7 +2,7 @@
 namespace Bang
 {
 
-    public class CalamityJanet : PlayerController
+    public class CalamityJanet : PlayerCardConverter
     {
 
         protected override void EnablePhase2Cards()
