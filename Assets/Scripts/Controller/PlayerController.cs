@@ -536,19 +536,19 @@ namespace Bang
                     EnablePhase2Cards();
                     break;
                 case State.Dying:
-                    EnableReactionCards<Beer>();
+                    EnableDyingReaction();
                     break;
                 case State.Duel:
-                    EnableReactionCards<Bang>();
+                    EnableDuelReaction();
                     break;
                 case State.Response:
                     switch (card)
                     {
                         case CardType.Bang:
-                            EnableReactionCards<Bang>();
+                            EnableIndiansReaction();
                             break;
                         case CardType.Missed:
-                            EnableReactionCards<Missed>();
+                            EnableBangReaction();
                             break;
                     }
                     break;
@@ -571,7 +571,32 @@ namespace Bang
             }
         }
 
-        protected virtual void EnableReactionCards<T>()
+        protected virtual void EnableDyingReaction()
+        {
+            EnableReactionCards<Beer>();
+        }
+
+        private void EnableDuelReaction()
+        {
+            EnableBangCardsForReaction();
+        }
+
+        private void EnableIndiansReaction()
+        {
+            EnableBangCardsForReaction();
+        }
+
+        protected virtual void EnableBangCardsForReaction()
+        {
+            EnableReactionCards<Bang>();
+        }
+
+        protected virtual void EnableBangReaction()
+        {
+            EnableReactionCards<Missed>();
+        }
+
+        private void EnableReactionCards<T>() where T : Card, new()
         {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
