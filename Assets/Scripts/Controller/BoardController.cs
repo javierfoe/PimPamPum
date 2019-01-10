@@ -8,24 +8,12 @@ namespace Bang
     public class BoardController : NetworkBehaviour
     {
         [SerializeField] private GameObject boardViewGO = null;
-        [SerializeField] private DeckDefinition deckCards;
-
-        [System.Serializable]
-        private struct DeckDefinition
-        {
-            public CardDefinition[] cardTypes;
-        }
+        [SerializeField] private CardDefinition[] deckCards;
 
         [System.Serializable]
         private struct CardDefinition
         {
-            public string name;
             public CardType type;
-            public CardSuitRank[] suitRanks;
-        }
-
-        [System.Serializable]
-        private struct CardSuitRank{
             public Suit suit;
             public Rank rank;
         }
@@ -142,90 +130,89 @@ namespace Bang
         {
             List<Card> temp = new List<Card>();
 
-            CardSuitRank[] cardSuitRanks;
-            foreach (CardDefinition cardDef in deckCards.cardTypes)
+            foreach (CardDefinition card in deckCards)
             {
-                cardSuitRanks = cardDef.suitRanks;
-                switch (cardDef.type)
-                {
-                    case CardType.Bang:
-                        GenerateCards<Bang>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Barrel:
-                        GenerateCards<Barrel>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Beer:
-                        GenerateCards<Beer>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Carabine:
-                        GenerateCards<Carabine>(cardSuitRanks, temp);
-                        break;
-                    case CardType.CatBalou:
-                        GenerateCards<CatBalou>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Duel:
-                        GenerateCards<Duel>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Dynamite:
-                        GenerateCards<Dynamite>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Gatling:
-                        GenerateCards<Gatling>(cardSuitRanks, temp);
-                        break;
-                    case CardType.GeneralStore:
-                        GenerateCards<GeneralStore>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Indians:
-                        GenerateCards<Indians>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Jail:
-                        GenerateCards<Jail>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Missed:
-                        GenerateCards<Missed>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Mustang:
-                        GenerateCards<Mustang>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Panic:
-                        GenerateCards<Panic>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Remington:
-                        GenerateCards<Remington>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Saloon:
-                        GenerateCards<Saloon>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Schofield:
-                        GenerateCards<Schofield>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Scope:
-                        GenerateCards<Scope>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Stagecoach:
-                        GenerateCards<Stagecoach>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Volcanic:
-                        GenerateCards<Volcanic>(cardSuitRanks, temp);
-                        break;
-                    case CardType.WellsFargo:
-                        GenerateCards<WellsFargo>(cardSuitRanks, temp);
-                        break;
-                    case CardType.Winchester:
-                        GenerateCards<Winchester>(cardSuitRanks, temp);
-                        break;
-                }
+                GenerateCard(card, temp);
             }
 
             ShuffleCards(temp);
         }
 
-        private void GenerateCards<T>(CardSuitRank[] suitRanks, List<Card> list) where T : Card, new()
+        private void GenerateCard(CardDefinition card, List<Card> list)
         {
-            foreach (CardSuitRank suitRank in suitRanks)
+            Card c = null;
+            Suit suit = card.suit;
+            Rank rank = card.rank;
+            switch (card.type)
             {
-                list.Add(Card.CreateNew<T>(suitRank.suit, suitRank.rank));
+                case CardType.Bang:
+                    c = Card.CreateNew<Bang>(suit, rank);
+                    break;
+                case CardType.Barrel:
+                    c = Card.CreateNew<Barrel>(suit, rank);
+                    break;
+                case CardType.Beer:
+                    c = Card.CreateNew<Beer>(suit, rank);
+                    break;
+                case CardType.Carabine:
+                    c = Card.CreateNew<Carabine>(suit, rank);
+                    break;
+                case CardType.CatBalou:
+                    c = Card.CreateNew<CatBalou>(suit, rank);
+                    break;
+                case CardType.Duel:
+                    c = Card.CreateNew<Duel>(suit, rank);
+                    break;
+                case CardType.Dynamite:
+                    c = Card.CreateNew<Dynamite>(suit, rank);
+                    break;
+                case CardType.Gatling:
+                    c = Card.CreateNew<Gatling>(suit, rank);
+                    break;
+                case CardType.GeneralStore:
+                    c = Card.CreateNew<GeneralStore>(suit, rank);
+                    break;
+                case CardType.Indians:
+                    c = Card.CreateNew<Indians>(suit, rank);
+                    break;
+                case CardType.Jail:
+                    c = Card.CreateNew<Jail>(suit, rank);
+                    break;
+                case CardType.Missed:
+                    c = Card.CreateNew<Missed>(suit, rank);
+                    break;
+                case CardType.Mustang:
+                    c = Card.CreateNew<Mustang>(suit, rank);
+                    break;
+                case CardType.Panic:
+                    c = Card.CreateNew<Panic>(suit, rank);
+                    break;
+                case CardType.Remington:
+                    c = Card.CreateNew<Remington>(suit, rank);
+                    break;
+                case CardType.Saloon:
+                    c = Card.CreateNew<Saloon>(suit, rank);
+                    break;
+                case CardType.Schofield:
+                    c = Card.CreateNew<Schofield>(suit, rank);
+                    break;
+                case CardType.Scope:
+                    c = Card.CreateNew<Scope>(suit, rank);
+                    break;
+                case CardType.Stagecoach:
+                    c = Card.CreateNew<Stagecoach>(suit, rank);
+                    break;
+                case CardType.Volcanic:
+                    c = Card.CreateNew<Volcanic>(suit, rank);
+                    break;
+                case CardType.WellsFargo:
+                    c = Card.CreateNew<WellsFargo>(suit, rank);
+                    break;
+                case CardType.Winchester:
+                    c = Card.CreateNew<Winchester>(suit, rank);
+                    break;
             }
+            if (c != null) list.Add(c);
         }
 
         [TargetRpc]
