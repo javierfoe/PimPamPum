@@ -873,6 +873,7 @@ namespace Bang
         public IEnumerator Duel(int player)
         {
             yield return GameController.StartDuel(playerNum, player);
+            State = State.Play;
         }
 
         public IEnumerator CatBalou(int player, Drop drop, int cardIndex)
