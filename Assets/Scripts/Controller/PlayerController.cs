@@ -8,12 +8,6 @@ namespace Bang
     public abstract class PlayerController : NetworkBehaviour
     {
 
-        private enum HitState
-        {
-            Draw,
-            Play
-        }
-
         public static PlayerController LocalPlayer { get; private set; }
 
         protected static GameController GameController { get; set; }
@@ -26,7 +20,6 @@ namespace Bang
 
         private Coroutine hit, jailCheck;
         private int draggedCard, bangsUsed, hp;
-        private HitState hitState;
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
@@ -168,6 +161,7 @@ namespace Bang
 
         public override void OnStartServer()
         {
+            State = State.OutOfTurn;
             Phase1CardsDrawn = 2;
             MissesToDodge = 1;
             MaxHP = characterHP;
@@ -332,7 +326,6 @@ namespace Bang
 
         public void StartTurn()
         {
-            hitState = HitState.Draw;
             endTurn = false;
             SetTurn(true);
             StartCoroutine(OnStartTurn());
@@ -345,14 +338,14 @@ namespace Bang
 
         protected virtual IEnumerator Phase1()
         {
-            DrawPhase1();
+            yield return DrawPhase1();
             Phase2();
             yield return null;
         }
 
         private void Phase2()
         {
-            hitState = HitState.Play;
+            State = State.Play;
             if (!IsDead)
             {
                 EnableCardsPlay();
@@ -389,7 +382,12 @@ namespace Bang
 
         public void DyingFinished()
         {
-            if (hitState == HitState.Play)
+            StayOnPhase2();
+        }
+
+        private void StayOnPhase2()
+        {
+            if (State == State.Play)
                 Phase2();
         }
 
@@ -441,6 +439,7 @@ namespace Bang
 
         public void ForceEndTurn()
         {
+            State = State.OutOfTurn;
             DisableCards();
             GameController.EndTurn();
         }
@@ -618,6 +617,10 @@ namespace Bang
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
             yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
+            if(State == State.OutOfTurn)
+            {
+                CardUsedOutOfTurn();
+            }
         }
 
         private IEnumerator DuelResponse(int index)
@@ -774,12 +777,15 @@ namespace Bang
 
             EnableTakeHitButton(false);
             HP -= amount;
-            for (int i = 0; i < amount; i++) HitTrigger(attacker);
             if (IsDying)
             {
                 EnableCardsDying();
                 yield return GameController.Dying(playerNum, attacker);
                 DisableCards();
+            }
+            if (!IsDead)
+            {
+                for (int i = 0; i < amount; i++) HitTrigger(attacker);
             }
         }
 
@@ -850,7 +856,7 @@ namespace Bang
         public void FinishCardUsed()
         {
             CheckNoCards();
-            Phase2();
+            StayOnPhase2();
         }
 
         public void DiscardCardFromHand(int index)

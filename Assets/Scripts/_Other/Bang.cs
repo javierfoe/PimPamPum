@@ -105,6 +105,7 @@ namespace Bang
 
     public enum State
     {
+        OutOfTurn,
         Play,
         Response,
         Bang,

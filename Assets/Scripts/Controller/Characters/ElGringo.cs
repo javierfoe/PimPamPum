@@ -6,6 +6,7 @@ namespace Bang
 
         protected override void HitTrigger(int attacker)
         {
+            if (attacker == PlayerNumber || attacker == BangConstants.NoOne) return;
             PlayerController attackerPc = GameController.GetPlayerController(attacker);
             Card c = null;
             if (attackerPc.HasCards)

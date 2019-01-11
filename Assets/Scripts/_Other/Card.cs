@@ -40,6 +40,11 @@ namespace Bang
             return brownCard;
         }
 
+        public Card()
+        {
+            SetSuitRank(Suit.Null, Rank.Null);
+        }
+
         private void SetSuitRank(Suit suit, Rank rank)
         {
             Struct = new CardStruct
