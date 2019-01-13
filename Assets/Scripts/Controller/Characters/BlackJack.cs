@@ -10,7 +10,7 @@ namespace Bang
             Draw(1);
             Card c = GameController.DrawCard();
             AddCard(c);
-            bool anotherCard = c.Suit == Suit.Hearts || c.Suit == Suit.Diamonds;
+            bool anotherCard = c.IsRed;
             yield return BangEvent(this + " has drawn:" + c + (anotherCard ? " he draws another card." : " he doesn't draw extra."));
             if (anotherCard)
             {

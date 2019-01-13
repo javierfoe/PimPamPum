@@ -25,6 +25,14 @@ namespace Bang
             }
         }
 
+        public bool IsRed
+        {
+            get
+            {
+                return Suit == Suit.Hearts || Suit == Suit.Diamonds;
+            }
+        }
+
         public CardStruct Struct
         {
             get; set;

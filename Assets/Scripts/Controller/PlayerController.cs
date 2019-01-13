@@ -42,7 +42,7 @@ namespace Bang
             set
             {
                 playerView = value;
-                playerView.SetPlayerIndex(playerNum);
+                playerView.SetPlayerIndex(PlayerNumber);
             }
         }
 
@@ -113,6 +113,11 @@ namespace Bang
             get; set;
         }
 
+        protected int BeerHeal
+        {
+            get; set;
+        }
+
         protected int Phase1CardsDrawn
         {
             get; set;
@@ -144,6 +149,11 @@ namespace Bang
             get; protected set;
         }
 
+        protected bool ActivePlayer
+        {
+            get { return GameController.CurrentPlayer == PlayerNumber; }
+        }
+
         public Role Role
         {
             get; private set;
@@ -162,6 +172,7 @@ namespace Bang
         public override void OnStartServer()
         {
             State = State.OutOfTurn;
+            BeerHeal = 1;
             Phase1CardsDrawn = 2;
             MissesToDodge = 1;
             MaxHP = characterHP;
@@ -228,6 +239,7 @@ namespace Bang
         protected virtual IEnumerator DrawPhase1()
         {
             Draw(Phase1CardsDrawn);
+            Phase2();
             yield return null;
         }
 
@@ -259,7 +271,7 @@ namespace Bang
 
         public void EquipPropertyTo(int target, Property p)
         {
-            if (target == playerNum)
+            if (target == PlayerNumber)
             {
                 p.EquipProperty(this);
                 return;
@@ -339,8 +351,6 @@ namespace Bang
         protected virtual IEnumerator Phase1()
         {
             yield return DrawPhase1();
-            Phase2();
-            yield return null;
         }
 
         private void Phase2()
@@ -387,7 +397,7 @@ namespace Bang
 
         private void StayOnPhase2()
         {
-            if (State == State.Play)
+            if (ActivePlayer)
                 Phase2();
         }
 
@@ -406,7 +416,7 @@ namespace Bang
             else
             {
                 yield return BangEvent(this + ": Avoids the dynamite and passes it to the next player");
-                GameController.PassDynamite(playerNum, d);
+                GameController.PassDynamite(PlayerNumber, d);
             }
         }
 
@@ -617,7 +627,7 @@ namespace Bang
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
             yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
-            if(State == State.OutOfTurn)
+            if(!ActivePlayer)
             {
                 CardUsedOutOfTurn();
             }
@@ -645,17 +655,17 @@ namespace Bang
         public IEnumerator ShotBang(int target)
         {
             bangsUsed++;
-            yield return GameController.Bang(playerNum, target, MissesToDodge);
+            yield return GameController.Bang(PlayerNumber, target, MissesToDodge);
         }
 
         public IEnumerator Indians()
         {
-            yield return GameController.Indians(playerNum);
+            yield return GameController.Indians(PlayerNumber);
         }
 
         public IEnumerator Gatling()
         {
-            yield return GameController.Gatling(playerNum);
+            yield return GameController.Gatling(PlayerNumber);
         }
 
         public virtual bool Bang()
@@ -703,37 +713,37 @@ namespace Bang
 
         public void BangBeginCardDrag()
         {
-            GameController.TargetPlayersRange(playerNum, weapon.Range + Scope);
+            GameController.TargetPlayersRange(PlayerNumber, weapon.Range + Scope);
         }
 
         public void JailBeginCardDrag()
         {
-            GameController.TargetPrison(playerNum);
+            GameController.TargetPrison(PlayerNumber);
         }
 
         public void CatBalouBeginCardDrag()
         {
-            GameController.TargetAllCards(playerNum);
+            GameController.TargetAllCards(PlayerNumber);
         }
 
         public void PanicBeginCardDrag()
         {
-            GameController.TargetAllRangeCards(playerNum, 1 + Scope);
+            GameController.TargetAllRangeCards(PlayerNumber, 1 + Scope);
         }
 
         public void TargetOthers()
         {
-            GameController.TargetOthers(playerNum);
+            GameController.TargetOthers(PlayerNumber);
         }
 
         public void SelfTargetCard()
         {
-            GameController.TargetSelf(playerNum);
+            GameController.TargetSelf(PlayerNumber);
         }
 
         public void SelfTargetPropertyCard<T>() where T : Property
         {
-            GameController.TargetSelfProperty<T>(playerNum);
+            GameController.TargetSelfProperty<T>(PlayerNumber);
         }
 
         public void StopTargeting(NetworkConnection conn)
@@ -742,7 +752,7 @@ namespace Bang
             SetStealable(conn, false);
         }
 
-        private IEnumerator OnStartTurn()
+        protected virtual IEnumerator OnStartTurn()
         {
             bangsUsed = 0;
             if (dynamite)
@@ -780,7 +790,7 @@ namespace Bang
             if (IsDying)
             {
                 EnableCardsDying();
-                yield return GameController.Dying(playerNum, attacker);
+                yield return GameController.Dying(PlayerNumber, attacker);
                 DisableCards();
             }
             if (!IsDead)
@@ -809,7 +819,7 @@ namespace Bang
             if (weapon != null) deadCards.Add(weapon);
 
             GameController.CheckDeath(deadCards);
-            GameController.CheckMurder(killer, playerNum);
+            GameController.CheckMurder(killer, PlayerNumber);
         }
 
         public void DiscardAll()
@@ -832,9 +842,11 @@ namespace Bang
 
         public virtual IEnumerator HealFromBeer()
         {
-            if (!GameController.FinalDuel) Heal();
-            yield return null;
+            yield return GameController.UsedBeer(PlayerNumber);
+            if (!GameController.FinalDuel) Heal(BeerHeal);
         }
+
+        public virtual IEnumerator UsedBeer() { yield return null; }
 
         public virtual void HealFromSaloon()
         {
@@ -867,12 +879,12 @@ namespace Bang
 
         public IEnumerator GeneralStore()
         {
-            yield return GameController.GeneralStore(playerNum);
+            yield return GameController.GeneralStore(PlayerNumber);
         }
 
         public IEnumerator Duel(int player)
         {
-            yield return GameController.StartDuel(playerNum, player);
+            yield return GameController.StartDuel(PlayerNumber, player);
             State = State.Play;
         }
 
@@ -883,7 +895,7 @@ namespace Bang
             switch (drop)
             {
                 case Drop.Hand:
-                    if (playerNum == player && cardIndex < draggedCard) draggedCard--;
+                    if (PlayerNumber == player && cardIndex < draggedCard) draggedCard--;
                     c = pc.StealCardFromHand(cardIndex);
                     break;
                 case Drop.Properties:
@@ -893,10 +905,9 @@ namespace Bang
                     c = pc.UnequipWeapon();
                     break;
             }
-            pc.StolenBy(this);
             DiscardCardUsed();
             GameController.DiscardCard(c);
-            yield return null;
+            yield return pc.StolenBy(PlayerNumber);
         }
 
         public IEnumerator Panic(int player, Drop drop, int cardIndex)
@@ -906,7 +917,7 @@ namespace Bang
             switch (drop)
             {
                 case Drop.Hand:
-                    if (player == playerNum)
+                    if (player == PlayerNumber)
                     {
                         c = null;
                     }
@@ -922,15 +933,15 @@ namespace Bang
                     c = pc.UnequipWeapon();
                     break;
             }
-            pc.StolenBy(this);
             DiscardCardUsed();
             if (c != null) AddCard(c);
-            yield return null;
+            yield return pc.StolenBy(PlayerNumber);
         }
 
-        protected virtual void StolenBy(PlayerController thief)
+        protected virtual IEnumerator StolenBy(int thief)
         {
             CheckNoCards();
+            yield return null;
         }
 
         public void DiscardWeapon()
@@ -1006,7 +1017,7 @@ namespace Bang
         {
             DisableCards();
             Card card = index > -1 ? hand[index] : null;
-            GameController.MakeDecision(playerNum, card, decision);
+            GameController.MakeDecision(PlayerNumber, card, decision);
         }
 
         public void Win()
@@ -1029,16 +1040,21 @@ namespace Bang
             return HP;
         }
 
-        protected virtual void EndTurn()
+        private void EndTurn()
         {
             if (hand.Count <= CardLimit())
             {
-                ForceEndTurn();
+                WillinglyEndTurn();
             }
             else if (State != State.Discard)
             {
                 DiscardEndTurn();
             }
+        }
+
+        protected virtual void WillinglyEndTurn()
+        {
+            ForceEndTurn();
         }
 
         public void SetTargetable(NetworkConnection conn, bool value)
@@ -1130,7 +1146,7 @@ namespace Bang
         private void CmdBeginCardDrag(int index)
         {
             draggedCard = index;
-            GameController.HighlightTrash(playerNum, true);
+            GameController.HighlightTrash(PlayerNumber, true);
             if (State == State.Play)
             {
                 hand[draggedCard].BeginCardDrag(this);
@@ -1146,7 +1162,7 @@ namespace Bang
         [Command]
         private void CmdStopTargeting()
         {
-            GameController.StopTargeting(playerNum);
+            GameController.StopTargeting(PlayerNumber);
         }
 
         [Command]
@@ -1164,7 +1180,7 @@ namespace Bang
                     break;
                 case State.Dying:
                     if (drop == Drop.Trash)
-                        StartCoroutine(PlayCard(playerNum, drop, cardIndex));
+                        StartCoroutine(PlayCard(PlayerNumber, drop, cardIndex));
                     break;
                 case State.Duel:
                     if (drop == Drop.Trash)
@@ -1186,7 +1202,7 @@ namespace Bang
         private void CmdSetPlayerName(string name)
         {
             playerName = name;
-            GameController.SetPlayerNames(playerNum);
+            GameController.SetPlayerNames(PlayerNumber);
         }
 
         [ClientRpc]

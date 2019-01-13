@@ -38,10 +38,15 @@ namespace Bang
         private IPlayerView[] playerViews;
         private Decision[] decisionsMade;
         private Card[] cardsUsed;
-        private int decisionMaker, currentPlayer, generalStoreChoice, dodges;
+        private int decisionMaker, generalStoreChoice, dodges;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
+
+        public int CurrentPlayer
+        {
+            get; private set;
+        }
 
         public int PlayersAlive
         {
@@ -157,6 +162,18 @@ namespace Bang
                 {
                     DiscardCard(c);
                 }
+            }
+        }
+
+        public IEnumerator UsedBeer(int player)
+        {
+            for(int i = player; i < maxPlayers; i++)
+            {
+                yield return playerControllers[i].UsedBeer();
+            }
+            for(int i = 0; i < player; i++)
+            {
+                yield return playerControllers[i].UsedBeer();
             }
         }
 
@@ -530,7 +547,7 @@ namespace Bang
         {
             cardsUsed = new Card[maxPlayers];
             decisionsMade = new Decision[maxPlayers];
-            if (target != player) decisionsMade[player] = Decision.Source;
+            if (player != BangConstants.NoOne && target != player) decisionsMade[player] = Decision.Source;
             decisionMaker = target;
         }
 
@@ -664,7 +681,7 @@ namespace Bang
         public void StartGame()
         {
             boardController.ConstructorBoard();
-            currentPlayer = -1;
+            CurrentPlayer = -1;
             Role[] roles = Roles.GetRoles(MaxPlayers);
             List<PlayerController> players = new List<PlayerController>();
             foreach (PlayerController pc in playerControllers)
@@ -679,7 +696,7 @@ namespace Bang
                 if (sheriff < 0)
                 {
                     sheriff = random;
-                    currentPlayer = random;
+                    CurrentPlayer = random;
                 }
                 players[random].SetRole(r);
                 players.RemoveAt(random);
@@ -689,14 +706,14 @@ namespace Bang
 
         public void EndTurn()
         {
-            int nextPlayer = currentPlayer < maxPlayers - 1 ? currentPlayer + 1 : 0;
+            int nextPlayer = CurrentPlayer < maxPlayers - 1 ? CurrentPlayer + 1 : 0;
             StartTurn(nextPlayer);
         }
 
         private void StartTurn(int player)
         {
-            if (currentPlayer != BangConstants.NoOne) playerControllers[currentPlayer].SetTurn(false);
-            currentPlayer = player;
+            if (CurrentPlayer != BangConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
+            CurrentPlayer = player;
             playerControllers[player].StartTurn();
         }
 
