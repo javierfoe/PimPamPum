@@ -59,7 +59,7 @@ namespace Bang
         protected int HP
         {
             get { return hp; }
-            private set
+            set
             {
                 hp = value;
                 RpcUpdateHP(hp);
@@ -280,6 +280,30 @@ namespace Bang
             p.EquipProperty(pc);
         }
 
+        public IEnumerator DiscardCopiesOf<T>(Property p) where T : Property
+        {
+            if (HasProperty<T>())
+            {
+                int index;
+                Property foundProperty = FindProperty<T>(out index);
+                if (foundProperty != p)
+                {
+                    yield return BangEvent(this + " has discarded: " + foundProperty);
+                    DiscardProperty(index);
+                }
+            }
+            else if (Weapon is T && Weapon != p)
+            {
+                yield return BangEvent(this + " has discarded: " + Weapon);
+                DiscardWeapon();
+            }
+        }
+
+        public virtual IEnumerator Equip<T>(Property p) where T : Property
+        {
+            yield return null;
+        }
+
         public void EquipProperty(Property c)
         {
             properties.Add(c);
@@ -401,13 +425,18 @@ namespace Bang
                 Phase2();
         }
 
+        public virtual IEnumerator DrawEffectTrigger(Card c)
+        {
+            yield return null;
+        }
+
         private IEnumerator DynamiteCheck()
         {
-            Card c = GameController.DrawDiscardCard();
+            yield return GameController.DrawEffect(PlayerNumber);
             int index;
             Dynamite d = FindProperty<Dynamite>(out index);
             UnequipProperty(index);
-            if (Dynamite.CheckCondition(c))
+            if (Dynamite.CheckCondition(GameController.DrawnCard))
             {
                 yield return BangEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.DiscardCard(d);
@@ -422,10 +451,10 @@ namespace Bang
 
         public IEnumerator JailCheck()
         {
-            Card c = GameController.DrawDiscardCard();
+            yield return GameController.DrawEffect(PlayerNumber);
             int index;
             Jail j = FindProperty<Jail>(out index);
-            endTurn = !Jail.CheckCondition(c);
+            endTurn = !Jail.CheckCondition(GameController.DrawnCard);
             UnequipProperty(index);
             yield return BangEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
             GameController.DiscardCard(j);
@@ -626,8 +655,9 @@ namespace Bang
 
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
+            DisableCards();
             yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
-            if(!ActivePlayer)
+            if (!ActivePlayer)
             {
                 CardUsedOutOfTurn();
             }
@@ -640,9 +670,11 @@ namespace Bang
             DiscardCardFromHand(index);
         }
 
-        public void DiscardCardEndTurn(int index)
+        public IEnumerator DiscardCardEndTurn(int index)
         {
-            DiscardCardFromHand(index);
+            DisableCards();
+            Card c = UnequipHandCard(index);
+            yield return GameController.DiscardCardEndTurn(c, PlayerNumber);
             EndTurn();
         }
 
@@ -666,6 +698,11 @@ namespace Bang
         public IEnumerator Gatling()
         {
             yield return GameController.Gatling(PlayerNumber);
+        }
+
+        public virtual IEnumerator EndTurnDiscard(Card c)
+        {
+            yield return null;
         }
 
         public virtual bool Bang()
@@ -1015,7 +1052,6 @@ namespace Bang
 
         private void MakeDecision(Decision decision, int index = -1)
         {
-            DisableCards();
             Card card = index > -1 ? hand[index] : null;
             GameController.MakeDecision(PlayerNumber, card, decision);
         }
@@ -1046,7 +1082,7 @@ namespace Bang
             {
                 WillinglyEndTurn();
             }
-            else if (State != State.Discard)
+            else
             {
                 DiscardEndTurn();
             }
@@ -1172,15 +1208,21 @@ namespace Bang
             {
                 case State.Play:
                     if (player > -1)
+                    {
                         StartCoroutine(PlayCard(player, drop, cardIndex));
+                    }
                     break;
                 case State.Discard:
                     if (drop == Drop.Trash)
-                        DiscardCardEndTurn(index);
+                    {
+                        StartCoroutine(DiscardCardEndTurn(index));
+                    }
                     break;
                 case State.Dying:
                     if (drop == Drop.Trash)
+                    {
                         StartCoroutine(PlayCard(PlayerNumber, drop, cardIndex));
+                    }
                     break;
                 case State.Duel:
                     if (drop == Drop.Trash)

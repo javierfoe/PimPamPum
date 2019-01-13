@@ -43,6 +43,16 @@ namespace Bang
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
 
+        public bool PickedCard
+        {
+            get; set;
+        }
+
+        public Card DrawnCard
+        {
+            get; private set;
+        }
+
         public int CurrentPlayer
         {
             get; private set;
@@ -272,12 +282,18 @@ namespace Bang
             }
         }
 
-        public Card DrawDiscardCard()
+        public IEnumerator DrawEffect(int player)
         {
-            Card res = DrawCard();
-            Debug.Log("Draw! Card: Suit - " + res.Suit + " Rank - " + res.Rank);
-            DiscardCard(res);
-            return res;
+            DrawnCard = DrawCard();
+            PickedCard = false;
+            for(int i = player; i < maxPlayers; i++)
+            {
+                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
+            }
+            for (int i = 0; i < player; i++)
+            {
+                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
+            }
         }
 
         public Card DrawCard()
@@ -400,16 +416,15 @@ namespace Bang
         private IEnumerator BarrelDodge(int target, int misses = 1)
         {
             dodges = 0;
-            Card c;
             bool dodge;
             PlayerController pc = playerControllers[target];
             int barrels = pc.Barrels;
             for (int i = 0; i < barrels && dodges < misses; i++)
             {
-                c = DrawDiscardCard();
-                dodge = Barrel.CheckCondition(c);
+                yield return DrawEffect(target);
+                dodge = Barrel.CheckCondition(DrawnCard);
                 dodges += dodge ? 1 : 0;
-                yield return BangEvent(pc + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + c);
+                yield return BangEvent(pc + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + DrawnCard);
             }
         }
 
@@ -594,6 +609,23 @@ namespace Bang
             StartGame();
         }
 
+        public IEnumerator DiscardCardEndTurn(Card c, int player)
+        {
+            PickedCard = false;
+            for(int i = player + 1; i < maxPlayers; i++)
+            {
+                yield return playerControllers[i].EndTurnDiscard(c);
+            }
+            for(int i = 0; i < player; i++)
+            {
+                yield return playerControllers[i].EndTurnDiscard(c);
+            }
+            if (!PickedCard)
+            {
+                DiscardCard(c);
+            }
+        }
+
         public void SetPlayerViews()
         {
             mainMenu.SetActive(false);
@@ -644,6 +676,18 @@ namespace Bang
                 playerControllers[i++] = go.GetComponent<PlayerController>();
 
             RpcAddPlayerControllers(gos);
+        }
+
+        public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
+        {
+            for(int i = player; i < maxPlayers; i++)
+            {
+                yield return playerControllers[i].DiscardCopiesOf<T>(p);
+            }
+            for (int i = 0; i < player; i++)
+            {
+                yield return playerControllers[i].DiscardCopiesOf<T>(p);
+            }
         }
 
         public void PassDynamite(int player, Dynamite d)

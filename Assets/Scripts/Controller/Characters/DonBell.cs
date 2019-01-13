@@ -28,9 +28,9 @@ namespace Bang
         private IEnumerator ExtraTurnCheck()
         {
             DisableCards();
-            Card c = GameController.DrawDiscardCard();
-            extraTurn = c.IsRed;
-            yield return BangEvent(this + " has drawn: " + c + (extraTurn ? " he gets another turn. " : " he ends the turn normally."));
+            yield return GameController.DrawEffect(PlayerNumber);
+            extraTurn = GameController.DrawnCard.IsRed;
+            yield return BangEvent(this + " has drawn: " + GameController.DrawnCard + (extraTurn ? " he gets another turn. " : " he ends the turn normally."));
 
             if (extraTurn)
             {

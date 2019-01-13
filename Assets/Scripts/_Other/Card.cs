@@ -68,7 +68,6 @@ namespace Bang
 
         public virtual IEnumerator PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            pc.DisableCards();
             yield return CardEvent(pc, player, drop, cardIndex);
             yield return CardEffect(pc, player, drop, cardIndex);
             pc.FinishCardUsed();
@@ -312,7 +311,7 @@ namespace Bang
         {
             pc.UnequipDraggedCard();
             pc.EquipPropertyTo(player, this);
-            yield return null;
+            yield return EquipTrigger(pc);
         }
 
         public virtual void EquipProperty(PlayerController pc)
@@ -322,6 +321,8 @@ namespace Bang
         }
 
         public virtual void AddPropertyEffect(PlayerController pc) { }
+
+        protected virtual IEnumerator EquipTrigger(PlayerController pc) { yield return null; }
 
         public virtual void UnequipProperty(PlayerController pc) { }
     }
@@ -342,6 +343,11 @@ namespace Bang
         public override void UnequipProperty(PlayerController pc)
         {
             pc.UnequipMustang();
+        }
+
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Mustang>(this);
         }
 
         public override string ToString()
@@ -373,6 +379,11 @@ namespace Bang
             return c.Suit == Suit.Hearts;
         }
 
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Barrel>(this);
+        }
+
         public override string ToString()
         {
             return "Barrel";
@@ -397,6 +408,11 @@ namespace Bang
             pc.UnequipScope();
         }
 
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Scope>(this);
+        }
+
         public override string ToString()
         {
             return "Binoculars";
@@ -419,6 +435,11 @@ namespace Bang
         public override void UnequipProperty(PlayerController pc)
         {
             pc.UnequipDynamite();
+        }
+
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Dynamite>(this);
         }
 
         public static bool CheckCondition(Card c)
@@ -453,6 +474,11 @@ namespace Bang
         public override void UnequipProperty(PlayerController pc)
         {
             pc.UnequipJail();
+        }
+
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Jail>(this);
         }
 
         public override string ToString()
@@ -505,6 +531,11 @@ namespace Bang
 
         public override bool Bang(PlayerController pc) { return true; }
 
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Volcanic>(this);
+        }
+
         public override string ToString()
         {
             return "Volcanic";
@@ -516,6 +547,11 @@ namespace Bang
     {
         public Remington() : base(3) { }
 
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Remington>(this);
+        }
+
         public override string ToString()
         {
             return "Remington";
@@ -525,6 +561,11 @@ namespace Bang
     public class Schofield : Weapon
     {
         public Schofield() : base(2) { }
+
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Schofield>(this);
+        }
 
         public override string ToString()
         {
@@ -536,6 +577,11 @@ namespace Bang
     {
         public Carabine() : base(4) { }
 
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Carabine>(this);
+        }
+
         public override string ToString()
         {
             return "Carabine";
@@ -545,6 +591,11 @@ namespace Bang
     public class Winchester : Weapon
     {
         public Winchester() : base(5) { }
+
+        protected override IEnumerator EquipTrigger(PlayerController pc)
+        {
+            yield return pc.Equip<Winchester>(this);
+        }
 
         public override string ToString()
         {
