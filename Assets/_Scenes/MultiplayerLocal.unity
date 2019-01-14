@@ -1464,10 +1464,14 @@ MonoBehaviour:
   m_OfflineScene: 
   m_OnlineScene: 
   m_SpawnPrefabs:
+  - {fileID: 1472249705846576, guid: 75e184355984c7b40aa9de59b16998f1, type: 2}
   - {fileID: 1165193491574240, guid: fb1e652c63c51ac47b249ad19e1a561e, type: 2}
+  - {fileID: 1633854868379484, guid: a96a2abc41946d94f8e003a5d3d7bb35, type: 2}
+  - {fileID: 1305137605488796, guid: 17769a286b8dc5b40b4682a01c187563, type: 2}
   - {fileID: 1593247284527152, guid: 14a9a7bb8fc79274392eca6b3462e3ce, type: 2}
   - {fileID: 1888766644292658, guid: ae653fe7872a7884eadab535caa7a80c, type: 2}
   - {fileID: 1302375765715714, guid: 188fe9884948aef4087343eaf64760ee, type: 2}
+  - {fileID: 1364677951663324, guid: ea934cae4fedbac46af3a9830f739e4c, type: 2}
   - {fileID: 1549740704446934, guid: 6b0764d4a14c4bd4b9dfffc89179dbe7, type: 2}
   - {fileID: 1649262275782114, guid: 3e29b7346b8fcec45944706d58380fce, type: 2}
   - {fileID: 1270704081474260, guid: 2b82e6f56aaa65a4b8f81849afcfc9e9, type: 2}
@@ -1479,6 +1483,7 @@ MonoBehaviour:
   - {fileID: 1110412893228910, guid: 386232d7bbf0cc4439cea08a7ab6b0c8, type: 2}
   - {fileID: 1002505776817526, guid: 9cd9c079bd1285c4ba781ed771fae15f, type: 2}
   - {fileID: 1871004436593324, guid: 6b4f1dac654034d4cb9808f1ea983abd, type: 2}
+  - {fileID: 1802868390545486, guid: 7ac4f27781c0b864d8d388f1dc675e1d, type: 2}
   - {fileID: 1403088717175050, guid: b231de2e611f66c4189f93e692e277ea, type: 2}
   - {fileID: 1001886743864804, guid: 8f7ee45e56a32184eac9fd54a8656327, type: 2}
   - {fileID: 1251744854656538, guid: 12ffdffec55f7f34b81a519f738f0def, type: 2}

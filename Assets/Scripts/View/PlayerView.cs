@@ -178,5 +178,10 @@ namespace Bang
         {
             playerName.text = name;
         }
+
+        public void SetTextTakeHitButton(string text)
+        {
+            takeHitButton.SetText(text);
+        }
     }
 }

@@ -19,13 +19,15 @@ namespace Bang
         [SerializeField] private int characterHP = 4;
 
         private Coroutine hit, jailCheck;
-        private int draggedCard, bangsUsed, hp;
+        private int draggedCardIndex, hp;
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
         private string playerName;
+        private Card draggedCard;
 
+        protected int bangsUsed;
         protected List<Card> hand;
 
         public State State
@@ -35,7 +37,7 @@ namespace Bang
 
         public IPlayerView PlayerView
         {
-            private get
+            protected get
             {
                 return playerView;
             }
@@ -255,10 +257,24 @@ namespace Bang
             RpcAddCard();
         }
 
+        public void EnableProperties(bool value)
+        {
+            if (value)
+            {
+                foreach (Property p in properties)
+                    p.AddPropertyEffect(this);
+            }
+            else
+            {
+                foreach (Property p in properties)
+                    p.UnequipProperty(this);
+            }
+        }
+
         public Card UnequipDraggedCard()
         {
-            Card c = hand[draggedCard];
-            RemoveCardFromHand(draggedCard);
+            Card c = hand[draggedCardIndex];
+            RemoveCardFromHand(draggedCardIndex);
             return c;
         }
 
@@ -476,7 +492,7 @@ namespace Bang
             return res;
         }
 
-        public void ForceEndTurn()
+        public virtual void ForceEndTurn()
         {
             State = State.OutOfTurn;
             DisableCards();
@@ -629,7 +645,7 @@ namespace Bang
             EnableBangCardsForReaction();
         }
 
-        private void EnableIndiansReaction()
+        protected virtual void EnableIndiansReaction()
         {
             EnableBangCardsForReaction();
         }
@@ -644,7 +660,7 @@ namespace Bang
             EnableReactionCards<Missed>();
         }
 
-        private void EnableReactionCards<T>() where T : Card, new()
+        protected void EnableReactionCards<T>() where T : Card, new()
         {
             int length = hand.Count;
             for (int i = 0; i < length; i++)
@@ -656,7 +672,7 @@ namespace Bang
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
             DisableCards();
-            yield return hand[draggedCard].PlayCard(this, player, drop, cardIndex);
+            yield return hand[draggedCardIndex].PlayCard(this, player, drop, cardIndex);
             if (!ActivePlayer)
             {
                 CardUsedOutOfTurn();
@@ -684,7 +700,7 @@ namespace Bang
             yield return null;
         }
 
-        public IEnumerator ShotBang(int target)
+        public virtual IEnumerator ShotBang(int target)
         {
             bangsUsed++;
             yield return GameController.Bang(PlayerNumber, target, MissesToDodge);
@@ -692,12 +708,12 @@ namespace Bang
 
         public IEnumerator Indians()
         {
-            yield return GameController.Indians(PlayerNumber);
+            yield return GameController.Indians(PlayerNumber, draggedCard);
         }
 
         public IEnumerator Gatling()
         {
-            yield return GameController.Gatling(PlayerNumber);
+            yield return GameController.Gatling(PlayerNumber, draggedCard);
         }
 
         public virtual IEnumerator EndTurnDiscard(Card c)
@@ -748,29 +764,34 @@ namespace Bang
             SetStealable(conn, value, hand.Count > 0, !HasColt45);
         }
 
+        public void BeginCardDrag(Card c)
+        {
+            draggedCard = c;
+        }
+
         public void BangBeginCardDrag()
         {
-            GameController.TargetPlayersRange(PlayerNumber, weapon.Range + Scope);
+            GameController.TargetPlayersRange(PlayerNumber, weapon.Range + Scope, draggedCard);
         }
 
         public void JailBeginCardDrag()
         {
-            GameController.TargetPrison(PlayerNumber);
+            GameController.TargetPrison(PlayerNumber, draggedCard);
         }
 
         public void CatBalouBeginCardDrag()
         {
-            GameController.TargetAllCards(PlayerNumber);
+            GameController.TargetAllCards(PlayerNumber, draggedCard);
         }
 
         public void PanicBeginCardDrag()
         {
-            GameController.TargetAllRangeCards(PlayerNumber, 1 + Scope);
+            GameController.TargetAllRangeCards(PlayerNumber, 1 + Scope, draggedCard);
         }
 
         public void TargetOthers()
         {
-            GameController.TargetOthers(PlayerNumber);
+            GameController.TargetOthers(PlayerNumber, draggedCard);
         }
 
         public void SelfTargetCard()
@@ -787,6 +808,11 @@ namespace Bang
         {
             TargetSetTargetable(conn, false);
             SetStealable(conn, false);
+        }
+
+        public virtual bool Immune(Card c)
+        {
+            return false;
         }
 
         protected virtual IEnumerator OnStartTurn()
@@ -899,7 +925,7 @@ namespace Bang
 
         public void DiscardCardUsed()
         {
-            DiscardCardFromHand(draggedCard);
+            DiscardCardFromHand(draggedCardIndex);
         }
 
         public void FinishCardUsed()
@@ -925,54 +951,82 @@ namespace Bang
             State = State.Play;
         }
 
-        public IEnumerator CatBalou(int player, Drop drop, int cardIndex)
+        public IEnumerator CatBalou(int target, Drop drop, int cardIndex)
         {
-            PlayerController pc = GameController.GetPlayerController(player);
-            Card c = null;
-            switch (drop)
+            PlayerController pc = GameController.GetPlayerController(target);
+
+            yield return pc.AvoidCard(PlayerNumber, target);
+
+            if (GameController.GetDecision(target) != Decision.Avoid)
             {
-                case Drop.Hand:
-                    if (PlayerNumber == player && cardIndex < draggedCard) draggedCard--;
-                    c = pc.StealCardFromHand(cardIndex);
-                    break;
-                case Drop.Properties:
-                    c = pc.UnequipProperty(cardIndex);
-                    break;
-                case Drop.Weapon:
-                    c = pc.UnequipWeapon();
-                    break;
+                Card c = null;
+                switch (drop)
+                {
+                    case Drop.Hand:
+                        if (PlayerNumber == target && cardIndex < draggedCardIndex) draggedCardIndex--;
+                        c = pc.StealCardFromHand(cardIndex);
+                        break;
+                    case Drop.Properties:
+                        c = pc.UnequipProperty(cardIndex);
+                        break;
+                    case Drop.Weapon:
+                        c = pc.UnequipWeapon();
+                        break;
+                }
+                DiscardCardUsed();
+                GameController.DiscardCard(c);
+                yield return pc.StolenBy(PlayerNumber);
             }
-            DiscardCardUsed();
-            GameController.DiscardCard(c);
-            yield return pc.StolenBy(PlayerNumber);
+            else
+            {
+                DiscardCardUsed();
+                yield return GameController.DiscardUsedCard(target);
+            }
         }
 
-        public IEnumerator Panic(int player, Drop drop, int cardIndex)
+        public IEnumerator Panic(int target, Drop drop, int cardIndex)
         {
-            PlayerController pc = GameController.GetPlayerController(player);
-            Card c = null;
-            switch (drop)
+            PlayerController pc = GameController.GetPlayerController(target);
+
+            yield return pc.AvoidCard(PlayerNumber, target);
+
+            if (GameController.GetDecision(target) != Decision.Avoid)
             {
-                case Drop.Hand:
-                    if (player == PlayerNumber)
-                    {
-                        c = null;
-                    }
-                    else
-                    {
-                        c = pc.StealCardFromHand(cardIndex);
-                    }
-                    break;
-                case Drop.Properties:
-                    c = pc.UnequipProperty(cardIndex);
-                    break;
-                case Drop.Weapon:
-                    c = pc.UnequipWeapon();
-                    break;
+                Card c = null;
+                switch (drop)
+                {
+                    case Drop.Hand:
+                        if (target == PlayerNumber)
+                        {
+                            c = null;
+                        }
+                        else
+                        {
+                            c = pc.StealCardFromHand(cardIndex);
+                        }
+                        break;
+                    case Drop.Properties:
+                        c = pc.UnequipProperty(cardIndex);
+                        break;
+                    case Drop.Weapon:
+                        c = pc.UnequipWeapon();
+                        break;
+                }
+                DiscardCardUsed();
+                if (c != null) AddCard(c);
+                yield return pc.StolenBy(PlayerNumber);
             }
-            DiscardCardUsed();
-            if (c != null) AddCard(c);
-            yield return pc.StolenBy(PlayerNumber);
+            else
+            {
+                DiscardCardUsed();
+                yield return GameController.DiscardUsedCard(target);
+            }
+        }
+
+        public virtual IEnumerator AvoidCard(int player, int target)
+        {
+            GameController.RestartDecisions(player, target);
+            yield return null;
         }
 
         protected virtual IEnumerator StolenBy(int thief)
@@ -1181,11 +1235,11 @@ namespace Bang
         [Command]
         private void CmdBeginCardDrag(int index)
         {
-            draggedCard = index;
+            draggedCardIndex = index;
             GameController.HighlightTrash(PlayerNumber, true);
             if (State == State.Play)
             {
-                hand[draggedCard].BeginCardDrag(this);
+                hand[draggedCardIndex].BeginCardDrag(this);
             }
         }
 
@@ -1329,7 +1383,7 @@ namespace Bang
         }
 
         [TargetRpc]
-        private void TargetEnableCard(NetworkConnection conn, int card, bool value)
+        protected void TargetEnableCard(NetworkConnection conn, int card, bool value)
         {
             PlayerView.EnableCard(card, value);
         }

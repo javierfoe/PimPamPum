@@ -64,7 +64,10 @@ namespace Bang
             };
         }
 
-        public virtual void BeginCardDrag(PlayerController pc) { }
+        public virtual void BeginCardDrag(PlayerController pc)
+        {
+            pc.BeginCardDrag(this);
+        }
 
         public virtual IEnumerator PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
@@ -107,6 +110,7 @@ namespace Bang
     {
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.BangBeginCardDrag();
         }
 
@@ -140,6 +144,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 
@@ -160,6 +165,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.TargetOthers();
         }
 
@@ -179,6 +185,12 @@ namespace Bang
     {
 
         public override void BeginCardDrag(PlayerController pc)
+        {
+            base.BeginCardDrag(pc);
+            BeginStealCardDrag(pc);
+        }
+
+        protected virtual void BeginStealCardDrag(PlayerController pc)
         {
             pc.CatBalouBeginCardDrag();
         }
@@ -202,7 +214,7 @@ namespace Bang
     public class Panic : CatBalou
     {
 
-        public override void BeginCardDrag(PlayerController pc)
+        protected override void BeginStealCardDrag(PlayerController pc)
         {
             pc.PanicBeginCardDrag();
         }
@@ -223,6 +235,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 
@@ -243,6 +256,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 
@@ -263,6 +277,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 
@@ -283,6 +298,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 
@@ -332,6 +348,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetPropertyCard<Mustang>();
         }
 
@@ -361,6 +378,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetPropertyCard<Barrel>();
         }
 
@@ -395,6 +413,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetPropertyCard<Scope>();
         }
 
@@ -424,6 +443,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetPropertyCard<Dynamite>();
         }
 
@@ -463,6 +483,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.JailBeginCardDrag();
         }
 
@@ -501,6 +522,7 @@ namespace Bang
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
 

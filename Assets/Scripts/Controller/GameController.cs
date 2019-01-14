@@ -133,6 +133,11 @@ namespace Bang
             }
         }
 
+        public Decision GetDecision(int player)
+        {
+            return decisionsMade[player];
+        }
+
         private int NextPlayerAlive(int player)
         {
             PlayerController pc;
@@ -159,6 +164,18 @@ namespace Bang
             return res;
         }
 
+        public void EnableOthersProperties(int player, bool value)
+        {
+            for (int i = player + 1; i < maxPlayers; i++)
+            {
+                playerControllers[i].EnableProperties(value);
+            }
+            for (int i = 0; i < player; i++)
+            {
+                playerControllers[i].EnableProperties(value);
+            }
+        }
+
         public void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
@@ -177,11 +194,11 @@ namespace Bang
 
         public IEnumerator UsedBeer(int player)
         {
-            for(int i = player; i < maxPlayers; i++)
+            for (int i = player; i < maxPlayers; i++)
             {
                 yield return playerControllers[i].UsedBeer();
             }
-            for(int i = 0; i < player; i++)
+            for (int i = 0; i < player; i++)
             {
                 yield return playerControllers[i].UsedBeer();
             }
@@ -286,7 +303,7 @@ namespace Bang
         {
             DrawnCard = DrawCard();
             PickedCard = false;
-            for(int i = player; i < maxPlayers; i++)
+            for (int i = player; i < maxPlayers; i++)
             {
                 yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
             }
@@ -345,23 +362,36 @@ namespace Bang
         {
             int next = player;
             int bangsTarget = 0;
-            do
+
+            yield return playerControllers[target].AvoidCard(player, target);
+
+            if (decisionsMade[target] != Decision.Avoid)
             {
-                next = next == player ? target : player;
-                yield return ResponseDuel(player, next);
-                if (decisionsMade[next] == Decision.Avoid)
+
+                yield return BangEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
+
+                do
                 {
-                    if (next == target)
+                    next = next == player ? target : player;
+                    yield return ResponseDuel(player, next);
+                    if (decisionsMade[next] == Decision.Avoid)
                     {
-                        bangsTarget++;
+                        if (next == target)
+                        {
+                            bangsTarget++;
+                        }
                     }
-                }
-            } while (decisionsMade[next] != Decision.TakeHit);
+                } while (decisionsMade[next] != Decision.TakeHit);
 
-            playerControllers[player].CheckNoCards();
-            playerControllers[target].FinishDuelTarget(bangsTarget);
+                playerControllers[player].CheckNoCards();
+                playerControllers[target].FinishDuelTarget(bangsTarget);
 
-            yield return playerControllers[next].Hit(player);
+                yield return playerControllers[next].Hit(player);
+            }
+            else
+            {
+                yield return DiscardUsedCard(target);
+            }
         }
 
         public IEnumerator Dying(int target, int player)
@@ -434,7 +464,7 @@ namespace Bang
             Debug.Log(bangEvent);
         }
 
-        public IEnumerator Indians(int player)
+        public IEnumerator Indians(int player, Card c)
         {
             RestartDecisions(player, Everyone);
 
@@ -442,7 +472,7 @@ namespace Bang
             for (int i = 0; i < maxPlayers; i++)
             {
                 pc = playerControllers[i];
-                if (player != i && !pc.IsDead)
+                if (player != i && !pc.IsDead && !pc.Immune(c))
                 {
                     playerControllers[i].EnableCardsIndiansResponse();
                 }
@@ -455,6 +485,20 @@ namespace Bang
             yield return DecisionTimer(player);
 
             yield return ResponsesFinished(player, Everyone);
+        }
+
+        public IEnumerator AvoidCard(int player, int target)
+        {
+            RestartDecisions(player, target);
+            playerControllers[target].EnableCardsBangResponse();
+            yield return DecisionTimer(player);
+        }
+
+        public IEnumerator DiscardUsedCard(int target)
+        {
+            Card c = cardsUsed[target];
+            yield return BangEvent(playerControllers[target] + " has avoided the card effect with: " + c);
+            DiscardCard(c);
         }
 
         private IEnumerator ResponsesFinished(int player, int target)
@@ -500,7 +544,7 @@ namespace Bang
             DiscardCard(used);
         }
 
-        public IEnumerator Gatling(int player)
+        public IEnumerator Gatling(int player, Card c)
         {
             RestartDecisions(player, Everyone);
 
@@ -508,7 +552,7 @@ namespace Bang
             for (int i = 0; i < maxPlayers; i++)
             {
                 pc = playerControllers[i];
-                if (player != i && !pc.IsDead)
+                if (player != i && !pc.IsDead && !pc.Immune(c))
                 {
                     yield return BarrelDodge(i);
                     if (dodges < 1)
@@ -558,7 +602,7 @@ namespace Bang
             yield return DecisionTimer(player);
         }
 
-        private void RestartDecisions(int player, int target)
+        public void RestartDecisions(int player, int target)
         {
             cardsUsed = new Card[maxPlayers];
             decisionsMade = new Decision[maxPlayers];
@@ -612,11 +656,11 @@ namespace Bang
         public IEnumerator DiscardCardEndTurn(Card c, int player)
         {
             PickedCard = false;
-            for(int i = player + 1; i < maxPlayers; i++)
+            for (int i = player + 1; i < maxPlayers; i++)
             {
                 yield return playerControllers[i].EndTurnDiscard(c);
             }
-            for(int i = 0; i < player; i++)
+            for (int i = 0; i < player; i++)
             {
                 yield return playerControllers[i].EndTurnDiscard(c);
             }
@@ -680,7 +724,7 @@ namespace Bang
 
         public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
         {
-            for(int i = player; i < maxPlayers; i++)
+            for (int i = player; i < maxPlayers; i++)
             {
                 yield return playerControllers[i].DiscardCopiesOf<T>(p);
             }
@@ -787,19 +831,19 @@ namespace Bang
             } while (next != player);
         }
 
-        public void TargetPrison(int player)
+        public void TargetPrison(int player, Card c)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead)
+                if (pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead && !pc.Immune(c))
                     pc.SetTargetable(conn, true);
         }
 
-        public void TargetAllCards(int player)
+        public void TargetAllCards(int player, Card c)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (!pc.IsDead)
+                if (!pc.IsDead && !pc.Immune(c))
                     pc.SetStealable(conn, true);
         }
 
@@ -815,15 +859,15 @@ namespace Bang
             pc.SetTargetable(pc.connectionToClient, !pc.HasProperty<T>());
         }
 
-        public void TargetOthers(int player)
+        public void TargetOthers(int player, Card c)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && !pc.IsDead)
+                if (pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c))
                     pc.SetTargetable(conn, true);
         }
 
-        public void TargetAllRangeCards(int player, int range)
+        public void TargetAllRangeCards(int player, int range, Card c)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             List<int> playersInRange = PlayersInRange(player, range);
@@ -831,7 +875,7 @@ namespace Bang
             foreach (int i in playersInRange)
             {
                 pc = playerControllers[i];
-                if (!pc.IsDead)
+                if (!pc.Immune(c))
                 {
                     pc.SetStealable(conn, true);
                 }
@@ -839,13 +883,18 @@ namespace Bang
             playerControllers[player].SetStealable(conn, true);
         }
 
-        public void TargetPlayersRange(int player, int range)
+        public void TargetPlayersRange(int player, int range, Card c)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
             List<int> playersInRange = PlayersInRange(player, range);
+            PlayerController pc;
             foreach (int i in playersInRange)
             {
-                playerControllers[i].SetTargetable(conn, true);
+                pc = playerControllers[i];
+                if (!pc.Immune(c))
+                {
+                    pc.SetTargetable(conn, true);
+                }
             }
         }
 

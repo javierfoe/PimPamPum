@@ -1,7 +1,7 @@
 ﻿namespace Bang
 {
 
-    public class DieButton : BangButton
+    public class DieButton : Button
     {
 
         protected override void Click()

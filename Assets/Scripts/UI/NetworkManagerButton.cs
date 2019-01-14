@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Bang
 {
-    [RequireComponent(typeof(Button))]
+    [RequireComponent(typeof(UnityEngine.UI.Button))]
     public abstract class NetworkManagerButton : MonoBehaviour
     {
         protected static UnityEngine.UI.InputField playerName;
@@ -27,7 +27,7 @@ namespace Bang
         {
             InitializeStaticVariables();
             networkManager = FindObjectOfType<NetworkManager>();
-            GetComponent<Button>().onClick.AddListener(Click);
+            GetComponent<UnityEngine.UI.Button>().onClick.AddListener(this.Click);
             StartCoroutine(InputEmpty());
         }
 
