@@ -16,6 +16,7 @@ namespace Bang
             {
                 Draw(1);
             }
+            Phase2();
         }
 
         protected override string Character()

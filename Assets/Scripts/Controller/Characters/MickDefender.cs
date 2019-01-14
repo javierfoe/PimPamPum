@@ -14,9 +14,9 @@ namespace Bang
         protected override void EnableIndiansReaction()
         {
             base.EnableIndiansReaction();
-            for(int i = 0; i < hand.Count; i++)
+            for (int i = 0; i < hand.Count; i++)
             {
-                if(hand[i] is Missed)
+                if (hand[i] is Missed)
                 {
                     TargetEnableCard(connectionToClient, i, true);
                 }
@@ -26,7 +26,8 @@ namespace Bang
         public override IEnumerator AvoidCard(int player, int target)
         {
             yield return base.AvoidCard(player, target);
-            yield return GameController.AvoidCard(player, target);
+            if (player != target)
+                yield return GameController.AvoidCard(player, target);
         }
 
         protected override string Character()

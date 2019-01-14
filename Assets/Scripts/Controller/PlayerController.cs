@@ -393,7 +393,7 @@ namespace Bang
             yield return DrawPhase1();
         }
 
-        private void Phase2()
+        protected void Phase2()
         {
             State = State.Play;
             if (!IsDead)
@@ -1106,6 +1106,7 @@ namespace Bang
 
         private void MakeDecision(Decision decision, int index = -1)
         {
+            DisableCards();
             Card card = index > -1 ? hand[index] : null;
             GameController.MakeDecision(PlayerNumber, card, decision);
         }
