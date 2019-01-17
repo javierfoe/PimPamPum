@@ -338,9 +338,10 @@ namespace Bang
 
         public virtual void AddPropertyEffect(PlayerController pc) { }
 
+        public virtual void RemovePropertyEffect(PlayerController pc) { }
+
         protected virtual IEnumerator EquipTrigger(PlayerController pc) { yield return null; }
 
-        public virtual void UnequipProperty(PlayerController pc) { }
     }
 
     public class Mustang : Property
@@ -357,7 +358,7 @@ namespace Bang
             pc.EquipMustang();
         }
 
-        public override void UnequipProperty(PlayerController pc)
+        public override void RemovePropertyEffect(PlayerController pc)
         {
             pc.UnequipMustang();
         }
@@ -387,7 +388,7 @@ namespace Bang
             pc.EquipBarrel();
         }
 
-        public override void UnequipProperty(PlayerController pc)
+        public override void RemovePropertyEffect(PlayerController pc)
         {
             pc.UnequipBarrel();
         }
@@ -422,7 +423,7 @@ namespace Bang
             pc.EquipScope();
         }
 
-        public override void UnequipProperty(PlayerController pc)
+        public override void RemovePropertyEffect(PlayerController pc)
         {
             pc.UnequipScope();
         }
@@ -452,7 +453,7 @@ namespace Bang
             pc.EquipDynamite();
         }
 
-        public override void UnequipProperty(PlayerController pc)
+        public override void RemovePropertyEffect(PlayerController pc)
         {
             pc.UnequipDynamite();
         }
@@ -492,7 +493,7 @@ namespace Bang
             pc.EquipJail();
         }
 
-        public override void UnequipProperty(PlayerController pc)
+        public override void RemovePropertyEffect(PlayerController pc)
         {
             pc.UnequipJail();
         }

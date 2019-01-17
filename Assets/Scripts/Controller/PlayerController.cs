@@ -272,7 +272,7 @@ namespace Bang
             else
             {
                 foreach (Property p in properties)
-                    p.UnequipProperty(this);
+                    p.RemovePropertyEffect(this);
             }
         }
 
@@ -988,7 +988,7 @@ namespace Bang
         {
             if (HasColt45) return null;
             Weapon weapon = Weapon;
-            Weapon.UnequipProperty(this);
+            Weapon.RemovePropertyEffect(this);
             Weapon = colt45;
             return weapon;
         }
@@ -1015,7 +1015,7 @@ namespace Bang
         {
             Property card = (Property)properties[index];
             properties.RemoveAt(index);
-            card.UnequipProperty(this);
+            card.RemovePropertyEffect(this);
             RpcRemoveProperty(index);
             return card;
         }
