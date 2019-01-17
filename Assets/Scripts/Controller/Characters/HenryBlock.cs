@@ -5,7 +5,7 @@ namespace Bang
     public class HenryBlock : PlayerController
     {
 
-        protected override IEnumerator StolenBy(int thief)
+        public override IEnumerator StolenBy(int thief)
         {
             if (thief != PlayerNumber)
             {

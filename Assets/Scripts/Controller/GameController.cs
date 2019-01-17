@@ -269,11 +269,6 @@ namespace Bang
             generalStoreChoice = choice;
         }
 
-        public PlayerController GetPlayerController(int index)
-        {
-            return playerControllers[index];
-        }
-
         public int MaxPlayers
         {
             get { return maxPlayers; }
@@ -334,6 +329,86 @@ namespace Bang
             decisionsMade[player] = decision;
         }
 
+        public void EquipPropertyTo(int target, Property p)
+        {
+            p.EquipProperty(playerControllers[target]);
+        }
+
+        public IEnumerator CatBalou(int player, int target, Drop drop, int cardIndex)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+
+            yield return targetPc.AvoidCard(player, target);
+
+            if (decisionsMade[target] != Decision.Avoid)
+            {
+                Card c = null;
+                switch (drop)
+                {
+                    case Drop.Hand:
+                        if (player == target && cardIndex < pc.DraggedCardIndex) pc.DraggedCardIndex--;
+                        c = targetPc.StealCardFromHand(cardIndex);
+                        break;
+                    case Drop.Properties:
+                        c = targetPc.UnequipProperty(cardIndex);
+                        break;
+                    case Drop.Weapon:
+                        c = targetPc.UnequipWeapon();
+                        break;
+                }
+                pc.DiscardCardUsed();
+                DiscardCard(c);
+                yield return targetPc.StolenBy(player);
+            }
+            else
+            {
+                pc.DiscardCardUsed();
+                yield return DiscardUsedCard(target);
+            }
+        }
+
+        public IEnumerator Panic(int player, int target, Drop drop, int cardIndex)
+        {
+
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+
+            yield return targetPc.AvoidCard(player, target);
+
+            if (decisionsMade[target] != Decision.Avoid)
+            {
+                Card c = null;
+                switch (drop)
+                {
+                    case Drop.Hand:
+                        if (target == player)
+                        {
+                            c = null;
+                        }
+                        else
+                        {
+                            c = targetPc.StealCardFromHand(cardIndex);
+                        }
+                        break;
+                    case Drop.Properties:
+                        c = targetPc.UnequipProperty(cardIndex);
+                        break;
+                    case Drop.Weapon:
+                        c = targetPc.UnequipWeapon();
+                        break;
+                }
+                pc.DiscardCardUsed();
+                if (c != null) pc.AddCard(c);
+                yield return targetPc.StolenBy(player);
+            }
+            else
+            {
+                pc.DiscardCardUsed();
+                yield return DiscardUsedCard(target);
+            }
+        }
+
         public IEnumerator GeneralStore(int player)
         {
             int next = player;
@@ -386,11 +461,28 @@ namespace Bang
                 playerControllers[player].CheckNoCards();
                 playerControllers[target].FinishDuelTarget(bangsTarget);
 
-                yield return playerControllers[next].Hit(player);
+                yield return HitPlayer(player, next);
             }
             else
             {
                 yield return DiscardUsedCard(target);
+            }
+        }
+
+        public IEnumerator HitPlayer(int player, int target)
+        {
+            yield return playerControllers[target].Hit(player);
+        }
+
+        public void StealIfHandNotEmpty(int player, int target)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+            Card c = null;
+            if (targetPc.HasCards)
+            {
+                c = targetPc.StealCardFromHand();
+                pc.AddCard(c);
             }
         }
 
@@ -426,13 +518,13 @@ namespace Bang
                 while (dodges < misses && decision != Decision.TakeHit)
                 {
                     RestartDecisions(player, target);
-                    playerControllers[target].EnableCardsBangResponse();
+                    targetPc.EnableCardsBangResponse();
                     yield return DecisionTimer(player);
                     decision = decisionsMade[target];
                     dodge = decision == Decision.Avoid;
                     if (dodge)
                     {
-                        yield return CardResponse(targetPc);
+                        yield return CardResponse(target);
                     }
                     dodges += dodge ? 1 : 0;
                 }
@@ -462,6 +554,13 @@ namespace Bang
         {
             yield return new WaitForSeconds(bangEventTime);
             Debug.Log(bangEvent);
+        }
+
+        public IEnumerator BangEventPlayedCard(int player, int target, Card card, Drop drop, int cardIndex)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController pcTarget = playerControllers[target];
+            yield return BangEvent(pc + " Card: " + card + " Target: " + pcTarget + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
         public IEnumerator Indians(int player, Card c)
@@ -523,20 +622,20 @@ namespace Bang
 
         private IEnumerator DecisionConsequence(int target, int player)
         {
-            PlayerController pc = playerControllers[target];
             switch (decisionsMade[target])
             {
                 case Decision.TakeHit:
-                    yield return pc.Hit(player);
+                    yield return HitPlayer(player, target);
                     break;
                 case Decision.Avoid:
-                    yield return CardResponse(pc);
+                    yield return CardResponse(target);
                     break;
             }
         }
 
-        private IEnumerator CardResponse(PlayerController pc)
+        private IEnumerator CardResponse(int target)
         {
+            PlayerController pc = playerControllers[target];
             int playerNum = pc.PlayerNumber;
             Card used = cardsUsed[playerNum];
             yield return BangEvent(pc + " has avoided the hit with: " + cardsUsed[playerNum]);
