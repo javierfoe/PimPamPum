@@ -704,10 +704,10 @@ namespace Bang
             yield return null;
         }
 
-        public virtual IEnumerator ShotBang(int target)
+        public virtual IEnumerator ShotBang(int target, Card c)
         {
             bangsUsed++;
-            yield return GameController.Bang(PlayerNumber, target, MissesToDodge);
+            yield return GameController.Bang(PlayerNumber, target, c, MissesToDodge);
         }
 
         public IEnumerator Indians()
