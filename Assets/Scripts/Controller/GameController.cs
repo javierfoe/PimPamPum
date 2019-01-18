@@ -526,7 +526,7 @@ namespace Bang
             {
                 targetPc.EnableCardsBangResponse();
                 decisionsMade[target] = Decision.Pending;
-                while(decisionsMade[target] == Decision.Pending)
+                while (decisionsMade[target] == Decision.Pending)
                 {
                     yield return null;
                 }
@@ -541,6 +541,14 @@ namespace Bang
                     r.card = cardsUsed[target];
                 }
                 responses.Add(r);
+            }
+            if (!(dodges < misses))
+            {
+                decisionsMade[target] = Decision.Dodge;
+            }
+            else
+            {
+                decisionsMade[target] = Decision.TakeHit;
             }
         }
 
