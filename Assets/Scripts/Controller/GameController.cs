@@ -301,7 +301,13 @@ namespace Bang
             }
         }
 
-        public IEnumerator DrawEffect(int player, Card c)
+        public IEnumerator DrawEffect(int player)
+        {
+            Card c = DrawCard();
+            yield return DrawEffect(player, c);
+        }
+
+        private IEnumerator DrawEffect(int player, Card c)
         {
             PickedCard = false;
             for (int i = player; i < maxPlayers; i++)
