@@ -45,8 +45,7 @@ namespace Bang
         private IPlayerView[] playerViews;
         private Decision[] decisionsMade;
         private Card[] cardsUsed;
-        private int amountPlayersDecided, generalStoreChoice;
-        private List<Response>[] playerResponses;
+        private int decisionMaker, generalStoreChoice;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
@@ -118,6 +117,32 @@ namespace Bang
         public float DecisionTime
         {
             get { return decisionTime; }
+        }
+
+        private bool AreDecisionsMade
+        {
+            get
+            {
+                bool res;
+                if (decisionMaker > Everyone)
+                {
+                    res = decisionsMade[decisionMaker] != Decision.Pending;
+                }
+                else
+                {
+                    res = true;
+                    for (int i = 0; i < decisionsMade.Length && res; i++)
+                    {
+                        res &= decisionsMade[i] != Decision.Pending;
+                    }
+                }
+                return res;
+            }
+        }
+
+        public Decision GetDecision(int player)
+        {
+            return decisionsMade[player];
         }
 
         private int NextPlayerAlive(int player)
@@ -475,10 +500,11 @@ namespace Bang
 
         public IEnumerator Dying(int target, int player)
         {
+            decisionMaker = target;
             decisionsMade[target] = Decision.Pending;
             PlayerController pc = playerControllers[target];
             float time = 0;
-            while (decisionsMade[target] != Decision.Pending && time < decisionTime && pc.IsDying)
+            while (!AreDecisionsMade && time < decisionTime && pc.IsDying)
             {
                 time += Time.deltaTime;
                 yield return null;
@@ -491,8 +517,7 @@ namespace Bang
         public IEnumerator Bang(int player, int target, int misses = 1)
         {
             int dodges;
-            playerResponses[target] = BarrelDodge(target, out dodges, misses);
-            List<Response> responses = playerResponses[target];
+            List<Response> responses = BarrelDodge(target, out dodges, misses);
             PlayerController targetPc = playerControllers[target];
             decisionsMade[target] = Decision.Pending;
             bool dodge;
@@ -525,7 +550,6 @@ namespace Bang
             {
                 decisionsMade[target] = Decision.TakeHit;
             }
-            amountPlayersDecided++;
         }
 
         private List<Response> BarrelDodge(int target, out int dodges, int misses = 1)
@@ -568,8 +592,7 @@ namespace Bang
 
         public IEnumerator Indians(int player, Card c)
         {
-            int target = Everyone;
-            RestartDecisions(player, target);
+            RestartDecisions(player, Everyone);
 
             PlayerController pc;
             for (int i = 0; i < maxPlayers; i++)
@@ -585,16 +608,16 @@ namespace Bang
                 }
             }
 
-            yield return DecisionTimer(player, target);
+            yield return DecisionTimer(player);
 
-            yield return ResponsesFinished(player, target);
+            yield return ResponsesFinished(player, Everyone);
         }
 
         public IEnumerator AvoidCard(int player, int target)
         {
             RestartDecisions(player, target);
             playerControllers[target].EnableCardsBangResponse();
-            yield return DecisionTimer(player, target);
+            yield return DecisionTimer(player);
         }
 
         public IEnumerator DiscardUsedCard(int target)
@@ -649,9 +672,7 @@ namespace Bang
 
         public IEnumerator Gatling(int player, Card c)
         {
-            int target = Everyone;
-
-            RestartDecisions(player, target);
+            RestartDecisions(player, Everyone);
             int dodges;
             PlayerController pc;
             List<Response> barrelCards;
@@ -676,9 +697,9 @@ namespace Bang
                 }
             }
 
-            yield return DecisionTimer(player, target);
+            yield return DecisionTimer(player);
 
-            yield return ResponsesFinished(player, target);
+            yield return ResponsesFinished(player, Everyone);
         }
 
         private void EnableResponseDuel(int player)
@@ -705,7 +726,7 @@ namespace Bang
         {
             EnableResponseDuel(target);
             RestartDecisions(player, target);
-            yield return DecisionTimer(player, target);
+            yield return DecisionTimer(player);
         }
 
         public void RestartDecisions(int player, int target)
@@ -713,14 +734,13 @@ namespace Bang
             cardsUsed = new Card[maxPlayers];
             decisionsMade = new Decision[maxPlayers];
             if (player != BangConstants.NoOne && target != player) decisionsMade[player] = Decision.Source;
+            decisionMaker = target;
         }
 
-        private IEnumerator DecisionTimer(int player, int target)
+        private IEnumerator DecisionTimer(int player)
         {
-            int maxDecisions = target == Everyone ? maxPlayers - 1 : 1;
             float time = 0;
-            amountPlayersDecided = 0;
-            while (amountPlayersDecided < maxDecisions && time < decisionTime)
+            while (!AreDecisionsMade && time < decisionTime)
             {
                 time += Time.deltaTime;
                 yield return null;
@@ -751,7 +771,6 @@ namespace Bang
         public void SetMatch(int maxPlayers, GameObject[] playerControllerGOs)
         {
             MaxPlayers = maxPlayers;
-            playerResponses = new List<Response>[maxPlayers];
             AddPlayerControllers(playerControllerGOs);
 
             foreach (PlayerController pc in playerControllers)
