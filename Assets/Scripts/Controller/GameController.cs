@@ -8,13 +8,6 @@ namespace Bang
     public class GameController : NetworkBehaviour
     {
 
-        private struct Response
-        {
-            public Decision decision;
-            public bool barrelDraw;
-            public Card card;
-        }
-
         public static GameObject CardPrefab
         {
             get; private set;
@@ -45,7 +38,7 @@ namespace Bang
         private IPlayerView[] playerViews;
         private Decision[] decisionsMade;
         private Card[] cardsUsed;
-        private int decisionMaker, generalStoreChoice;
+        private int decisionMaker, generalStoreChoice, dodges;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
@@ -301,16 +294,17 @@ namespace Bang
             }
         }
 
-        public IEnumerator DrawEffect(int player, Card c)
+        public IEnumerator DrawEffect(int player)
         {
+            DrawnCard = DrawCard();
             PickedCard = false;
             for (int i = player; i < maxPlayers; i++)
             {
-                yield return playerControllers[i].DrawEffectTrigger(c);
+                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
             }
             for (int i = 0; i < player; i++)
             {
-                yield return playerControllers[i].DrawEffectTrigger(c);
+                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
             }
         }
 
@@ -510,57 +504,50 @@ namespace Bang
 
         public IEnumerator Bang(int player, int target, int misses = 1)
         {
-            int dodges;
-            List<Response> responses = BarrelDodge(target, out dodges, misses);
-            PlayerController targetPc = playerControllers[target];
-            decisionsMade[target] = Decision.Pending;
-            bool dodge;
-            Response r;
-            while (dodges < misses && decisionsMade[target] != Decision.TakeHit)
+            yield return BarrelDodge(target, misses);
+            RestartDecisions(player, target);
+            Decision decision = Decision.Pending;
+            if (dodges >= misses)
             {
-                targetPc.EnableCardsBangResponse();
-                decisionsMade[target] = Decision.Pending;
-                while(decisionsMade[target] == Decision.Pending)
+                decisionsMade[target] = Decision.Barrel;
+            }
+            else
+            {
+                PlayerController targetPc = playerControllers[target];
+                bool dodge;
+                while (dodges < misses && decision != Decision.TakeHit)
                 {
-                    yield return null;
+                    RestartDecisions(player, target);
+                    targetPc.EnableCardsBangResponse();
+                    yield return DecisionTimer(player);
+                    decision = decisionsMade[target];
+                    dodge = decision == Decision.Avoid;
+                    if (dodge)
+                    {
+                        yield return CardResponse(target);
+                    }
+                    dodges += dodge ? 1 : 0;
                 }
-                dodge = decisionsMade[target] == Decision.Dodge;
-                dodges += dodge ? 1 : 0;
-                r = new Response
+                if (decision == Decision.TakeHit)
                 {
-                    decision = decisionsMade[target]
-                };
-                if (dodge)
-                {
-                    r.card = cardsUsed[target];
+                    yield return targetPc.Hit(player);
                 }
-                responses.Add(r);
             }
         }
 
-        private List<Response> BarrelDodge(int target, out int dodges, int misses = 1)
+        private IEnumerator BarrelDodge(int target, int misses = 1)
         {
-            List<Response> res = new List<Response>();
             dodges = 0;
             bool dodge;
             PlayerController pc = playerControllers[target];
             int barrels = pc.Barrels;
-            Card c;
-            Response r;
             for (int i = 0; i < barrels && dodges < misses; i++)
             {
-                c = DrawCard();
-                dodge = Barrel.CheckCondition(c);
-                r = new Response
-                {
-                    decision = Decision.Barrel,
-                    card = c,
-                    barrelDraw = dodge
-                };
-                res.Add(r);
+                yield return DrawEffect(target);
+                dodge = Barrel.CheckCondition(DrawnCard);
                 dodges += dodge ? 1 : 0;
+                yield return BangEvent(pc + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + DrawnCard);
             }
-            return res;
         }
 
         public IEnumerator BangEvent(string bangEvent)
@@ -659,15 +646,14 @@ namespace Bang
         public IEnumerator Gatling(int player, Card c)
         {
             RestartDecisions(player, Everyone);
-            int dodges;
+
             PlayerController pc;
-            List<Response> barrelCards;
             for (int i = 0; i < maxPlayers; i++)
             {
                 pc = playerControllers[i];
                 if (player != i && !pc.IsDead && !pc.Immune(c))
                 {
-                    barrelCards = BarrelDodge(i, out dodges);
+                    yield return BarrelDodge(i);
                     if (dodges < 1)
                     {
                         playerControllers[i].EnableCardsBangResponse();
