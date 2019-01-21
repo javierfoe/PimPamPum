@@ -50,6 +50,7 @@ namespace Bang
         void SetRole(Role role);
         void EnableEndTurnButton(bool enable);
         void SetTextTakeHitButton(string text);
+        void EnableBarrelButton(bool enable);
         void EnableTakeHitButton(bool enable);
         void EnableDieButton(bool enable);
         void EnableCard(int index, bool enable);

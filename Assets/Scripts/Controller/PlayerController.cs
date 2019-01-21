@@ -575,21 +575,21 @@ namespace Bang
             EnableCards();
         }
 
-        public void EnableCardsBangResponse()
+        public void EnableMissedsResponse()
         {
             EnableTakeHitButton(true);
             State = State.Response;
             EnableCards(CardType.Missed);
         }
 
-        public void EnableCardsIndiansResponse()
+        public void EnableBangsResponse()
         {
             EnableTakeHitButton(true);
             State = State.Response;
             EnableCards(CardType.Bang);
         }
 
-        public void EnableCardsDuelResponse()
+        public void EnableBangsDuelResponse()
         {
             EnableTakeHitButton(true);
             State = State.Duel;
@@ -967,7 +967,6 @@ namespace Bang
 
         public virtual IEnumerator AvoidCard(int player, int target)
         {
-            GameController.RestartDecisions(player, target);
             yield return null;
         }
 
@@ -1122,6 +1121,27 @@ namespace Bang
             RpcSetPlayerName(PlayerName);
         }
 
+        public void EnableBarrelButton(bool value)
+        {
+            TargetEnableBarrelButton(connectionToClient, value);
+        }
+        
+        private void BangResponseButton()
+        {
+            PlayerView.EnableTakeHitButton(false);
+            PlayerView.EnableBarrelButton(false);
+        }
+
+        protected void AvoidButton()
+        {
+            TargetAvoidButton(connectionToClient);
+        }
+
+        protected void TakeHitButton()
+        {
+            TargetTakeHitButton(connectionToClient);
+        }
+
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
@@ -1138,7 +1158,7 @@ namespace Bang
         [Client]
         public void TakeHit()
         {
-            PlayerView.EnableTakeHitButton(false);
+            BangResponseButton();
             CmdMakeDecision(Decision.TakeHit);
         }
 
@@ -1153,6 +1173,13 @@ namespace Bang
         {
             CmdUseCard(index, player, drop, cardIndex);
             CmdStopTargeting();
+        }
+
+        [Client]
+        public void UseBarrel()
+        {
+            BangResponseButton();
+            CmdMakeDecision(Decision.Barrel);
         }
 
         [Client]
@@ -1349,6 +1376,18 @@ namespace Bang
         }
 
         [TargetRpc]
+        private void TargetAvoidButton(NetworkConnection conn)
+        {
+            PlayerView.SetTextTakeHitButton("Take card effect");
+        }
+
+        [TargetRpc]
+        private void TargetTakeHitButton(NetworkConnection conn)
+        {
+            PlayerView.SetTextTakeHitButton("Take hit");
+        }
+
+        [TargetRpc]
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             if (!isLocalPlayer)
@@ -1373,6 +1412,12 @@ namespace Bang
         private void TargetEnableDieButton(NetworkConnection conn, bool value)
         {
             PlayerView.EnableDieButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableBarrelButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableBarrelButton(value);
         }
 
         [TargetRpc]

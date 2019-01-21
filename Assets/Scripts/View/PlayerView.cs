@@ -20,6 +20,7 @@ namespace Bang
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
         private DieButton dieButton;
+        private BarrelButton barrelButton;
 
         private int HiddenCards
         {
@@ -47,7 +48,9 @@ namespace Bang
             takeHitButton = FindObjectOfType<TakeHitButton>();
             dieButton = FindObjectOfType<DieButton>();
             endGamePanel = FindObjectOfType<EndGamePanelView>();
+            barrelButton = FindObjectOfType<BarrelButton>();
             endGamePanel.gameObject.SetActive(false);
+            barrelButton.Active = false;
             endTurnButton.Active = false;
             takeHitButton.Active = false;
             dieButton.Active = false;
@@ -182,6 +185,11 @@ namespace Bang
         public void SetTextTakeHitButton(string text)
         {
             takeHitButton.SetText(text);
+        }
+
+        public void EnableBarrelButton(bool value)
+        {
+            barrelButton.Active = value;
         }
     }
 }

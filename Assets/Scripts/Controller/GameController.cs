@@ -36,9 +36,9 @@ namespace Bang
         [SyncVar] private int maxPlayers;
 
         private IPlayerView[] playerViews;
-        private Decision[] decisionsMade;
-        private Card[] cardsUsed;
-        private int decisionMaker, generalStoreChoice, dodges;
+        private Decision decision;
+        private Card cardUsed;
+        private int generalStoreChoice;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
@@ -107,37 +107,6 @@ namespace Bang
             }
         }
 
-        public float DecisionTime
-        {
-            get { return decisionTime; }
-        }
-
-        private bool AreDecisionsMade
-        {
-            get
-            {
-                bool res;
-                if (decisionMaker > Everyone)
-                {
-                    res = decisionsMade[decisionMaker] != Decision.Pending;
-                }
-                else
-                {
-                    res = true;
-                    for (int i = 0; i < decisionsMade.Length && res; i++)
-                    {
-                        res &= decisionsMade[i] != Decision.Pending;
-                    }
-                }
-                return res;
-            }
-        }
-
-        public Decision GetDecision(int player)
-        {
-            return decisionsMade[player];
-        }
-
         private int NextPlayerAlive(int player)
         {
             PlayerController pc;
@@ -166,11 +135,7 @@ namespace Bang
 
         public void EnableOthersProperties(int player, bool value)
         {
-            for (int i = player + 1; i < maxPlayers; i++)
-            {
-                playerControllers[i].EnableProperties(value);
-            }
-            for (int i = 0; i < player; i++)
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 playerControllers[i].EnableProperties(value);
             }
@@ -194,11 +159,7 @@ namespace Bang
 
         public IEnumerator UsedBeer(int player)
         {
-            for (int i = player; i < maxPlayers; i++)
-            {
-                yield return playerControllers[i].UsedBeer();
-            }
-            for (int i = 0; i < player; i++)
+            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 yield return playerControllers[i].UsedBeer();
             }
@@ -298,11 +259,7 @@ namespace Bang
         {
             DrawnCard = DrawCard();
             PickedCard = false;
-            for (int i = player; i < maxPlayers; i++)
-            {
-                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
-            }
-            for (int i = 0; i < player; i++)
+            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
             }
@@ -325,8 +282,8 @@ namespace Bang
 
         public void MakeDecision(int player, Card card, Decision decision)
         {
-            cardsUsed[player] = card;
-            decisionsMade[player] = decision;
+            cardUsed = card;
+            this.decision = decision;
         }
 
         public void EquipPropertyTo(int target, Property p)
@@ -341,7 +298,7 @@ namespace Bang
 
             yield return targetPc.AvoidCard(player, target);
 
-            if (decisionsMade[target] != Decision.Avoid)
+            if (decision != Decision.Avoid)
             {
                 Card c = null;
                 switch (drop)
@@ -376,7 +333,7 @@ namespace Bang
 
             yield return targetPc.AvoidCard(player, target);
 
-            if (decisionsMade[target] != Decision.Avoid)
+            if (decision != Decision.Avoid)
             {
                 Card c = null;
                 switch (drop)
@@ -414,9 +371,21 @@ namespace Bang
             int next = player;
             int players = PlayersAlive;
             generalStoreChoices = boardController.DrawGeneralStoreCards(players);
+            NetworkConnection conn;
+            float time;
             while (players > 1)
             {
-                yield return GeneralStoreChoice(next);
+                generalStoreChoice = -1;
+                time = 0;
+                conn = playerControllers[next].connectionToClient;
+                boardController.EnableCards(conn, true);
+                while (generalStoreChoice < 0 && time < decisionTime)
+                {
+                    time += Time.deltaTime;
+                    yield return null;
+                }
+                boardController.EnableCards(conn, false);
+                generalStoreChoice = generalStoreChoice < 0 ? Random.Range(0, generalStoreChoices.Count) : generalStoreChoice;
                 yield return GetCardGeneralStore(next, generalStoreChoice);
                 next = NextPlayerAlive(next);
                 players--;
@@ -440,7 +409,7 @@ namespace Bang
 
             yield return playerControllers[target].AvoidCard(player, target);
 
-            if (decisionsMade[target] != Decision.Avoid)
+            if (decision != Decision.Avoid)
             {
 
                 yield return BangEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
@@ -448,15 +417,26 @@ namespace Bang
                 do
                 {
                     next = next == player ? target : player;
-                    yield return ResponseDuel(player, next);
-                    if (decisionsMade[next] == Decision.Avoid)
+                    EnableResponseDuel(target);
+                    float time = 0;
+                    decision = Decision.Pending;
+                    while (decision != Decision.Pending && time < decisionTime)
+                    {
+                        time += Time.deltaTime;
+                        yield return null;
+                    }
+                    if (decision == Decision.Pending)
+                    {
+                        decision = Decision.TakeHit;
+                    }
+                    else if (decision == Decision.Avoid)
                     {
                         if (next == target)
                         {
                             bangsTarget++;
                         }
                     }
-                } while (decisionsMade[next] != Decision.TakeHit);
+                } while (decision != Decision.TakeHit);
 
                 playerControllers[player].CheckNoCards();
                 playerControllers[target].FinishDuelTarget(bangsTarget);
@@ -488,11 +468,9 @@ namespace Bang
 
         public IEnumerator Dying(int target, int player)
         {
-            decisionMaker = target;
-            decisionsMade[target] = Decision.Pending;
             PlayerController pc = playerControllers[target];
             float time = 0;
-            while (!AreDecisionsMade && time < decisionTime && pc.IsDying)
+            while (decision != Decision.Die && time < decisionTime && pc.IsDying)
             {
                 time += Time.deltaTime;
                 yield return null;
@@ -504,50 +482,57 @@ namespace Bang
 
         public IEnumerator Bang(int player, int target, int misses = 1)
         {
-            yield return BarrelDodge(target, misses);
-            RestartDecisions(player, target);
-            Decision decision = Decision.Pending;
-            if (dodges >= misses)
+            PlayerController targetPc = playerControllers[target];
+            float time = 0;
+            int dodges = 0, barrelsUsed = 0, barrels = targetPc.Barrels;
+            bool dodge;
+            Card barrelDrawn;
+            while (dodges < misses && decision != Decision.TakeHit)
             {
-                decisionsMade[target] = Decision.Barrel;
-            }
-            else
-            {
-                PlayerController targetPc = playerControllers[target];
-                bool dodge;
-                while (dodges < misses && decision != Decision.TakeHit)
+                targetPc.EnableMissedsResponse();
+                if (barrelsUsed < barrels)
                 {
-                    RestartDecisions(player, target);
-                    targetPc.EnableCardsBangResponse();
-                    yield return DecisionTimer(player);
-                    decision = decisionsMade[target];
-                    dodge = decision == Decision.Avoid;
-                    if (dodge)
-                    {
-                        yield return CardResponse(target);
-                    }
+                    targetPc.EnableBarrelButton(true);
+                }
+                while (time < decisionTime && decision == Decision.Pending)
+                {
+                    time += Time.deltaTime;
+                    yield return null;
+                }
+                if (time - decisionTime < 0.01f)
+                {
+                    decision = Decision.TakeHit;
+                }
+                else if (decision == Decision.Avoid)
+                {
+                    dodges++;
+                    yield return CardResponse(target);
+                }
+                else if (decision == Decision.Barrel)
+                {
+                    barrelsUsed++;
+                    barrelDrawn = BarrelDodge(out dodge);
                     dodges += dodge ? 1 : 0;
+                    yield return BarrelEffect(target, barrelDrawn, dodge);
                 }
-                if (decision == Decision.TakeHit)
-                {
-                    yield return targetPc.Hit(player);
-                }
+            }
+            if (decision == Decision.TakeHit)
+            {
+                yield return targetPc.Hit(player);
             }
         }
 
-        private IEnumerator BarrelDodge(int target, int misses = 1)
+        private Card BarrelDodge(out bool dodged)
         {
-            dodges = 0;
-            bool dodge;
-            PlayerController pc = playerControllers[target];
-            int barrels = pc.Barrels;
-            for (int i = 0; i < barrels && dodges < misses; i++)
-            {
-                yield return DrawEffect(target);
-                dodge = Barrel.CheckCondition(DrawnCard);
-                dodges += dodge ? 1 : 0;
-                yield return BangEvent(pc + (dodge ? " has avoided a hit with the barrel." : " the barrel didn't help.") + " Card: " + DrawnCard);
-            }
+            Card c = DrawCard();
+            dodged = Barrel.CheckCondition(c);
+            return c;
+        }
+
+        private IEnumerator BarrelEffect(int target, Card c, bool dodge)
+        {
+            yield return DrawEffect(target);
+            yield return BangEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
         }
 
         public IEnumerator BangEvent(string bangEvent)
@@ -565,171 +550,84 @@ namespace Bang
 
         public IEnumerator Indians(int player, Card c)
         {
-            RestartDecisions(player, Everyone);
-
             PlayerController pc;
-            for (int i = 0; i < maxPlayers; i++)
+            float time = 0;
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 pc = playerControllers[i];
-                if (player != i && !pc.IsDead && !pc.Immune(c))
+                if (!pc.Immune(c))
                 {
-                    playerControllers[i].EnableCardsIndiansResponse();
-                }
-                else
-                {
-                    decisionsMade[i] = Decision.Source;
+                    yield return pc.AvoidCard(player, i);
+                    if (decision != Decision.Avoid)
+                    {
+                        decision = Decision.Pending;
+                        pc.EnableBangsResponse();
+                        while(time < decisionTime && decision == Decision.Pending)
+                        {
+                            time += Time.deltaTime;
+                            yield return null;
+                        }
+                        if(decision == Decision.Avoid)
+                        {
+                            yield return CardResponse(i);
+                        }
+                        else
+                        {
+                            yield return HitPlayer(i, player);
+                        }
+                    }
+                    else
+                    {
+                        yield return DiscardUsedCard(i);
+                    }
                 }
             }
-
-            yield return DecisionTimer(player);
-
-            yield return ResponsesFinished(player, Everyone);
         }
 
         public IEnumerator AvoidCard(int player, int target)
         {
-            RestartDecisions(player, target);
-            playerControllers[target].EnableCardsBangResponse();
-            yield return DecisionTimer(player);
+            playerControllers[target].EnableMissedsResponse();
+            float time = 0;
+            float total = decisionTime / 2;
+            while (time < total && decision == Decision.Pending)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
         }
 
         public IEnumerator DiscardUsedCard(int target)
         {
-            Card c = cardsUsed[target];
-            yield return BangEvent(playerControllers[target] + " has avoided the card effect with: " + c);
-            DiscardCard(c);
-        }
-
-        private IEnumerator ResponsesFinished(int player, int target)
-        {
-            if (target == Everyone)
-            {
-                for (int i = player + 1; i < maxPlayers; i++)
-                {
-                    yield return DecisionConsequence(i, player);
-                }
-
-                for (int i = 0; i < player; i++)
-                {
-                    yield return DecisionConsequence(i, player);
-                }
-            }
-            else
-            {
-                yield return DecisionConsequence(target, player);
-            }
-        }
-
-        private IEnumerator DecisionConsequence(int target, int player)
-        {
-            switch (decisionsMade[target])
-            {
-                case Decision.TakeHit:
-                    yield return HitPlayer(player, target);
-                    break;
-                case Decision.Avoid:
-                    yield return CardResponse(target);
-                    break;
-            }
+            yield return BangEvent(playerControllers[target] + " has avoided the card effect with: " + cardUsed);
+            DiscardCard(cardUsed);
         }
 
         private IEnumerator CardResponse(int target)
         {
             PlayerController pc = playerControllers[target];
             int playerNum = pc.PlayerNumber;
-            Card used = cardsUsed[playerNum];
-            yield return BangEvent(pc + " has avoided the hit with: " + cardsUsed[playerNum]);
+            Card used = cardUsed;
+            yield return BangEvent(pc + " has avoided the hit with: " + cardUsed);
             pc.Response();
             DiscardCard(used);
         }
 
         public IEnumerator Gatling(int player, Card c)
         {
-            RestartDecisions(player, Everyone);
-
             PlayerController pc;
-            for (int i = 0; i < maxPlayers; i++)
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 pc = playerControllers[i];
-                if (player != i && !pc.IsDead && !pc.Immune(c))
+                if (!pc.Immune(c))
                 {
-                    yield return BarrelDodge(i);
-                    if (dodges < 1)
-                    {
-                        playerControllers[i].EnableCardsBangResponse();
-                    }
-                    else if (dodges > 0)
-                    {
-                        decisionsMade[i] = Decision.Barrel;
-                    }
-                }
-                else
-                {
-                    decisionsMade[i] = Decision.Source;
+                    yield return Bang(player, i);
                 }
             }
-
-            yield return DecisionTimer(player);
-
-            yield return ResponsesFinished(player, Everyone);
         }
 
         private void EnableResponseDuel(int player)
         {
-            playerControllers[player].EnableCardsDuelResponse();
-        }
-
-        private IEnumerator GeneralStoreChoice(int player)
-        {
-            generalStoreChoice = -1;
-            float time = 0;
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            boardController.EnableCards(conn, true);
-            while (generalStoreChoice < 0 && time < decisionTime)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
-            boardController.EnableCards(conn, false);
-            generalStoreChoice = generalStoreChoice < 0 ? Random.Range(0, generalStoreChoices.Count) : generalStoreChoice;
-        }
-
-        private IEnumerator ResponseDuel(int player, int target)
-        {
-            EnableResponseDuel(target);
-            RestartDecisions(player, target);
-            yield return DecisionTimer(player);
-        }
-
-        public void RestartDecisions(int player, int target)
-        {
-            cardsUsed = new Card[maxPlayers];
-            decisionsMade = new Decision[maxPlayers];
-            if (player != BangConstants.NoOne && target != player) decisionsMade[player] = Decision.Source;
-            decisionMaker = target;
-        }
-
-        private IEnumerator DecisionTimer(int player)
-        {
-            float time = 0;
-            while (!AreDecisionsMade && time < decisionTime)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
-
-            Decision ed;
-            for (int i = 0; i < maxPlayers; i++)
-            {
-                playerControllers[i].EnableTakeHitButton(false);
-                ed = decisionsMade[i];
-                decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
-            }
-
-            for (int i = 0; i < maxPlayers; i++)
-            {
-                if (i != player) playerControllers[i].DisableCards();
-            }
+            playerControllers[player].EnableBangsDuelResponse();
         }
 
         public void Saloon()
@@ -755,11 +653,7 @@ namespace Bang
         public IEnumerator DiscardCardEndTurn(Card c, int player)
         {
             PickedCard = false;
-            for (int i = player + 1; i < maxPlayers; i++)
-            {
-                yield return playerControllers[i].EndTurnDiscard(c);
-            }
-            for (int i = 0; i < player; i++)
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 yield return playerControllers[i].EndTurnDiscard(c);
             }
@@ -823,11 +717,7 @@ namespace Bang
 
         public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
         {
-            for (int i = player; i < maxPlayers; i++)
-            {
-                yield return playerControllers[i].DiscardCopiesOf<T>(p);
-            }
-            for (int i = 0; i < player; i++)
+            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
             {
                 yield return playerControllers[i].DiscardCopiesOf<T>(p);
             }
