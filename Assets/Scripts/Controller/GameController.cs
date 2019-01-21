@@ -325,7 +325,6 @@ namespace Bang
 
         public IEnumerator Panic(int player, int target, Drop drop, int cardIndex)
         {
-
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
 
@@ -418,7 +417,7 @@ namespace Bang
                     EnableResponseDuel(target);
                     float time = 0;
                     decision = Decision.Pending;
-                    while (decision != Decision.Pending && time < decisionTime)
+                    while (decision == Decision.Pending && time < decisionTime)
                     {
                         time += Time.deltaTime;
                         yield return null;
@@ -471,6 +470,7 @@ namespace Bang
         {
             PlayerController pc = playerControllers[target];
             float time = 0;
+            decision = Decision.Pending;
             while (decision != Decision.Die && time < decisionTime && pc.IsDying)
             {
                 time += Time.deltaTime;
