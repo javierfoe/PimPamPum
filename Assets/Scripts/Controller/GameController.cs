@@ -23,8 +23,6 @@ namespace Bang
             get; private set;
         }
 
-        private static readonly int Everyone = -1;
-
         [SerializeField] private GameObject game = null, mainMenu = null;
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;

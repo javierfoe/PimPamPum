@@ -937,6 +937,11 @@ namespace Bang
 
         public void FinishCardUsed()
         {
+            if (IsDead)
+            {
+                ForceEndTurn();
+                return;
+            }
             CheckNoCards();
             if (ActivePlayer)
                 Phase2();
