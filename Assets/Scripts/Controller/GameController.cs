@@ -451,7 +451,10 @@ namespace Bang
 
         public IEnumerator HitPlayer(int player, int target)
         {
-            yield return playerControllers[target].Hit(player);
+            PlayerController pc = playerControllers[target];
+            yield return pc.Hit(player);
+            yield return pc.Dying(player);
+            yield return pc.Die(player);
         }
 
         public void StealIfHandNotEmpty(int player, int target)
@@ -466,7 +469,7 @@ namespace Bang
             }
         }
 
-        public IEnumerator Dying(int target, int player)
+        public IEnumerator Dying(int target)
         {
             PlayerController pc = playerControllers[target];
             float time = 0;
@@ -476,11 +479,18 @@ namespace Bang
                 yield return null;
             }
             pc.EnableDieButton(false);
-            if (pc.IsDying) yield return pc.Die(player);
-            if (player != BangConstants.NoOne) playerControllers[player].DyingFinished();
         }
 
         public IEnumerator Bang(int player, int target, int misses = 1)
+        {
+            yield return BangTo(player, target, misses);
+            if (decision == Decision.TakeHit)
+            {
+                yield return HitPlayer(player, target);
+            }
+        }
+
+        private IEnumerator BangTo(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
             float time = 0;
@@ -499,7 +509,7 @@ namespace Bang
                     time += Time.deltaTime;
                     yield return null;
                 }
-                if (time - decisionTime < 0.01f)
+                if (decisionTime - time < 0.01f)
                 {
                     decision = Decision.TakeHit;
                 }
@@ -515,10 +525,6 @@ namespace Bang
                     dodges += dodge ? 1 : 0;
                     yield return BarrelEffect(target, barrelDrawn, dodge);
                 }
-            }
-            if (decision == Decision.TakeHit)
-            {
-                yield return targetPc.Hit(player);
             }
         }
 
@@ -573,7 +579,7 @@ namespace Bang
                         }
                         else
                         {
-                            yield return HitPlayer(i, player);
+                            yield return pc.Hit(player);
                         }
                     }
                     else
@@ -581,6 +587,19 @@ namespace Bang
                         yield return DiscardUsedCard(i);
                     }
                 }
+            }
+            yield return MultipleTargetResponsesFinished(player);
+        }
+
+        private IEnumerator MultipleTargetResponsesFinished(int player)
+        {
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            {
+                yield return playerControllers[i].Dying(player);       
+            }
+            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            {
+                yield return playerControllers[i].Die(player);
             }
         }
 
@@ -620,9 +639,10 @@ namespace Bang
                 pc = playerControllers[i];
                 if (!pc.Immune(c))
                 {
-                    yield return Bang(player, i);
+                    yield return BangTo(player, i);
                 }
             }
+            yield return MultipleTargetResponsesFinished(player);
         }
 
         private void EnableResponseDuel(int player)

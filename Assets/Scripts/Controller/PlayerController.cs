@@ -434,17 +434,6 @@ namespace Bang
 
         protected virtual void CardUsedOutOfTurn() { }
 
-        public void DyingFinished()
-        {
-            StayOnPhase2();
-        }
-
-        private void StayOnPhase2()
-        {
-            if (ActivePlayer)
-                Phase2();
-        }
-
         public virtual IEnumerator DrawEffectTrigger(Card c)
         {
             yield return null;
@@ -850,14 +839,25 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if (attacker != BangConstants.NoOne) yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
+            if (attacker != BangConstants.NoOne)
+            {
+                yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
+            }
+            else
+            {
+                yield return BangEvent(this + " loses " + amount + " hit points.");
+            }
 
             EnableTakeHitButton(false);
             HP -= amount;
+        }
+
+        public IEnumerator Dying(int attacker, int amount = 1)
+        {
             if (IsDying)
             {
                 EnableCardsDying();
-                yield return GameController.Dying(PlayerNumber, attacker);
+                yield return GameController.Dying(PlayerNumber);
                 DisableCards();
             }
             if (!IsDead)
@@ -870,23 +870,26 @@ namespace Bang
 
         public virtual IEnumerator Die(int killer)
         {
-            yield return BangEvent(this + " has died.");
-            IsDead = true;
-            if (Role != Role.Sheriff) RpcSetRole(Role);
-            List<Card> deadCards = new List<Card>();
-            for (int i = hand.Count - 1; i > -1; i--)
+            if (IsDying)
             {
-                deadCards.Add(UnequipHandCard(i));
-            }
-            for (int i = properties.Count - 1; i > -1; i--)
-            {
-                deadCards.Add(UnequipProperty(i));
-            }
-            Card weapon = UnequipWeapon();
-            if (weapon != null) deadCards.Add(weapon);
+                yield return BangEvent(this + " has died.");
+                IsDead = true;
+                if (Role != Role.Sheriff) RpcSetRole(Role);
+                List<Card> deadCards = new List<Card>();
+                for (int i = hand.Count - 1; i > -1; i--)
+                {
+                    deadCards.Add(UnequipHandCard(i));
+                }
+                for (int i = properties.Count - 1; i > -1; i--)
+                {
+                    deadCards.Add(UnequipProperty(i));
+                }
+                Card weapon = UnequipWeapon();
+                if (weapon != null) deadCards.Add(weapon);
 
-            GameController.CheckDeath(deadCards);
-            GameController.CheckMurder(killer, PlayerNumber);
+                GameController.CheckDeath(deadCards);
+                GameController.CheckMurder(killer, PlayerNumber);
+            }
         }
 
         public void DiscardAll()
@@ -935,7 +938,8 @@ namespace Bang
         public void FinishCardUsed()
         {
             CheckNoCards();
-            StayOnPhase2();
+            if (ActivePlayer)
+                Phase2();
         }
 
         public void DiscardCardFromHand(int index)
@@ -1125,7 +1129,7 @@ namespace Bang
         {
             TargetEnableBarrelButton(connectionToClient, value);
         }
-        
+
         private void BangResponseButton()
         {
             PlayerView.EnableTakeHitButton(false);
