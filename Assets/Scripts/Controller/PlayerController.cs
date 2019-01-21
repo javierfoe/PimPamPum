@@ -449,7 +449,7 @@ namespace Bang
             {
                 yield return BangEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.DiscardCard(d);
-                yield return Hit(BangConstants.NoOne, 3);
+                yield return GetHitBy(BangConstants.NoOne, 3);
             }
             else
             {
@@ -707,6 +707,13 @@ namespace Bang
         public IEnumerator Gatling()
         {
             yield return GameController.Gatling(PlayerNumber, draggedCard);
+        }
+
+        public IEnumerator GetHitBy(int player, int amount = 1)
+        {
+            yield return Hit(player, amount);
+            yield return Dying(player, amount);
+            yield return Die(player);
         }
 
         public virtual IEnumerator EndTurnDiscard(Card c)

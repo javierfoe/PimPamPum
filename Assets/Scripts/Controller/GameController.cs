@@ -133,7 +133,7 @@ namespace Bang
 
         public void EnableOthersProperties(int player, bool value)
         {
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 playerControllers[i].EnableProperties(value);
             }
@@ -157,7 +157,7 @@ namespace Bang
 
         public IEnumerator UsedBeer(int player)
         {
-            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].UsedBeer();
             }
@@ -257,9 +257,13 @@ namespace Bang
         {
             DrawnCard = DrawCard();
             PickedCard = false;
-            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
+            }
+            if (!PickedCard)
+            {
+                DiscardCard(DrawnCard);
             }
         }
 
@@ -404,6 +408,8 @@ namespace Bang
             int next = player;
             int bangsTarget = 0;
 
+            decision = Decision.Pending;
+
             yield return playerControllers[target].AvoidCard(player, target);
 
             if (decision != Decision.Avoid)
@@ -414,7 +420,7 @@ namespace Bang
                 do
                 {
                     next = next == player ? target : player;
-                    EnableResponseDuel(target);
+                    playerControllers[next].EnableBangsDuelResponse();
                     float time = 0;
                     decision = Decision.Pending;
                     while (decision == Decision.Pending && time < decisionTime)
@@ -444,14 +450,6 @@ namespace Bang
             {
                 yield return DiscardUsedCard(target);
             }
-        }
-
-        public IEnumerator HitPlayer(int player, int target)
-        {
-            PlayerController pc = playerControllers[target];
-            yield return pc.Hit(player);
-            yield return pc.Dying(player);
-            yield return pc.Die(player);
         }
 
         public void StealIfHandNotEmpty(int player, int target)
@@ -488,6 +486,11 @@ namespace Bang
             }
         }
 
+        public IEnumerator HitPlayer(int player, int target)
+        {
+            yield return playerControllers[target].GetHitBy(player);
+        }
+
         private IEnumerator BangTo(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
@@ -495,6 +498,7 @@ namespace Bang
             int dodges = 0, barrelsUsed = 0, barrels = targetPc.Barrels;
             bool dodge;
             Card barrelDrawn;
+            decision = Decision.Pending;
             while (dodges < misses && decision != Decision.TakeHit)
             {
                 targetPc.EnableMissedsResponse();
@@ -513,11 +517,13 @@ namespace Bang
                 }
                 else if (decision == Decision.Avoid)
                 {
+                    decision = Decision.Pending;
                     dodges++;
                     yield return CardResponse(target);
                 }
                 else if (decision == Decision.Barrel)
                 {
+                    decision = Decision.Pending;
                     barrelsUsed++;
                     barrelDrawn = BarrelDodge(out dodge);
                     dodges += dodge ? 1 : 0;
@@ -556,11 +562,12 @@ namespace Bang
         {
             PlayerController pc;
             float time = 0;
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 pc = playerControllers[i];
-                if (!pc.Immune(c))
+                if (!pc.IsDead && !pc.Immune(c))
                 {
+                    decision = Decision.Pending;
                     yield return pc.AvoidCard(player, i);
                     if (decision != Decision.Avoid)
                     {
@@ -591,11 +598,11 @@ namespace Bang
 
         private IEnumerator MultipleTargetResponsesFinished(int player)
         {
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
-                yield return playerControllers[i].Dying(player);       
+                yield return playerControllers[i].Dying(player);
             }
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].Die(player);
             }
@@ -632,10 +639,10 @@ namespace Bang
         public IEnumerator Gatling(int player, Card c)
         {
             PlayerController pc;
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 pc = playerControllers[i];
-                if (!pc.Immune(c))
+                if (!pc.IsDead && !pc.Immune(c))
                 {
                     yield return BangTo(player, i);
                 }
@@ -645,7 +652,6 @@ namespace Bang
 
         private void EnableResponseDuel(int player)
         {
-            playerControllers[player].EnableBangsDuelResponse();
         }
 
         public void Saloon()
@@ -671,7 +677,7 @@ namespace Bang
         public IEnumerator DiscardCardEndTurn(Card c, int player)
         {
             PickedCard = false;
-            for (int i = player + 1; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].EndTurnDiscard(c);
             }
@@ -735,7 +741,7 @@ namespace Bang
 
         public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
         {
-            for (int i = player; i != player; i = i == maxPlayers ? 0 : i + 1)
+            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].DiscardCopiesOf<T>(p);
             }
