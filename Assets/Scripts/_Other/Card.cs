@@ -117,7 +117,7 @@ namespace Bang
         protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
-            yield return pc.ShotBang(player, this);
+            yield return pc.ShotBang(player);
         }
 
         public override string ToString()

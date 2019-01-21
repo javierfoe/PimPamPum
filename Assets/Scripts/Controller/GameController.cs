@@ -42,7 +42,6 @@ namespace Bang
 
         [SyncVar] private int maxPlayers;
 
-        private Coroutine[] coroutines;
         private IPlayerView[] playerViews;
         private Decision[] decisionsMade;
         private Card[] cardsUsed;
@@ -489,27 +488,8 @@ namespace Bang
             if (player != BangConstants.NoOne) playerControllers[player].DyingFinished();
         }
 
-        public IEnumerator Bang(int player, int target, Card c = null, int misses = 1)
+        public IEnumerator Bang(int player, int target, int misses = 1)
         {
-            coroutines = new Coroutine[maxPlayers];
-            if(target == Everyone)
-            {
-                for(int i = 0; i < maxPlayers; i++)
-                {
-                    if (i != player && c == null || c != null && !playerControllers[i].Immune(c)) coroutines[i] = StartCoroutine(Bang(i, misses));
-                }
-            }
-            else
-            {
-                coroutines[target] = StartCoroutine(Bang(target, misses));
-            }
-
-            yield return DecisionTimer(player, target);
-        }
-
-        private IEnumerator Bang(int target, int misses)
-        {
-            Debug.Log("New Bang coroutine started");
             int dodges;
             playerResponses[target] = BarrelDodge(target, out dodges, misses);
             List<Response> responses = playerResponses[target];
@@ -669,7 +649,36 @@ namespace Bang
 
         public IEnumerator Gatling(int player, Card c)
         {
-            yield return Bang(player, Everyone, c);
+            int target = Everyone;
+
+            RestartDecisions(player, target);
+            int dodges;
+            PlayerController pc;
+            List<Response> barrelCards;
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                pc = playerControllers[i];
+                if (player != i && !pc.IsDead && !pc.Immune(c))
+                {
+                    barrelCards = BarrelDodge(i, out dodges);
+                    if (dodges < 1)
+                    {
+                        playerControllers[i].EnableCardsBangResponse();
+                    }
+                    else if (dodges > 0)
+                    {
+                        decisionsMade[i] = Decision.Barrel;
+                    }
+                }
+                else
+                {
+                    decisionsMade[i] = Decision.Source;
+                }
+            }
+
+            yield return DecisionTimer(player, target);
+
+            yield return ResponsesFinished(player, target);
         }
 
         private void EnableResponseDuel(int player)
@@ -708,7 +717,6 @@ namespace Bang
 
         private IEnumerator DecisionTimer(int player, int target)
         {
-            Debug.Log("DecisionTimer IEnumerator");
             int maxDecisions = target == Everyone ? maxPlayers - 1 : 1;
             float time = 0;
             amountPlayersDecided = 0;
@@ -718,21 +726,17 @@ namespace Bang
                 yield return null;
             }
 
-            foreach (Coroutine coroutine in coroutines)
-            {
-                if(coroutine != null) StopCoroutine(coroutine);
-            }
-
-            PlayerController pc;
+            Decision ed;
             for (int i = 0; i < maxPlayers; i++)
             {
-                pc = playerControllers[i];
-                if (decisionsMade[i] == Decision.Pending)
-                {
-                    decisionsMade[i] = Decision.TakeHit;
-                    pc.EnableTakeHitButton(false);
-                    pc.DisableCards();
-                }
+                playerControllers[i].EnableTakeHitButton(false);
+                ed = decisionsMade[i];
+                decisionsMade[i] = ed == Decision.Pending ? Decision.TakeHit : ed;
+            }
+
+            for (int i = 0; i < maxPlayers; i++)
+            {
+                if (i != player) playerControllers[i].DisableCards();
             }
         }
 
