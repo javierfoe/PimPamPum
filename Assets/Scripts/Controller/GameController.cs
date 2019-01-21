@@ -157,7 +157,7 @@ namespace Bang
 
         public IEnumerator UsedBeer(int player)
         {
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player, j = 0; j < maxPlayers; i = i == maxPlayers - 1 ? 0 : i + 1, j++)
             {
                 yield return playerControllers[i].UsedBeer();
             }
@@ -257,7 +257,7 @@ namespace Bang
         {
             DrawnCard = DrawCard();
             PickedCard = false;
-            for (int i = player; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player, j = 0; j < maxPlayers; i = i == maxPlayers - 1 ? 0 : i + 1, j++)
             {
                 yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
             }
