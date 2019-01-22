@@ -298,6 +298,7 @@ namespace Bang
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
 
+            decision = Decision.Pending;
             yield return targetPc.AvoidCard(player, target);
 
             if (decision != Decision.Avoid)
@@ -332,6 +333,7 @@ namespace Bang
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
 
+            decision = Decision.Pending;
             yield return targetPc.AvoidCard(player, target);
 
             if (decision != Decision.Avoid)
@@ -645,7 +647,12 @@ namespace Bang
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
                 {
-                    yield return BangTo(player, i);
+                    decision = Decision.Pending;
+                    yield return pc.AvoidCard(player, i);
+                    if (decision != Decision.Avoid)
+                    {
+                        yield return BangTo(player, i);
+                    }
                 }
             }
             yield return MultipleTargetResponsesFinished(player);
