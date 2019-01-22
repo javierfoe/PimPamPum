@@ -434,6 +434,7 @@ namespace Bang
                     }
                     else if (decision == Decision.Avoid)
                     {
+                        yield return BangEvent(playerControllers[next] + " keeps dueling.");
                         if (next == target)
                         {
                             bangsTarget++;

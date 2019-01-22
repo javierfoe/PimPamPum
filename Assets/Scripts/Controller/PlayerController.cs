@@ -672,9 +672,8 @@ namespace Bang
             }
         }
 
-        private IEnumerator DuelResponse(int index)
+        private void DuelResponse(int index)
         {
-            yield return BangEvent(this + " keeps dueling with: " + hand[index]);
             MakeDecision(Decision.Avoid, index);
             DiscardCardFromHand(index);
         }
@@ -1266,7 +1265,7 @@ namespace Bang
                 case State.Duel:
                     if (drop == Drop.Trash)
                     {
-                        StartCoroutine(DuelResponse(index));
+                        DuelResponse(index);
                     }
                     break;
                 case State.Response:
