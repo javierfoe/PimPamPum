@@ -571,28 +571,19 @@ namespace Bang
                 if (!pc.IsDead && !pc.Immune(c))
                 {
                     decision = Decision.Pending;
-                    yield return pc.AvoidCard(player, i);
-                    if (decision != Decision.Avoid)
+                    pc.EnableBangsResponse();
+                    while (time < decisionTime && decision == Decision.Pending)
                     {
-                        decision = Decision.Pending;
-                        pc.EnableBangsResponse();
-                        while(time < decisionTime && decision == Decision.Pending)
-                        {
-                            time += Time.deltaTime;
-                            yield return null;
-                        }
-                        if(decision == Decision.Avoid)
-                        {
-                            yield return CardResponse(i);
-                        }
-                        else
-                        {
-                            yield return pc.Hit(player);
-                        }
+                        time += Time.deltaTime;
+                        yield return null;
+                    }
+                    if (decision == Decision.Avoid)
+                    {
+                        yield return CardResponse(i);
                     }
                     else
                     {
-                        yield return DiscardUsedCard(i);
+                        yield return pc.Hit(player);
                     }
                 }
             }
@@ -647,12 +638,7 @@ namespace Bang
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
                 {
-                    decision = Decision.Pending;
-                    yield return pc.AvoidCard(player, i);
-                    if (decision != Decision.Avoid)
-                    {
-                        yield return BangTo(player, i);
-                    }
+                    yield return BangTo(player, i);
                 }
             }
             yield return MultipleTargetResponsesFinished(player);
