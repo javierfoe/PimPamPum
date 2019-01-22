@@ -243,7 +243,7 @@ namespace Bang
             }
         }
 
-        protected virtual IEnumerator Phase1()
+        private IEnumerator Phase1()
         {
             yield return DrawPhase1();
             Phase2();
