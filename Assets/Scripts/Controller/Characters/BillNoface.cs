@@ -7,8 +7,9 @@ namespace Bang
 
         protected override IEnumerator DrawPhase1()
         {
-            Draw(1 + MaxHP - HP);
-            yield return null;
+            int drawncards = 1 + MaxHP - HP;
+            yield return BangEvent(this + " draws a total of " + drawncards + " cards.");
+            Draw(drawncards);
         }
 
         protected override string Character()

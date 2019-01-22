@@ -8,11 +8,12 @@ namespace Bang
 
         protected override IEnumerator DrawPhase1()
         {
-            if(!HasProperties && HasColt45)
+            Draw(2);
+            if (!HasProperties && HasColt45)
             {
+                yield return BangEvent(this + " draws 2 extra cards. He has no blue cards on play in front of him");
                 Draw(2);
             }
-            yield return base.DrawPhase1();
         }
 
         protected override string Character()

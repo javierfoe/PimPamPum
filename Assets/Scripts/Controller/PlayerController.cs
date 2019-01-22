@@ -243,10 +243,15 @@ namespace Bang
             }
         }
 
+        protected virtual IEnumerator Phase1()
+        {
+            yield return DrawPhase1();
+            Phase2();
+        }
+
         protected virtual IEnumerator DrawPhase1()
         {
             Draw(Phase1CardsDrawn);
-            Phase2();
             yield return null;
         }
 
@@ -390,11 +395,6 @@ namespace Bang
         public void SetTurn(bool value)
         {
             RpcSetTurn(value);
-        }
-
-        protected virtual IEnumerator Phase1()
-        {
-            yield return DrawPhase1();
         }
 
         protected void Phase2()

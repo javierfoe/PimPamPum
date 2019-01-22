@@ -4,12 +4,10 @@ namespace Bang
     public class PixiePete : PlayerController
     {
 
-        private const int drawCards = 3;
-
         public override void OnStartServer()
         {
             base.OnStartServer();
-            Phase1CardsDrawn = drawCards;
+            Phase1CardsDrawn = 3;
         }
 
         protected override string Character()
