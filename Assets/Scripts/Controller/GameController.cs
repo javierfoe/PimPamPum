@@ -256,14 +256,19 @@ namespace Bang
         public IEnumerator DrawEffect(int player)
         {
             DrawnCard = DrawCard();
+            yield return DrawEffect(player, DrawnCard);
+        }
+
+        public IEnumerator DrawEffect(int player, Card c)
+        {
             PickedCard = false;
             for (int i = player, j = 0; j < maxPlayers; i = i == maxPlayers - 1 ? 0 : i + 1, j++)
             {
-                yield return playerControllers[i].DrawEffectTrigger(DrawnCard);
+                yield return playerControllers[i].DrawEffect(c);
             }
             if (!PickedCard)
             {
-                DiscardCard(DrawnCard);
+                DiscardCard(c);
             }
         }
 
@@ -544,7 +549,7 @@ namespace Bang
 
         private IEnumerator BarrelEffect(int target, Card c, bool dodge)
         {
-            yield return DrawEffect(target);
+            yield return DrawEffect(target, c);
             yield return BangEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
         }
 
@@ -639,13 +644,13 @@ namespace Bang
                 if (!pc.IsDead && !pc.Immune(c))
                 {
                     yield return BangTo(player, i);
+                    if(decision == Decision.TakeHit)
+                    {
+                        yield return pc.Hit(i);
+                    }
                 }
             }
             yield return MultipleTargetResponsesFinished(player);
-        }
-
-        private void EnableResponseDuel(int player)
-        {
         }
 
         public void Saloon()

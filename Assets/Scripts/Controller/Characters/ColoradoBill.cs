@@ -1,14 +1,12 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 
 namespace Bang
 {
     public class ColoradoBill : PlayerController
     {
 
-        public override IEnumerator ShotBang(int target)
+        protected override IEnumerator ShotBangTrigger(int target)
         {
-            bangsUsed++;
             yield return GameController.DrawEffect(PlayerNumber);
             if (GameController.DrawnCard.Suit == Suit.Spades)
             {
@@ -18,7 +16,7 @@ namespace Bang
             else
             {
                 yield return BangEvent(this + " has shot an standard Bang! " + GameController.DrawnCard);
-                yield return GameController.Bang(PlayerNumber, target, MissesToDodge);
+                yield return base.ShotBangTrigger(target);
             }
         }
 

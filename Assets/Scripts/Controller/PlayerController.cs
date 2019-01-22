@@ -434,7 +434,15 @@ namespace Bang
 
         protected virtual void CardUsedOutOfTurn() { }
 
-        public virtual IEnumerator DrawEffectTrigger(Card c)
+        public IEnumerator DrawEffect(Card c)
+        {
+            if (!IsDead)
+            {
+                yield return DrawEffectTrigger(c);
+            }
+        }
+
+        protected virtual IEnumerator DrawEffectTrigger(Card c)
         {
             yield return null;
         }
@@ -692,9 +700,14 @@ namespace Bang
             yield return null;
         }
 
-        public virtual IEnumerator ShotBang(int target)
+        public IEnumerator ShotBang(int target)
         {
             bangsUsed++;
+            yield return ShotBangTrigger(target);
+        }
+
+        protected virtual IEnumerator ShotBangTrigger(int target)
+        {
             yield return GameController.Bang(PlayerNumber, target, MissesToDodge);
         }
 
@@ -715,7 +728,15 @@ namespace Bang
             yield return Die(player);
         }
 
-        public virtual IEnumerator EndTurnDiscard(Card c)
+        public IEnumerator EndTurnDiscard(Card c)
+        {
+            if (!IsDead)
+            {
+                yield return EndTurnDiscardTrigger(c);
+            }
+        }
+
+        protected virtual IEnumerator EndTurnDiscardTrigger(Card c)
         {
             yield return null;
         }
@@ -860,42 +881,50 @@ namespace Bang
 
         public IEnumerator Dying(int attacker, int amount = 1)
         {
-            if (IsDying)
-            {
-                EnableCardsDying();
-                yield return GameController.Dying(PlayerNumber);
-                DisableCards();
-            }
             if (!IsDead)
             {
-                for (int i = 0; i < amount; i++) HitTrigger(attacker);
+                if (IsDying)
+                {
+                    EnableCardsDying();
+                    yield return GameController.Dying(PlayerNumber);
+                    DisableCards();
+                }
+                if (!IsDead)
+                {
+                    for (int i = 0; i < amount; i++) HitTrigger(attacker);
+                }
             }
         }
 
         protected virtual void HitTrigger(int attacker) { }
 
-        public virtual IEnumerator Die(int killer)
+        public IEnumerator Die(int killer)
         {
-            if (IsDying)
+            if (!IsDead && IsDying)
             {
-                yield return BangEvent(this + " has died.");
-                IsDead = true;
-                if (Role != Role.Sheriff) RpcSetRole(Role);
-                List<Card> deadCards = new List<Card>();
-                for (int i = hand.Count - 1; i > -1; i--)
-                {
-                    deadCards.Add(UnequipHandCard(i));
-                }
-                for (int i = properties.Count - 1; i > -1; i--)
-                {
-                    deadCards.Add(UnequipProperty(i));
-                }
-                Card weapon = UnequipWeapon();
-                if (weapon != null) deadCards.Add(weapon);
-
-                GameController.CheckDeath(deadCards);
-                GameController.CheckMurder(killer, PlayerNumber);
+                yield return DieTrigger(killer);
             }
+        }
+
+        protected virtual IEnumerator DieTrigger(int killer)
+        {
+            yield return BangEvent(this + " has died.");
+            IsDead = true;
+            if (Role != Role.Sheriff) RpcSetRole(Role);
+            List<Card> deadCards = new List<Card>();
+            for (int i = hand.Count - 1; i > -1; i--)
+            {
+                deadCards.Add(UnequipHandCard(i));
+            }
+            for (int i = properties.Count - 1; i > -1; i--)
+            {
+                deadCards.Add(UnequipProperty(i));
+            }
+            Card weapon = UnequipWeapon();
+            if (weapon != null) deadCards.Add(weapon);
+
+            GameController.CheckDeath(deadCards);
+            GameController.CheckMurder(killer, PlayerNumber);
         }
 
         public void DiscardAll()
@@ -922,7 +951,18 @@ namespace Bang
             if (!GameController.FinalDuel) Heal(BeerHeal);
         }
 
-        public virtual IEnumerator UsedBeer() { yield return null; }
+        public IEnumerator UsedBeer()
+        {
+            if (!IsDead)
+            {
+                yield return UsedBeerTrigger();
+            }
+        }
+
+        protected virtual IEnumerator UsedBeerTrigger()
+        {
+            yield return null;
+        }
 
         public virtual void HealFromSaloon()
         {

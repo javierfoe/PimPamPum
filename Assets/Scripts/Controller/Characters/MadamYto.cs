@@ -5,7 +5,7 @@ namespace Bang
     public class MadamYto : PlayerController
     {
 
-        public override IEnumerator UsedBeer()
+        protected override IEnumerator UsedBeerTrigger()
         {
             if (!IsDead)
             {

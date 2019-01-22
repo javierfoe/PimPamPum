@@ -9,7 +9,7 @@ namespace Bang
         public override void OnStartServer()
         {
             base.OnStartServer();
-            BeerHeal = 2;
+            BeerHeal = beerHeal;
         }
 
 

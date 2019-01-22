@@ -7,7 +7,7 @@ namespace Bang
 
         public override IEnumerator StolenBy(int thief)
         {
-            if (thief != PlayerNumber)
+            if (thief != PlayerNumber && thief != BangConstants.NoOne)
             {
                 yield return GameController.Bang(BangConstants.NoOne, thief);
             }

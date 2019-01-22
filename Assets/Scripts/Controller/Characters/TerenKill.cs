@@ -5,7 +5,7 @@ namespace Bang
     public class TerenKill : PlayerController
     {
 
-        public override IEnumerator Die(int killer)
+        protected override IEnumerator DieTrigger(int killer)
         {
             yield return GameController.DrawEffect(PlayerNumber);
             if (GameController.DrawnCard.Suit != Suit.Spades)
@@ -17,7 +17,7 @@ namespace Bang
             else
             {
                 yield return BangEvent(this + " draws! and dies: " + GameController.DrawnCard);
-                yield return base.Die(killer);
+                yield return base.DieTrigger(killer);
             }
         }
 

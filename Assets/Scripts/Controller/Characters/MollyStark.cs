@@ -6,7 +6,7 @@ namespace Bang
 
         protected override void CardUsedOutOfTurn()
         {
-            Draw(1);
+            Draw();
         }
 
         protected override string Character()

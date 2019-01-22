@@ -5,7 +5,7 @@ namespace Bang
     public class GaryLooter : PlayerController
     {
 
-        public override IEnumerator EndTurnDiscard(Card c)
+        protected override IEnumerator EndTurnDiscardTrigger(Card c)
         {
             if (!IsDead)
             {
