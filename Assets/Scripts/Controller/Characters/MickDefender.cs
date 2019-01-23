@@ -25,10 +25,12 @@ namespace Bang
 
         public override IEnumerator AvoidCard(int player, int target)
         {
-            AvoidButton();
-            if (player != target)
+            if (HasHand<Missed>() && player != target)
+            {
+                AvoidButton();
                 yield return GameController.AvoidCard(player, target);
-            TakeHitButton();
+                TakeHitButton();
+            }
         }
 
         protected override string Character()
