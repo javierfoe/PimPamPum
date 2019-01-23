@@ -25,7 +25,7 @@ namespace Bang
 
         public override IEnumerator AvoidCard(int player, int target)
         {
-            if (HasHand<Missed>() && player != target)
+            if (player != target)
             {
                 AvoidButton();
                 yield return GameController.AvoidCard(player, target);
