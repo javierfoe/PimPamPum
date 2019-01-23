@@ -866,9 +866,9 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if (attacker != BangConstants.NoOne)
+            if (attacker != BangConstants.NoOne && attacker != PlayerNumber)
             {
-                yield return GameController.BangEventHitBy(PlayerNumber, attacker);
+                yield return GameController.BangEventHitBy(attacker, PlayerNumber);
             }
             else
             {

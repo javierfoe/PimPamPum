@@ -653,7 +653,7 @@ namespace Bang
                     yield return BangTo(player, i);
                     if(decision == Decision.TakeHit)
                     {
-                        yield return pc.Hit(i);
+                        yield return pc.Hit(player);
                     }
                 }
             }
