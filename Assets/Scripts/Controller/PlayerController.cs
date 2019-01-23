@@ -868,15 +868,14 @@ namespace Bang
         {
             if (attacker != BangConstants.NoOne)
             {
-                yield return BangEvent(this + " has been hit by: " + attacker + " amount: " + amount);
+                yield return GameController.BangEventHitBy(PlayerNumber, attacker);
             }
             else
             {
                 yield return BangEvent(this + " loses " + amount + " hit points.");
             }
-
-            EnableTakeHitButton(false);
             HP -= amount;
+            EnableTakeHitButton(false);
         }
 
         public IEnumerator Dying(int attacker, int amount = 1)

@@ -566,6 +566,13 @@ namespace Bang
             yield return BangEvent(pc + " Card: " + card + " Target: " + pcTarget + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
+        public IEnumerator BangEventHitBy(int player, int target)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController pcTarget = playerControllers[target];
+            yield return BangEvent(pcTarget + " has been hit by " + pc);
+        }
+
         public IEnumerator Indians(int player, Card c)
         {
             PlayerController pc;

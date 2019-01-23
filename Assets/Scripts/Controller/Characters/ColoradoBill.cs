@@ -11,7 +11,7 @@ namespace Bang
             if (GameController.DrawnCard.Suit == Suit.Spades)
             {
                 yield return BangEvent(this + " has shot an undodgeable Bang! " + GameController.DrawnCard);
-                GameController.HitPlayer(PlayerNumber, target);
+                yield return GameController.HitPlayer(PlayerNumber, target);
             }
             else
             {
