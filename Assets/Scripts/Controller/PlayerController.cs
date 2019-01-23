@@ -1226,7 +1226,6 @@ namespace Bang
         public void UseCard(int index, int player, Drop drop, int cardIndex)
         {
             CmdUseCard(index, player, drop, cardIndex);
-            CmdStopTargeting();
         }
 
         [Client]
@@ -1273,12 +1272,6 @@ namespace Bang
         }
 
         [Command]
-        private void CmdStopTargeting()
-        {
-            GameController.StopTargeting(PlayerNumber);
-        }
-
-        [Command]
         private void CmdUseCard(int index, int player, Drop drop, int cardIndex)
         {
             switch (State)
@@ -1315,6 +1308,7 @@ namespace Bang
                     }
                     break;
             }
+            GameController.StopTargeting(PlayerNumber);
         }
 
         [Command]
