@@ -781,7 +781,7 @@ namespace Bang
         public void SetStealable(NetworkConnection conn, bool value)
         {
             if (value && !Stealable) return;
-            SetStealable(conn, value, hand.Count > 0, !HasColt45);
+            SetStealable(conn, value, HasCards, !HasColt45);
         }
 
         public void BeginCardDrag(Card c)
