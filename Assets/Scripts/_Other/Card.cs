@@ -35,7 +35,7 @@ namespace Bang
 
         public CardStruct Struct
         {
-            get; set;
+            get; private set;
         }
 
         public Card Original
