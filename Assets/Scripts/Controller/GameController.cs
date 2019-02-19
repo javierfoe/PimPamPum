@@ -8,17 +8,7 @@ namespace Bang
     public class GameController : NetworkBehaviour
     {
 
-        public static GameObject CardPrefab
-        {
-            get; private set;
-        }
-
-        public static GameObject PropertyPrefab
-        {
-            get; private set;
-        }
-
-        public static GameObject GeneralStorePrefab
+        public static GameController Instance
         {
             get; private set;
         }
@@ -40,6 +30,21 @@ namespace Bang
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
         private List<int> availableCharacters;
+
+        public GameObject CardPrefab
+        {
+            get { return cardPrefab.gameObject; }
+        }
+
+        public GameObject PropertyPrefab
+        {
+            get { return propertyPrefab.gameObject; }
+        }
+
+        public GameObject GeneralStorePrefab
+        {
+            get { return generalStoreCardView.gameObject; }
+        }
 
         public bool PickedCard
         {
@@ -765,11 +770,13 @@ namespace Bang
             d.EquipProperty(pc);
         }
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+        
         public override void OnStartClient()
         {
-            CardPrefab = cardPrefab.gameObject;
-            PropertyPrefab = propertyPrefab.gameObject;
-            GeneralStorePrefab = generalStoreCardView.gameObject;
             playerControllers = new PlayerController[maxPlayers];
         }
 

@@ -9,7 +9,7 @@ namespace Bang
         {
             if(hand.Count < 6)
             {
-                GameController.PickedCard = true;
+                GameController.Instance.PickedCard = true;
                 yield return BangEvent(this + " adds the draw! effect card: " + c);
                 AddCard(c);
             }

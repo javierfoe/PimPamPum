@@ -12,7 +12,7 @@ namespace Bang
 
         protected override GameObject GetPrefab()
         {
-            return GameController.GeneralStorePrefab;
+            return GameController.Instance.GeneralStorePrefab;
         }
 
         public void EnableCards(bool value)

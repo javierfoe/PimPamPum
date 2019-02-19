@@ -7,7 +7,7 @@ namespace Bang
 
         public override IEnumerator Equip<T>(Property p)
         {
-            yield return GameController.DiscardCopiesOf<T>(PlayerNumber, p);
+            yield return GameController.Instance.DiscardCopiesOf<T>(PlayerNumber, p);
         }
 
         protected override string Character()

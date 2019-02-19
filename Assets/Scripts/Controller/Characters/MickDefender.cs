@@ -28,7 +28,7 @@ namespace Bang
             if (player != target)
             {
                 AvoidButton();
-                yield return GameController.AvoidCard(player, target);
+                yield return GameController.Instance.AvoidCard(player, target);
                 TakeHitButton();
             }
         }

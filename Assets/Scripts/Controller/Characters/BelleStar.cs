@@ -8,13 +8,13 @@ namespace Bang
 
         protected override IEnumerator OnStartTurn()
         {
-            GameController.EnableOthersProperties(PlayerNumber,false);
+            GameController.Instance.EnableOthersProperties(PlayerNumber,false);
             yield return base.OnStartTurn();
         }
 
         public override void ForceEndTurn()
         {
-            GameController.EnableOthersProperties(PlayerNumber, true);
+            GameController.Instance.EnableOthersProperties(PlayerNumber, true);
             base.ForceEndTurn();
         }
 

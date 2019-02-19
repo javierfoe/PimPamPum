@@ -6,7 +6,7 @@ namespace Bang
     {
         protected override GameObject GetPrefab()
         {
-            return GameController.PropertyPrefab;
+            return GameController.Instance.PropertyPrefab;
         }
     }
 }

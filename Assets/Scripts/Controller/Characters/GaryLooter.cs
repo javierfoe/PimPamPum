@@ -9,7 +9,7 @@ namespace Bang
         {
             if (!IsDead)
             {
-                GameController.PickedCard = true;
+                GameController.Instance.PickedCard = true;
                 yield return BangEvent(this + " adds the discarded card to his hand: " + c);
                 AddCard(c);
             }

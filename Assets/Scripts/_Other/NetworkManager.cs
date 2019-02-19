@@ -7,7 +7,6 @@ namespace Bang
     public class NetworkManager : UnityEngine.Networking.NetworkManager
     {
 
-        private GameController gameController;
         private GameObject[] playerControllerGameObjects;
         private PlayerController[] playerControllerComponents;
         private int currentPlayers, maxPlayers;
@@ -24,9 +23,8 @@ namespace Bang
             playerControllerComponents = new PlayerController[maxPlayers];
             currentPlayers = 0;
 
-            gameController = FindObjectOfType<GameController>();
-            gameController.MaxPlayers = maxPlayers;
-            gameController.AvailableCharacter = spawnPrefabs.Count;
+            GameController.Instance.MaxPlayers = maxPlayers;
+            GameController.Instance.AvailableCharacter = spawnPrefabs.Count;
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
@@ -36,7 +34,7 @@ namespace Bang
                 conn.Disconnect();
                 return;
             }
-            int character = gameController.AvailableCharacter;
+            int character = GameController.Instance.AvailableCharacter;
             PlayerController playerController = Instantiate(spawnPrefabs[character]).GetComponent<PlayerController>();
             playerController.PlayerNumber = currentPlayers;
             NetworkServer.AddPlayerForConnection(conn, playerController.gameObject, playerControllerId);
@@ -46,7 +44,7 @@ namespace Bang
 
             if (currentPlayers == maxPlayers)
             {
-                gameController.SetMatch(maxPlayers, playerControllerGameObjects);
+                GameController.Instance.SetMatch(maxPlayers, playerControllerGameObjects);
             }
         }
 

@@ -9,7 +9,7 @@ namespace Bang
         {
             if (thief != PlayerNumber && thief != BangConstants.NoOne)
             {
-                yield return GameController.Bang(BangConstants.NoOne, thief);
+                yield return GameController.Instance.Bang(BangConstants.NoOne, thief);
             }
             yield return base.StolenBy(thief);
         }

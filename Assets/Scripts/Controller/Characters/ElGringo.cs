@@ -7,7 +7,7 @@ namespace Bang
         protected override void HitTrigger(int attacker)
         {
             if (attacker == PlayerNumber || attacker == BangConstants.NoOne) return;
-            GameController.StealIfHandNotEmpty(PlayerNumber, attacker);
+            GameController.Instance.StealIfHandNotEmpty(PlayerNumber, attacker);
         }
 
         protected override string Character()

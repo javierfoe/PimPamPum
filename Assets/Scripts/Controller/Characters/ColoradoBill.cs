@@ -7,15 +7,15 @@ namespace Bang
 
         protected override IEnumerator ShotBangTrigger(int target)
         {
-            yield return GameController.DrawEffect(PlayerNumber);
-            if (GameController.DrawnCard.Suit == Suit.Spades)
+            yield return GameController.Instance.DrawEffect(PlayerNumber);
+            if (GameController.Instance.DrawnCard.Suit == Suit.Spades)
             {
-                yield return BangEvent(this + " has shot an undodgeable Bang! " + GameController.DrawnCard);
-                yield return GameController.HitPlayer(PlayerNumber, target);
+                yield return BangEvent(this + " has shot an undodgeable Bang! " + GameController.Instance.DrawnCard);
+                yield return GameController.Instance.HitPlayer(PlayerNumber, target);
             }
             else
             {
-                yield return BangEvent(this + " has shot an standard Bang! " + GameController.DrawnCard);
+                yield return BangEvent(this + " has shot an standard Bang! " + GameController.Instance.DrawnCard);
                 yield return base.ShotBangTrigger(target);
             }
         }
