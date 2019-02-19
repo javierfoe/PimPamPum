@@ -1151,11 +1151,6 @@ namespace Bang
             yield return GameController.Instance.BangEvent(bangEvent);
         }
 
-        public IEnumerator BangEventPlayedCard(Card card, int target, Drop drop, int cardIndex)
-        {
-            yield return GameController.Instance.BangEventPlayedCard(PlayerNumber, target, card, drop, cardIndex);
-        }
-
         public override string ToString()
         {
             return PlayerName;

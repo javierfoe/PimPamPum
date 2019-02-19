@@ -84,7 +84,7 @@ namespace Bang
 
         protected virtual IEnumerator CardEvent(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            yield return pc.BangEventPlayedCard(this, player, drop, cardIndex);
+            yield return GameController.Instance.BangEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
         }
 
         public Card ConvertTo<T>() where T : Card, new()
