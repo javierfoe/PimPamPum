@@ -1,14 +1,12 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 namespace Bang
 {
 
-    public class NetworkManager : UnityEngine.Networking.NetworkManager
+    public class NetworkManager : Mirror.NetworkManager
     {
 
-        private GameObject[] playerControllerGameObjects;
-        private PlayerController[] playerControllerComponents;
         private int currentPlayers, maxPlayers;
 
         public void SetPlayerAmount(float amount)
@@ -18,16 +16,19 @@ namespace Bang
 
         public override void OnStartServer()
         {
-
-            playerControllerGameObjects = new GameObject[maxPlayers];
-            playerControllerComponents = new PlayerController[maxPlayers];
+            base.OnStartServer();
             currentPlayers = 0;
+        }
 
+        public override void OnServerReady(NetworkConnection conn)
+        {
+            base.OnServerReady(conn);
+            if (currentPlayers > 0) return;
             GameController.Instance.MaxPlayers = maxPlayers;
             GameController.Instance.AvailableCharacter = spawnPrefabs.Count;
         }
 
-        public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
+        public override void OnServerAddPlayer(NetworkConnection conn)
         {
             if (currentPlayers == maxPlayers)
             {
@@ -37,15 +38,15 @@ namespace Bang
             int character = GameController.Instance.AvailableCharacter;
             PlayerController playerController = Instantiate(spawnPrefabs[character]).GetComponent<PlayerController>();
             playerController.PlayerNumber = currentPlayers;
-            NetworkServer.AddPlayerForConnection(conn, playerController.gameObject, playerControllerId);
+            NetworkServer.AddPlayerForConnection(conn, playerController.gameObject);
 
-            playerControllerComponents[currentPlayers] = playerController;
-            playerControllerGameObjects[currentPlayers++] = playerController.gameObject;
+            GameController.Instance.AddPlayerController(currentPlayers++, playerController);
 
             if (currentPlayers == maxPlayers)
             {
-                GameController.Instance.SetMatch(maxPlayers, playerControllerGameObjects);
+                GameController.Instance.SetMatch();
             }
+
         }
 
     }

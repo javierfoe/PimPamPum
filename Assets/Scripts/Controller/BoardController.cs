@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 namespace Bang
 {
@@ -8,7 +8,7 @@ namespace Bang
     public class BoardController : NetworkBehaviour
     {
         [SerializeField] private GameObject boardViewGO = null;
-        [SerializeField] private CardDefinition[] deckCards;
+        [SerializeField] private CardDefinition[] deckCards = null;
 
         [System.Serializable]
         private struct CardDefinition

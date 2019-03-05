@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 namespace Bang
 {
@@ -236,7 +236,11 @@ namespace Bang
         public int MaxPlayers
         {
             get { return maxPlayers; }
-            set { maxPlayers = value; }
+            set
+            {
+                maxPlayers = value;
+                playerControllers = new PlayerController[value];
+            }
         }
 
         public int AvailableCharacter
@@ -656,7 +660,7 @@ namespace Bang
                 if (!pc.IsDead && !pc.Immune(c))
                 {
                     yield return BangTo(player, i);
-                    if(decision == Decision.TakeHit)
+                    if (decision == Decision.TakeHit)
                     {
                         yield return pc.Hit(player);
                     }
@@ -673,11 +677,8 @@ namespace Bang
             }
         }
 
-        public void SetMatch(int maxPlayers, GameObject[] playerControllerGOs)
+        public void SetMatch()
         {
-            MaxPlayers = maxPlayers;
-            AddPlayerControllers(playerControllerGOs);
-
             foreach (PlayerController pc in playerControllers)
                 foreach (PlayerController pc2 in playerControllers)
                     pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
@@ -741,13 +742,9 @@ namespace Bang
             return res;
         }
 
-        private void AddPlayerControllers(GameObject[] gos)
+        public void AddPlayerController(int i, PlayerController pc)
         {
-            int i = 0;
-            foreach (GameObject go in gos)
-                playerControllers[i++] = go.GetComponent<PlayerController>();
-
-            RpcAddPlayerControllers(gos);
+            playerControllers[i] = pc;
         }
 
         public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
@@ -770,14 +767,21 @@ namespace Bang
             d.EquipProperty(pc);
         }
 
-        private void Awake()
+        public override void OnStartServer()
         {
-            Instance = this;
+            base.OnStartServer();
+            Initialize();
         }
-        
+
         public override void OnStartClient()
         {
-            playerControllers = new PlayerController[maxPlayers];
+            base.OnStartClient();
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            Instance = this;
         }
 
         public IPlayerView GetPlayerView(int index)
@@ -944,14 +948,5 @@ namespace Bang
                 pc.SetPlayerName();
         }
 
-        [ClientRpc]
-        private void RpcAddPlayerControllers(GameObject[] gos)
-        {
-            if (isServer) return;
-            Debug.Log("AddPlayerControllers RPC: " + gos.Length);
-            int i = 0;
-            foreach (GameObject go in gos)
-                playerControllers[i++] = go.GetComponent<PlayerController>();
-        }
     }
 }

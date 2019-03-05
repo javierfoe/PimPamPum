@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 namespace Bang
 {
@@ -1428,7 +1428,7 @@ namespace Bang
         {
             if (!isLocalPlayer)
             {
-                PlayerView = GameController.Instance.GetPlayerView(playerNumber, this.PlayerNumber);
+                PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
             }
         }
 
