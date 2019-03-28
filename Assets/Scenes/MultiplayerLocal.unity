@@ -1118,10 +1118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SceneId: 0
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
   m_AssetId: 
+  m_SceneId: 819425942
 --- !u!4 &219958267
 Transform:
   m_ObjectHideFlags: 0
@@ -1492,7 +1492,7 @@ MonoBehaviour:
   networkAddress: localhost
   maxConnections: 4
   playerPrefab: {fileID: 0}
-  autoCreatePlayer: 1
+  autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 1472249705846576, guid: 75e184355984c7b40aa9de59b16998f1, type: 3}
@@ -1527,6 +1527,7 @@ MonoBehaviour:
   - {fileID: 1898146779560658, guid: 9f1c7fd72cf9d8740ad778eef339a280, type: 3}
   - {fileID: 1265278354071078, guid: aeec00b775953d14c98f942782fb6b9d, type: 3}
   - {fileID: 1054144581137644, guid: e28682c66e8e2ed40be5276e542af9d6, type: 3}
+  gameController: {fileID: 1588766673}
 --- !u!4 &486509228
 Transform:
   m_ObjectHideFlags: 0
@@ -4659,10 +4660,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SceneId: 0
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
   m_AssetId: 
+  m_SceneId: 924026063
 --- !u!4 &1588766675
 Transform:
   m_ObjectHideFlags: 0

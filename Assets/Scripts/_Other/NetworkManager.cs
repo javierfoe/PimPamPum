@@ -7,6 +7,8 @@ namespace Bang
     public class NetworkManager : Mirror.NetworkManager
     {
 
+        [SerializeField] private GameController gameController = null;
+
         private int currentPlayers, maxPlayers;
 
         public void SetPlayerAmount(float amount)
@@ -18,35 +20,28 @@ namespace Bang
         {
             base.OnStartServer();
             currentPlayers = 0;
+            gameController.MaxPlayers = maxPlayers;
+            gameController.AvailableCharacter = spawnPrefabs.Count;
         }
 
-        public override void OnServerReady(NetworkConnection conn)
-        {
-            base.OnServerReady(conn);
-            if (currentPlayers > 0) return;
-            GameController.Instance.MaxPlayers = maxPlayers;
-            GameController.Instance.AvailableCharacter = spawnPrefabs.Count;
-        }
-
-        public override void OnServerAddPlayer(NetworkConnection conn)
+        public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
         {
             if (currentPlayers == maxPlayers)
             {
                 conn.Disconnect();
                 return;
             }
-            int character = GameController.Instance.AvailableCharacter;
+
+            int character = gameController.AvailableCharacter;
             PlayerController playerController = Instantiate(spawnPrefabs[character]).GetComponent<PlayerController>();
             playerController.PlayerNumber = currentPlayers;
             NetworkServer.AddPlayerForConnection(conn, playerController.gameObject);
-
-            GameController.Instance.AddPlayerController(currentPlayers++, playerController);
+            gameController.AddPlayerController(currentPlayers++, playerController);
 
             if (currentPlayers == maxPlayers)
             {
-                GameController.Instance.SetMatch();
+                gameController.SetMatch();
             }
-
         }
 
     }

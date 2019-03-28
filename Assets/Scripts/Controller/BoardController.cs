@@ -11,7 +11,7 @@ namespace Bang
         [SerializeField] private CardDefinition[] deckCards = null;
 
         [System.Serializable]
-        private struct CardDefinition
+        public struct CardDefinition
         {
             public CardType type;
             public Suit suit;
