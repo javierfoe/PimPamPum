@@ -21,7 +21,7 @@ namespace Bang
             {
                 Input.text = PlayerPrefs.GetString(key);
             }
-            Input.onValueChanged.AddListener(ValueChanged);
+            Input.onEndEdit.AddListener(ValueChanged);
         }
 
         private void ValueChanged(string value)

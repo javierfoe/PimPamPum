@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Bang
 {
@@ -26,7 +25,6 @@ namespace Bang
         protected virtual void Start()
         {
             InitializeStaticVariables();
-            networkManager = FindObjectOfType<NetworkManager>();
             GetComponent<UnityEngine.UI.Button>().onClick.AddListener(this.Click);
             StartCoroutine(InputEmpty());
         }

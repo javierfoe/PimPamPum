@@ -25,7 +25,15 @@ namespace Bang
         {
             base.Start();
             hostAddress = FindObjectOfType<HostAdressInputField>().Input;
+            hostAddress.onEndEdit.AddListener(UpdateNetworkAddress);
+            UpdateNetworkAddress(hostAddress.text);
+
             StartCoroutine(InputEmptyHostAddress());
+        }
+
+        private void UpdateNetworkAddress(string address)
+        {
+            networkManager.networkAddress = address;
         }
 
         protected override void NetworkManagerAction()
