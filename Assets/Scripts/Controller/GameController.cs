@@ -13,7 +13,6 @@ namespace PimPamPum
             get; private set;
         }
 
-        [SerializeField] private GameObject game = null, mainMenu = null;
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
         [SerializeField] private GeneralStoreView generalStoreCardView = null;
@@ -21,15 +20,12 @@ namespace PimPamPum
         [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
 
-        [SyncVar] private int maxPlayers;
-
         private IPlayerView[] playerViews;
         private Decision decision;
         private Card cardUsed;
         private int generalStoreChoice;
         private PlayerController[] playerControllers;
         private List<Card> generalStoreChoices;
-        private List<int> availableCharacters;
 
         public GameObject CardPrefab
         {
@@ -44,6 +40,11 @@ namespace PimPamPum
         public GameObject GeneralStorePrefab
         {
             get { return generalStoreCardView.gameObject; }
+        }
+
+        public int MaxPlayers
+        {
+            get; set;
         }
 
         public bool PickedCard
@@ -66,7 +67,7 @@ namespace PimPamPum
             get
             {
                 int res = 0;
-                for (int i = 0; i < maxPlayers; i++)
+                for (int i = 0; i < MaxPlayers; i++)
                 {
                     res += playerControllers[i].IsDead ? 0 : 1;
                 }
@@ -79,7 +80,7 @@ namespace PimPamPum
             get
             {
                 int res = -1;
-                for (int i = 0; i < maxPlayers; i++)
+                for (int i = 0; i < MaxPlayers; i++)
                 {
                     res = !playerControllers[i].IsDead ? i : res;
                 }
@@ -93,7 +94,7 @@ namespace PimPamPum
             {
                 bool foes = false;
                 PlayerController pc;
-                for (int i = 0; i < maxPlayers && !foes; i++)
+                for (int i = 0; i < MaxPlayers && !foes; i++)
                 {
                     pc = playerControllers[i];
                     foes = (pc.Role == Role.Outlaw || pc.Role == Role.Renegade) && !pc.IsDead;
@@ -117,7 +118,7 @@ namespace PimPamPum
             do
             {
                 res++;
-                res = res < maxPlayers ? res : 0;
+                res = res < MaxPlayers ? res : 0;
                 pc = playerControllers[res];
             } while (pc.IsDead);
             return res;
@@ -130,7 +131,7 @@ namespace PimPamPum
             do
             {
                 res--;
-                res = res > -1 ? res : maxPlayers - 1;
+                res = res > -1 ? res : MaxPlayers - 1;
                 pc = playerControllers[res];
             } while (pc.IsDead);
             return res;
@@ -138,7 +139,7 @@ namespace PimPamPum
 
         public void EnableOthersProperties(int player, bool value)
         {
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 playerControllers[i].EnableProperties(value);
             }
@@ -147,7 +148,7 @@ namespace PimPamPum
         public void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
-            for (int i = 0; i < maxPlayers && !listTaken; i++)
+            for (int i = 0; i < MaxPlayers && !listTaken; i++)
             {
                 listTaken = playerControllers[i].CheckDeath(list);
             }
@@ -162,7 +163,7 @@ namespace PimPamPum
 
         public IEnumerator UsedBeer(int player)
         {
-            for (int i = player, j = 0; j < maxPlayers; i = i == maxPlayers - 1 ? 0 : i + 1, j++)
+            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
                 yield return playerControllers[i].UsedBeer();
             }
@@ -205,7 +206,7 @@ namespace PimPamPum
         private void Win(int player)
         {
             playerControllers[player].Win();
-            for (int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < MaxPlayers; i++)
             {
                 if (player != i) playerControllers[i].Lose();
             }
@@ -214,7 +215,7 @@ namespace PimPamPum
         private void Win(Team team)
         {
             PlayerController pc;
-            for (int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < MaxPlayers; i++)
             {
                 pc = playerControllers[i];
                 if (pc.BelongsToTeam(team))
@@ -233,35 +234,6 @@ namespace PimPamPum
             generalStoreChoice = choice;
         }
 
-        public int MaxPlayers
-        {
-            get { return maxPlayers; }
-            set
-            {
-                maxPlayers = value;
-                playerControllers = new PlayerController[value];
-            }
-        }
-
-        public int AvailableCharacter
-        {
-            get
-            {
-                int index = Random.Range(0, availableCharacters.Count);
-                int res = availableCharacters[index];
-                availableCharacters.RemoveAt(index);
-                return res;
-            }
-            set
-            {
-                availableCharacters = new List<int>();
-                for (int i = 0; i < value; i++)
-                {
-                    availableCharacters.Add(i);
-                }
-            }
-        }
-
         public IEnumerator DrawEffect(int player)
         {
             DrawnCard = DrawCard();
@@ -271,7 +243,7 @@ namespace PimPamPum
         public IEnumerator DrawEffect(int player, Card c)
         {
             PickedCard = false;
-            for (int i = player, j = 0; j < maxPlayers; i = i == maxPlayers - 1 ? 0 : i + 1, j++)
+            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
                 yield return playerControllers[i].DrawEffect(c);
             }
@@ -586,7 +558,7 @@ namespace PimPamPum
         {
             PlayerController pc;
             float time = 0;
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
@@ -613,11 +585,11 @@ namespace PimPamPum
 
         private IEnumerator MultipleTargetResponsesFinished(int player)
         {
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].Dying(player);
             }
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].Die(player);
             }
@@ -654,7 +626,7 @@ namespace PimPamPum
         public IEnumerator Gatling(int player, Card c)
         {
             PlayerController pc;
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
@@ -671,14 +643,17 @@ namespace PimPamPum
 
         public void Saloon()
         {
-            for (int i = 0; i < maxPlayers; i++)
+            for (int i = 0; i < MaxPlayers; i++)
             {
                 playerControllers[i].HealFromSaloon();
             }
         }
 
-        public void SetMatch()
+        public void SetMatch(PlayerController[] players)
         {
+            playerControllers = players;
+            MaxPlayers = players.Length;
+
             foreach (PlayerController pc in playerControllers)
                 foreach (PlayerController pc2 in playerControllers)
                     pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
@@ -689,7 +664,7 @@ namespace PimPamPum
         public IEnumerator DiscardCardEndTurn(Card c, int player)
         {
             PickedCard = false;
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].EndTurnDiscard(c);
             }
@@ -701,8 +676,7 @@ namespace PimPamPum
 
         public void SetPlayerViews()
         {
-            mainMenu.SetActive(false);
-            game.SetActive(true);
+            Debug.Log(MaxPlayers);
             playerViews = new IPlayerView[MaxPlayers];
             int j = 0;
             int i = 0;
@@ -749,7 +723,7 @@ namespace PimPamPum
 
         public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
         {
-            for (int i = player == maxPlayers - 1 ? 0 : player + 1; i != player; i = i == maxPlayers - 1 ? 0 : i + 1)
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 yield return playerControllers[i].DiscardCopiesOf<T>(p);
             }
@@ -824,7 +798,7 @@ namespace PimPamPum
 
         public void EndTurn()
         {
-            int nextPlayer = CurrentPlayer < maxPlayers - 1 ? CurrentPlayer + 1 : 0;
+            int nextPlayer = CurrentPlayer < MaxPlayers - 1 ? CurrentPlayer + 1 : 0;
             StartTurn(nextPlayer);
         }
 
@@ -943,7 +917,7 @@ namespace PimPamPum
 
         public void SetPlayerNames(int playerNum)
         {
-            if (playerNum < maxPlayers - 1) return;
+            if (playerNum < MaxPlayers - 1) return;
             foreach (PlayerController pc in playerControllers)
                 pc.SetPlayerName();
         }

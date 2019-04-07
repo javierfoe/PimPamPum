@@ -5,9 +5,8 @@ namespace PimPamPum
     public class MickDefender : PlayerController
     {
 
-        public override void OnStartLocalPlayer()
+        protected override void OnSetLocalPlayer()
         {
-            base.OnStartLocalPlayer();
             PlayerView.SetTextTakeHitButton("Take Card Effect");
         }
 

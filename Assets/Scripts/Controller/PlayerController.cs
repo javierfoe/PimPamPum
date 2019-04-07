@@ -185,17 +185,6 @@ namespace PimPamPum
             properties = new List<Card>();
         }
 
-        public override void OnStartLocalPlayer()
-        {
-            LocalPlayer = this;
-            GameController.Instance.SetPlayerViews();
-            PlayerView = GameController.Instance.GetPlayerView(0);
-            PlayerView.SetLocalPlayer();
-            PlayerName = NetworkManagerButton.PlayerName;
-            PlayerName = ToString();
-            PlayerView.SetPlayerName(PlayerName);
-        }
-
         public bool BelongsToTeam(Team team)
         {
             return
@@ -1184,6 +1173,8 @@ namespace PimPamPum
             TargetTakeHitButton(connectionToClient);
         }
 
+        protected virtual void OnSetLocalPlayer() { }
+
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
@@ -1373,6 +1364,20 @@ namespace PimPamPum
         {
             playerName = name;
             PlayerView.SetPlayerName(name);
+        }
+
+        [TargetRpc]
+        public virtual void TargetSetLocalPlayer(NetworkConnection conn, int maxPlayers)
+        {
+            LocalPlayer = this;
+            GameController.Instance.MaxPlayers = maxPlayers;
+            GameController.Instance.SetPlayerViews();
+            PlayerView = GameController.Instance.GetPlayerView(0);
+            PlayerView.SetLocalPlayer();
+            PlayerName = NetworkManagerButton.PlayerName;
+            PlayerName = ToString();
+            PlayerView.SetPlayerName(PlayerName);
+            OnSetLocalPlayer();
         }
 
         [TargetRpc]
