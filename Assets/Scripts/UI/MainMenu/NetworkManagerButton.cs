@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Bang
+namespace PimPamPum
 {
     [RequireComponent(typeof(UnityEngine.UI.Button))]
     public abstract class NetworkManagerButton : MonoBehaviour

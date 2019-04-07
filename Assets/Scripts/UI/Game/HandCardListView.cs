@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Bang
+namespace PimPamPum
 {
     public class HandCardListView : CardListView<ICardView>
     {

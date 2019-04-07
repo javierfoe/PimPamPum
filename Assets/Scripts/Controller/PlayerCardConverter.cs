@@ -1,5 +1,5 @@
 ﻿
-namespace Bang
+namespace PimPamPum
 {
     public abstract class PlayerCardConverter : PlayerController
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-namespace Bang
+namespace PimPamPum
 {
     public class GameController : NetworkBehaviour
     {
@@ -19,7 +19,7 @@ namespace Bang
         [SerializeField] private GeneralStoreView generalStoreCardView = null;
         [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform players = null;
-        [SerializeField] private float decisionTime = 0, bangEventTime = 0;
+        [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
 
         [SyncVar] private int maxPlayers;
 
@@ -188,7 +188,7 @@ namespace Bang
             {
                 Win(Team.Law);
             }
-            else if (murderer != BangConstants.NoOne)
+            else if (murderer != PimPamPumConstants.NoOne)
             {
                 PlayerController pcMurderer = playerControllers[murderer];
                 if (killedRole == Role.Outlaw)
@@ -413,7 +413,7 @@ namespace Bang
 
         private IEnumerator GetCardGeneralStore(int player, int choice)
         {
-            yield return BangEvent(playerControllers[player] + " has chosen the card: " + generalStoreChoices[choice]);
+            yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + generalStoreChoices[choice]);
             boardController.RemoveGeneralStoreCard(choice);
             playerControllers[player].AddCard(generalStoreChoices[choice]);
             generalStoreChoices.RemoveAt(choice);
@@ -422,7 +422,7 @@ namespace Bang
         public IEnumerator StartDuel(int player, int target)
         {
             int next = player;
-            int bangsTarget = 0;
+            int pimPamPumsTarget = 0;
 
             decision = Decision.Pending;
 
@@ -431,12 +431,12 @@ namespace Bang
             if (decision != Decision.Avoid)
             {
 
-                yield return BangEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
+                yield return PimPamPumEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
 
                 do
                 {
                     next = next == player ? target : player;
-                    playerControllers[next].EnableBangsDuelResponse();
+                    playerControllers[next].EnablePimPamPumsDuelResponse();
                     float time = 0;
                     decision = Decision.Pending;
                     while (decision == Decision.Pending && time < decisionTime)
@@ -450,16 +450,16 @@ namespace Bang
                     }
                     else if (decision == Decision.Avoid)
                     {
-                        yield return BangEvent(playerControllers[next] + " keeps dueling.");
+                        yield return PimPamPumEvent(playerControllers[next] + " keeps dueling.");
                         if (next == target)
                         {
-                            bangsTarget++;
+                            pimPamPumsTarget++;
                         }
                     }
                 } while (decision != Decision.TakeHit);
 
                 playerControllers[player].CheckNoCards();
-                playerControllers[target].FinishDuelTarget(bangsTarget);
+                playerControllers[target].FinishDuelTarget(pimPamPumsTarget);
 
                 yield return HitPlayer(player, next);
             }
@@ -494,9 +494,9 @@ namespace Bang
             pc.EnableDieButton(false);
         }
 
-        public IEnumerator Bang(int player, int target, int misses = 1)
+        public IEnumerator PimPamPum(int player, int target, int misses = 1)
         {
-            yield return BangTo(player, target, misses);
+            yield return PimPamPumTo(player, target, misses);
             if (decision == Decision.TakeHit)
             {
                 yield return HitPlayer(player, target);
@@ -508,7 +508,7 @@ namespace Bang
             yield return playerControllers[target].GetHitBy(player);
         }
 
-        private IEnumerator BangTo(int player, int target, int misses = 1)
+        private IEnumerator PimPamPumTo(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
             float time = 0;
@@ -559,27 +559,27 @@ namespace Bang
         private IEnumerator BarrelEffect(int target, Card c, bool dodge)
         {
             yield return DrawEffect(target, c);
-            yield return BangEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
+            yield return PimPamPumEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
         }
 
-        public IEnumerator BangEvent(string bangEvent)
+        public IEnumerator PimPamPumEvent(string pimPamPumEvent)
         {
-            yield return new WaitForSeconds(bangEventTime);
-            Debug.Log(bangEvent);
+            yield return new WaitForSeconds(pimPamPumEventTime);
+            Debug.Log(pimPamPumEvent);
         }
 
-        public IEnumerator BangEventPlayedCard(int player, int target, Card card, Drop drop, int cardIndex)
-        {
-            PlayerController pc = playerControllers[player];
-            PlayerController pcTarget = playerControllers[target];
-            yield return BangEvent(pc + " Card: " + card + " Target: " + pcTarget + " Drop: " + drop + " CardIndex: " + cardIndex);
-        }
-
-        public IEnumerator BangEventHitBy(int player, int target)
+        public IEnumerator PimPamPumEventPlayedCard(int player, int target, Card card, Drop drop, int cardIndex)
         {
             PlayerController pc = playerControllers[player];
             PlayerController pcTarget = playerControllers[target];
-            yield return BangEvent(pcTarget + " has been hit by " + pc);
+            yield return PimPamPumEvent(pc + " Card: " + card + " Target: " + pcTarget + " Drop: " + drop + " CardIndex: " + cardIndex);
+        }
+
+        public IEnumerator PimPamPumEventHitBy(int player, int target)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController pcTarget = playerControllers[target];
+            yield return PimPamPumEvent(pcTarget + " has been hit by " + pc);
         }
 
         public IEnumerator Indians(int player, Card c)
@@ -592,7 +592,7 @@ namespace Bang
                 if (!pc.IsDead && !pc.Immune(c))
                 {
                     decision = Decision.Pending;
-                    pc.EnableBangsResponse();
+                    pc.EnablePimPamPumsResponse();
                     while (time < decisionTime && decision == Decision.Pending)
                     {
                         time += Time.deltaTime;
@@ -637,7 +637,7 @@ namespace Bang
 
         public IEnumerator DiscardUsedCard(int target)
         {
-            yield return BangEvent(playerControllers[target] + " has avoided the card effect with: " + cardUsed);
+            yield return PimPamPumEvent(playerControllers[target] + " has avoided the card effect with: " + cardUsed);
             DiscardCard(cardUsed);
         }
 
@@ -646,7 +646,7 @@ namespace Bang
             PlayerController pc = playerControllers[target];
             int playerNum = pc.PlayerNumber;
             Card used = cardUsed;
-            yield return BangEvent(pc + " has avoided the hit with: " + cardUsed);
+            yield return PimPamPumEvent(pc + " has avoided the hit with: " + cardUsed);
             pc.Response();
             DiscardCard(used);
         }
@@ -659,7 +659,7 @@ namespace Bang
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
                 {
-                    yield return BangTo(player, i);
+                    yield return PimPamPumTo(player, i);
                     if (decision == Decision.TakeHit)
                     {
                         yield return pc.Hit(player);
@@ -830,7 +830,7 @@ namespace Bang
 
         private void StartTurn(int player)
         {
-            if (CurrentPlayer != BangConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
+            if (CurrentPlayer != PimPamPumConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
             CurrentPlayer = player;
             playerControllers[player].StartTurn();
         }

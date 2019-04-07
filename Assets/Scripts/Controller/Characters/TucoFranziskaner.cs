@@ -1,7 +1,7 @@
 ﻿
 using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class TucoFranziskaner : PlayerController
     {
@@ -11,7 +11,7 @@ namespace Bang
             Draw(2);
             if (!HasProperties && HasColt45)
             {
-                yield return BangEvent(this + " draws 2 extra cards. He has no blue cards on play in front of him");
+                yield return PimPamPumEvent(this + " draws 2 extra cards. He has no blue cards on play in front of him");
                 Draw(2);
             }
         }

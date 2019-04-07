@@ -1,6 +1,5 @@
-﻿using UnityEngine.UI;
-
-namespace Bang
+﻿
+namespace PimPamPum
 {
     public class GeneralStoreView : CardView, IGeneralStoreCardView
     {

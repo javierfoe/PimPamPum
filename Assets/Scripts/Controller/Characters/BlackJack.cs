@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class BlackJack : PlayerController
     {
@@ -11,7 +11,7 @@ namespace Bang
             Card c = GameController.Instance.DrawCard();
             AddCard(c);
             bool anotherCard = c.IsRed;
-            yield return BangEvent(this + " has drawn:" + c + (anotherCard ? " he draws another card." : " he doesn't draw extra."));
+            yield return PimPamPumEvent(this + " has drawn:" + c + (anotherCard ? " he draws another card." : " he doesn't draw extra."));
             if (anotherCard)
             {
                 Draw();

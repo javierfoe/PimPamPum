@@ -1,13 +1,13 @@
 ﻿
-namespace Bang
+namespace PimPamPum
 {
 
     public class ElenaFuente : PlayerCardConverter
     {
-        protected override void EnableBangReaction()
+        protected override void EnablePimPamPumReaction()
         {
             ConvertHandTo<Missed>();
-            base.EnableBangReaction();
+            base.EnablePimPamPumReaction();
         }
 
         protected override string Character()

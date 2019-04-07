@@ -1,5 +1,5 @@
 ﻿
-namespace Bang
+namespace PimPamPum
 {
     public class BigSpencer : PlayerController
     {
@@ -9,7 +9,7 @@ namespace Bang
             Draw(5);
         }
 
-        protected override void EnableBangReaction() { }
+        protected override void EnablePimPamPumReaction() { }
 
         protected override string Character()
         {

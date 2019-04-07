@@ -1,5 +1,5 @@
 ﻿
-namespace Bang
+namespace PimPamPum
 {
 
     public class CalamityJanet : PlayerCardConverter
@@ -7,20 +7,20 @@ namespace Bang
 
         protected override void EnablePhase2Cards()
         {
-            ConvertHandCardTo<Missed, Bang>();
+            ConvertHandCardTo<Missed, PimPamPum>();
             base.EnablePhase2Cards();
         }
 
-        protected override void EnableBangCardsForReaction()
+        protected override void EnablePimPamPumCardsForReaction()
         {
-            ConvertHandCardTo<Missed, Bang>();
-            base.EnableBangCardsForReaction();
+            ConvertHandCardTo<Missed, PimPamPum>();
+            base.EnablePimPamPumCardsForReaction();
         }
 
-        protected override void EnableBangReaction()
+        protected override void EnablePimPamPumReaction()
         {
-            ConvertHandCardTo<Bang, Missed>();
-            base.EnableBangReaction();
+            ConvertHandCardTo<PimPamPum, Missed>();
+            base.EnablePimPamPumReaction();
         }
 
         protected override string Character()

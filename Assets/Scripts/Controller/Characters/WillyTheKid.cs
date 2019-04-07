@@ -1,10 +1,10 @@
 ﻿
-namespace Bang
+namespace PimPamPum
 {
     public class WillyTheKid : PlayerController
     {
 
-        public override bool Bang()
+        public override bool PimPamPum()
         {
             return true;
         }

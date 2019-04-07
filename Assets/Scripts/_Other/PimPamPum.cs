@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace Bang
+namespace PimPamPum
 {
 
-    public static class BangConstants
+    public static class PimPamPumConstants
     {
         public const int NoOne = -1;
     }
@@ -108,7 +108,7 @@ namespace Bang
         OutOfTurn,
         Play,
         Response,
-        Bang,
+        PimPamPum,
         Duel,
         Discard,
         Dying
@@ -163,7 +163,7 @@ namespace Bang
 
     public enum CardType
     {
-        Bang,
+        PimPamPum,
         Barrel,
         Beer,
         Carabine,

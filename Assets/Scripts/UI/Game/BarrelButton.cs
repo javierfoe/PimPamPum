@@ -1,4 +1,4 @@
-﻿namespace Bang
+﻿namespace PimPamPum
 {
 
     public class BarrelButton : Button

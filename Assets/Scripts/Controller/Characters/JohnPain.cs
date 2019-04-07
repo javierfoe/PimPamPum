@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class JohnPain : PlayerController
     {
@@ -10,7 +10,7 @@ namespace Bang
             if(hand.Count < 6)
             {
                 GameController.Instance.PickedCard = true;
-                yield return BangEvent(this + " adds the draw! effect card: " + c);
+                yield return PimPamPumEvent(this + " adds the draw! effect card: " + c);
                 AddCard(c);
             }
         }

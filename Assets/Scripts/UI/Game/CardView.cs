@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Bang
+namespace PimPamPum
 {
     public class CardView : DropView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
     {

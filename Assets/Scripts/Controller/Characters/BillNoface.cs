@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class BillNoface : PlayerController
     {
@@ -8,7 +8,7 @@ namespace Bang
         protected override IEnumerator DrawPhase1()
         {
             int drawncards = 1 + MaxHP - HP;
-            yield return BangEvent(this + " draws a total of " + drawncards + " cards.");
+            yield return PimPamPumEvent(this + " draws a total of " + drawncards + " cards.");
             Draw(drawncards);
         }
 

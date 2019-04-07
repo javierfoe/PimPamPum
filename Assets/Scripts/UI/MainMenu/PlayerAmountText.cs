@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Bang
+namespace PimPamPum
 {
     public class PlayerAmountText : MonoBehaviour
     {

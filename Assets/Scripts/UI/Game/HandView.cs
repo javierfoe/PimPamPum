@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UI;
 
-namespace Bang
+namespace PimPamPum
 {
     public class HandView : DropView
     {

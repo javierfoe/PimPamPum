@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Bang
+namespace PimPamPum
 {
 
     public abstract class Card
@@ -84,7 +84,7 @@ namespace Bang
 
         protected virtual IEnumerator CardEvent(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            yield return GameController.Instance.BangEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
+            yield return GameController.Instance.PimPamPumEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
         }
 
         public Card ConvertTo<T>() where T : Card, new()
@@ -106,24 +106,24 @@ namespace Bang
 
     }
 
-    public class Bang : Card
+    public class PimPamPum : Card
     {
         public override void BeginCardDrag(PlayerController pc)
         {
             base.BeginCardDrag(pc);
-            pc.BangBeginCardDrag();
+            pc.PimPamPumBeginCardDrag();
         }
 
         protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
             pc.CheckNoCards();
-            yield return pc.ShotBang(player);
+            yield return pc.ShotPimPamPum(player);
         }
 
         public override string ToString()
         {
-            return "Bang";
+            return "PimPamPum";
         }
     }
 
@@ -535,9 +535,9 @@ namespace Bang
             pc.EquipWeapon(this);
         }
 
-        public virtual bool Bang(PlayerController pc)
+        public virtual bool PimPamPum(PlayerController pc)
         {
-            return pc.Bang();
+            return pc.PimPamPum();
         }
     }
 
@@ -555,7 +555,7 @@ namespace Bang
     {
         public Volcanic() : base(1) { }
 
-        public override bool Bang(PlayerController pc) { return true; }
+        public override bool PimPamPum(PlayerController pc) { return true; }
 
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {

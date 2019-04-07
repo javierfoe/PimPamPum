@@ -1,4 +1,5 @@
-﻿namespace Bang
+﻿
+namespace PimPamPum
 {
     public class WeaponView : CardView
     {

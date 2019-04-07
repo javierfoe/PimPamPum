@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Bang
+namespace PimPamPum
 {
     public class VultureSam : PlayerController
     {

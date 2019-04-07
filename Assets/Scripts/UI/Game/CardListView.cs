@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Bang
+namespace PimPamPum
 {
     public abstract class CardListView<T> : MonoBehaviour where T : ICardView
     {

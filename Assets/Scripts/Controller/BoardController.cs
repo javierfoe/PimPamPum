@@ -2,7 +2,7 @@
 using UnityEngine;
 using Mirror;
 
-namespace Bang
+namespace PimPamPum
 {
 
     public class BoardController : NetworkBehaviour
@@ -145,8 +145,8 @@ namespace Bang
             Rank rank = card.rank;
             switch (card.type)
             {
-                case CardType.Bang:
-                    c = Card.CreateNew<Bang>(suit, rank);
+                case CardType.PimPamPum:
+                    c = Card.CreateNew<PimPamPum>(suit, rank);
                     break;
                 case CardType.Barrel:
                     c = Card.CreateNew<Barrel>(suit, rank);

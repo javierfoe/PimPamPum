@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class MadamYto : PlayerController
     {
@@ -9,7 +9,7 @@ namespace Bang
         {
             if (!IsDead)
             {
-                yield return BangEvent(this + " draws a card for the beer just used.");
+                yield return PimPamPumEvent(this + " draws a card for the beer just used.");
                 Draw(1);
             }
         }

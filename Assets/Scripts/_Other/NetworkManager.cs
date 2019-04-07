@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Mirror;
 
-namespace Bang
+namespace PimPamPum
 {
 
     public class NetworkManager : Mirror.NetworkManager

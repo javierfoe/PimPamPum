@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Bang
+namespace PimPamPum
 {
     public class GaryLooter : PlayerController
     {
@@ -10,7 +10,7 @@ namespace Bang
             if (!IsDead)
             {
                 GameController.Instance.PickedCard = true;
-                yield return BangEvent(this + " adds the discarded card to his hand: " + c);
+                yield return PimPamPumEvent(this + " adds the discarded card to his hand: " + c);
                 AddCard(c);
             }
         }

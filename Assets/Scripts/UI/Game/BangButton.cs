@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
-namespace Bang
+namespace PimPamPum
 {
 
     public abstract class Button : MonoBehaviour

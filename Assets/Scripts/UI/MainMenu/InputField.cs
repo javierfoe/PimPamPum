@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Input = UnityEngine.UI.InputField;
 
-namespace Bang
+namespace PimPamPum
 {
     [RequireComponent(typeof(Input))]
     public class InputField : MonoBehaviour

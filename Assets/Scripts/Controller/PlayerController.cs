@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-namespace Bang
+namespace PimPamPum
 {
     public abstract class PlayerController : NetworkBehaviour
     {
@@ -25,7 +25,7 @@ namespace Bang
         private string playerName;
         private Card draggedCard;
 
-        protected int bangsUsed;
+        protected int pimPamPumsUsed;
         protected List<Card> hand;
 
         public State State
@@ -306,13 +306,13 @@ namespace Bang
                 Property foundProperty = FindProperty<T>(out index);
                 if (foundProperty != p)
                 {
-                    yield return BangEvent(this + " has discarded: " + foundProperty);
+                    yield return PimPamPumEvent(this + " has discarded: " + foundProperty);
                     DiscardProperty(index);
                 }
             }
             else if (Weapon is T && Weapon != p)
             {
-                yield return BangEvent(this + " has discarded: " + Weapon);
+                yield return PimPamPumEvent(this + " has discarded: " + Weapon);
                 DiscardWeapon();
             }
         }
@@ -404,9 +404,9 @@ namespace Bang
             }
         }
 
-        public void FinishDuelTarget(int bangsUsed = 1)
+        public void FinishDuelTarget(int pimPamPumsUsed = 1)
         {
-            for (int i = 0; i < bangsUsed; i++) CardUsedOutOfTurn();
+            for (int i = 0; i < pimPamPumsUsed; i++) CardUsedOutOfTurn();
             CheckNoCards();
         }
 
@@ -448,13 +448,13 @@ namespace Bang
             UnequipProperty(index);
             if (Dynamite.CheckCondition(GameController.Instance.DrawnCard))
             {
-                yield return BangEvent(this + ": Dynamite exploded. 3 damage inflicted");
+                yield return PimPamPumEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.Instance.DiscardCard(d);
-                yield return GetHitBy(BangConstants.NoOne, 3);
+                yield return GetHitBy(PimPamPumConstants.NoOne, 3);
             }
             else
             {
-                yield return BangEvent(this + ": Avoids the dynamite and passes it to the next player");
+                yield return PimPamPumEvent(this + ": Avoids the dynamite and passes it to the next player");
                 GameController.Instance.PassDynamite(PlayerNumber, d);
             }
         }
@@ -466,7 +466,7 @@ namespace Bang
             Jail j = FindProperty<Jail>(out index);
             endTurn = !Jail.CheckCondition(GameController.Instance.DrawnCard);
             UnequipProperty(index);
-            yield return BangEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
+            yield return PimPamPumEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
             GameController.Instance.DiscardCard(j);
         }
 
@@ -572,14 +572,14 @@ namespace Bang
             EnableCards(CardType.Missed);
         }
 
-        public void EnableBangsResponse()
+        public void EnablePimPamPumsResponse()
         {
             EnableTakeHitButton(true);
             State = State.Response;
-            EnableCards(CardType.Bang);
+            EnableCards(CardType.PimPamPum);
         }
 
-        public void EnableBangsDuelResponse()
+        public void EnablePimPamPumsDuelResponse()
         {
             EnableTakeHitButton(true);
             State = State.Duel;
@@ -602,11 +602,11 @@ namespace Bang
                 case State.Response:
                     switch (card)
                     {
-                        case CardType.Bang:
+                        case CardType.PimPamPum:
                             EnableIndiansReaction();
                             break;
                         case CardType.Missed:
-                            EnableBangReaction();
+                            EnablePimPamPumReaction();
                             break;
                     }
                     break;
@@ -615,17 +615,17 @@ namespace Bang
 
         protected virtual void EnablePhase2Cards()
         {
-            bool bangs = Weapon.Bang(this);
+            bool pimPamPums = Weapon.PimPamPum(this);
             int length = hand.Count;
             Card c;
             bool isMissed;
-            bool isBang;
+            bool isPimPamPum;
             for (int i = 0; i < length; i++)
             {
                 c = hand[i];
                 isMissed = c is Missed;
-                isBang = c is Bang;
-                TargetEnableCard(connectionToClient, i, !isBang && !isMissed || !isMissed && bangs);
+                isPimPamPum = c is PimPamPum;
+                TargetEnableCard(connectionToClient, i, !isPimPamPum && !isMissed || !isMissed && pimPamPums);
             }
         }
 
@@ -636,20 +636,20 @@ namespace Bang
 
         private void EnableDuelReaction()
         {
-            EnableBangCardsForReaction();
+            EnablePimPamPumCardsForReaction();
         }
 
         protected virtual void EnableIndiansReaction()
         {
-            EnableBangCardsForReaction();
+            EnablePimPamPumCardsForReaction();
         }
 
-        protected virtual void EnableBangCardsForReaction()
+        protected virtual void EnablePimPamPumCardsForReaction()
         {
-            EnableReactionCards<Bang>();
+            EnableReactionCards<PimPamPum>();
         }
 
-        protected virtual void EnableBangReaction()
+        protected virtual void EnablePimPamPumReaction()
         {
             EnableReactionCards<Missed>();
         }
@@ -693,15 +693,15 @@ namespace Bang
             yield return null;
         }
 
-        public IEnumerator ShotBang(int target)
+        public IEnumerator ShotPimPamPum(int target)
         {
-            bangsUsed++;
-            yield return ShotBangTrigger(target);
+            pimPamPumsUsed++;
+            yield return ShotPimPamPumTrigger(target);
         }
 
-        protected virtual IEnumerator ShotBangTrigger(int target)
+        protected virtual IEnumerator ShotPimPamPumTrigger(int target)
         {
-            yield return GameController.Instance.Bang(PlayerNumber, target, MissesToDodge);
+            yield return GameController.Instance.PimPamPum(PlayerNumber, target, MissesToDodge);
         }
 
         public IEnumerator Indians()
@@ -734,10 +734,10 @@ namespace Bang
             yield return null;
         }
 
-        public virtual bool Bang()
+        public virtual bool PimPamPum()
         {
             bool res = true;
-            if (bangsUsed > 0) res = false;
+            if (pimPamPumsUsed > 0) res = false;
             return res;
         }
 
@@ -782,7 +782,7 @@ namespace Bang
             draggedCard = c;
         }
 
-        public void BangBeginCardDrag()
+        public void PimPamPumBeginCardDrag()
         {
             GameController.Instance.TargetPlayersRange(PlayerNumber, weapon.Range + Scope, draggedCard);
         }
@@ -830,7 +830,7 @@ namespace Bang
 
         protected virtual IEnumerator OnStartTurn()
         {
-            bangsUsed = 0;
+            pimPamPumsUsed = 0;
             if (dynamite)
             {
                 yield return DynamiteCheck();
@@ -859,13 +859,13 @@ namespace Bang
 
         public IEnumerator Hit(int attacker, int amount = 1)
         {
-            if (attacker != BangConstants.NoOne && attacker != PlayerNumber)
+            if (attacker != PimPamPumConstants.NoOne && attacker != PlayerNumber)
             {
-                yield return GameController.Instance.BangEventHitBy(attacker, PlayerNumber);
+                yield return GameController.Instance.PimPamPumEventHitBy(attacker, PlayerNumber);
             }
             else
             {
-                yield return BangEvent(this + " loses " + amount + " hit points.");
+                yield return PimPamPumEvent(this + " loses " + amount + " hit points.");
             }
             HP -= amount;
             EnableTakeHitButton(false);
@@ -900,7 +900,7 @@ namespace Bang
 
         protected virtual IEnumerator DieTrigger(int killer)
         {
-            yield return BangEvent(this + " has died.");
+            yield return PimPamPumEvent(this + " has died.");
             IsDead = true;
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
@@ -1146,9 +1146,9 @@ namespace Bang
             TargetSetup(conn, playerIndex);
         }
 
-        public IEnumerator BangEvent(string bangEvent)
+        public IEnumerator PimPamPumEvent(string pimPamPumEvent)
         {
-            yield return GameController.Instance.BangEvent(bangEvent);
+            yield return GameController.Instance.PimPamPumEvent(pimPamPumEvent);
         }
 
         public override string ToString()
@@ -1168,7 +1168,7 @@ namespace Bang
             TargetEnableBarrelButton(connectionToClient, value);
         }
 
-        private void BangResponseButton()
+        private void PimPamPumResponseButton()
         {
             PlayerView.EnableTakeHitButton(false);
             PlayerView.EnableBarrelButton(false);
@@ -1200,7 +1200,7 @@ namespace Bang
         [Client]
         public void TakeHit()
         {
-            BangResponseButton();
+            PimPamPumResponseButton();
             CmdMakeDecision(Decision.TakeHit);
         }
 
@@ -1219,7 +1219,7 @@ namespace Bang
         [Client]
         public void UseBarrel()
         {
-            BangResponseButton();
+            PimPamPumResponseButton();
             CmdMakeDecision(Decision.Barrel);
         }
 
