@@ -21,10 +21,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "Teren Kill";
-        }
-
     }
 }

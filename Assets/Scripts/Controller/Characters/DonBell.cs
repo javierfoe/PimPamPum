@@ -42,9 +42,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "Don Bell";
-        }
     }
 }

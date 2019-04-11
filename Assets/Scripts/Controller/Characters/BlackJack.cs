@@ -18,10 +18,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "Black Jack";
-        }
-
     }
 }

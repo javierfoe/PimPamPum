@@ -10,10 +10,5 @@ namespace PimPamPum
             GameController.Instance.StealIfHandNotEmpty(PlayerNumber, attacker);
         }
 
-        protected override string Character()
-        {
-            return "El Gringo";
-        }
-
     }
 }

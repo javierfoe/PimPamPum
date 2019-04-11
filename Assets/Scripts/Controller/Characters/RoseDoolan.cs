@@ -12,10 +12,5 @@ namespace PimPamPum
             Scope = scopeModifier;
         }
 
-        protected override string Character()
-        {
-            return "Rose Doolan";
-        }
-
     }
 }

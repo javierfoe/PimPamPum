@@ -18,10 +18,5 @@ namespace PimPamPum
             base.ForceEndTurn();
         }
 
-        protected override string Character()
-        {
-            return "Belle Star";
-        }
-
     }
 }

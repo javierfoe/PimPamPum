@@ -15,10 +15,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "John Pain";
-        }
-
     }
 }

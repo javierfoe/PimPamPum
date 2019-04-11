@@ -10,10 +10,5 @@ namespace PimPamPum
             yield return GameController.Instance.DiscardCopiesOf<T>(PlayerNumber, p);
         }
 
-        protected override string Character()
-        {
-            return "Johnny Kisch";
-        }
-
     }
 }

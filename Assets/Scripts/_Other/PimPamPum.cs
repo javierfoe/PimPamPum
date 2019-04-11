@@ -111,7 +111,8 @@ namespace PimPamPum
         PimPamPum,
         Duel,
         Discard,
-        Dying
+        Dying,
+        SpecialEvent
     }
 
     public enum Event
@@ -150,7 +151,9 @@ namespace PimPamPum
         Die,
         Avoid,
         Barrel,
-        Source
+        Source,
+        Heal,
+        Pass
     }
 
     public enum Role

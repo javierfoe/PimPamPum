@@ -21,6 +21,7 @@ namespace PimPamPum
         private EndTurnButton endTurnButton;
         private DieButton dieButton;
         private BarrelButton barrelButton;
+        private PassButton passButton;
 
         private int HiddenCards
         {
@@ -49,11 +50,13 @@ namespace PimPamPum
             dieButton = FindObjectOfType<DieButton>();
             endGamePanel = FindObjectOfType<EndGamePanelView>();
             barrelButton = FindObjectOfType<BarrelButton>();
+            passButton = FindObjectOfType<PassButton>();
             endGamePanel.gameObject.SetActive(false);
             barrelButton.Active = false;
             endTurnButton.Active = false;
             takeHitButton.Active = false;
             dieButton.Active = false;
+            passButton.Active = false;
         }
 
         public void SetTurn(bool value)
@@ -190,6 +193,11 @@ namespace PimPamPum
         public void EnableBarrelButton(bool value)
         {
             barrelButton.Active = value;
+        }
+
+        public void EnablePassButton(bool value)
+        {
+            passButton.Active = value;
         }
     }
 }

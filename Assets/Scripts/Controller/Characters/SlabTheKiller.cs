@@ -12,10 +12,5 @@ namespace PimPamPum
             MissesToDodge = missesToDodge;
         }
 
-        protected override string Character()
-        {
-            return "Slab the Killer";
-        }
-
     }
 }

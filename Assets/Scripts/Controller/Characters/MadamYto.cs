@@ -5,18 +5,10 @@ namespace PimPamPum
     public class MadamYto : PlayerController
     {
 
-        protected override IEnumerator UsedBeerTrigger()
+        protected override IEnumerator UsedBeerTrigger(int player)
         {
-            if (!IsDead)
-            {
-                yield return PimPamPumEvent(this + " draws a card for the beer just used.");
-                Draw(1);
-            }
-        }
-
-        protected override string Character()
-        {
-            return "Madam Yto";
+            yield return PimPamPumEvent(this + " draws a card for the beer just used.");
+            Draw(1);
         }
 
     }

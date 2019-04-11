@@ -11,10 +11,5 @@ namespace PimPamPum
             return cardLimit;
         }
 
-        protected override string Character()
-        {
-            return "Sean Mallory";
-        }
-
     }
 }

@@ -12,10 +12,5 @@ namespace PimPamPum
             Barrels = barrels;
         }
 
-        protected override string Character()
-        {
-            return "Jourdonnais";
-        }
-
     }
 }

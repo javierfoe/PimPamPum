@@ -14,9 +14,9 @@ namespace PimPamPum
 
         [SyncVar] private int playerNum;
 
+        [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
 
-        private Coroutine hit, jailCheck;
         private int hp;
         private Weapon weapon;
         private List<Card> properties;
@@ -30,7 +30,7 @@ namespace PimPamPum
 
         public State State
         {
-            get; private set;
+            get; protected set;
         }
 
         public int DraggedCardIndex
@@ -522,6 +522,7 @@ namespace PimPamPum
 
         public virtual void DisableCards()
         {
+            OriginalHand();
             EnableTakeHitButton(false);
             EnableEndTurnButton(false);
             int length = hand.Count;
@@ -531,14 +532,19 @@ namespace PimPamPum
             }
         }
 
-        private void DiscardEndTurn()
+        protected void EnableAllCards()
         {
-            State = State.Discard;
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, true);
             }
+        }
+
+        private void DiscardEndTurn()
+        {
+            State = State.Discard;
+            EnableAllCards();
         }
 
         protected virtual void EnableCardsPlay()
@@ -932,15 +938,15 @@ namespace PimPamPum
             if (!GameController.Instance.FinalDuel) Heal(BeerHeal);
         }
 
-        public IEnumerator UsedBeer()
+        public IEnumerator UsedBeer(int player)
         {
             if (!IsDead)
             {
-                yield return UsedBeerTrigger();
+                yield return UsedBeerTrigger(player);
             }
         }
 
-        protected virtual IEnumerator UsedBeerTrigger()
+        protected virtual IEnumerator UsedBeerTrigger(int player)
         {
             yield return null;
         }
@@ -1081,7 +1087,12 @@ namespace PimPamPum
             TargetEnableDieButton(connectionToClient, value);
         }
 
-        private void MakeDecision(Decision decision, int index = -1)
+        public void EnablePassButton(bool value)
+        {
+            TargetEnablePassButton(connectionToClient, value);
+        }
+
+        protected void MakeDecision(Decision decision, int index = -1)
         {
             DisableCards();
             Card card = index > -1 ? hand[index] : null;
@@ -1145,7 +1156,10 @@ namespace PimPamPum
             return PlayerName;
         }
 
-        protected abstract string Character();
+        private string Character()
+        {
+            return characterName;
+        }
 
         public void SetPlayerName()
         {
@@ -1171,6 +1185,44 @@ namespace PimPamPum
         protected void TakeHitButton()
         {
             TargetTakeHitButton(connectionToClient);
+        }
+
+        protected virtual void UseCardState(int index, int player, Drop drop, int cardIndex)
+        {
+            switch (State)
+            {
+                case State.Play:
+                    if (player > -1)
+                    {
+                        StartCoroutine(PlayCard(player, drop, cardIndex));
+                    }
+                    break;
+                case State.Discard:
+                    if (drop == Drop.Trash)
+                    {
+                        StartCoroutine(DiscardCardEndTurn(index));
+                    }
+                    break;
+                case State.Dying:
+                    if (drop == Drop.Trash)
+                    {
+                        StartCoroutine(PlayCard(PlayerNumber, drop, cardIndex));
+                    }
+                    break;
+                case State.Duel:
+                    if (drop == Drop.Trash)
+                    {
+                        DuelResponse(index);
+                    }
+                    break;
+                case State.Response:
+                    if (drop == Drop.Trash)
+                    {
+                        MakeDecision(Decision.Avoid, index);
+                        UnequipHandCard(index);
+                    }
+                    break;
+            }
         }
 
         protected virtual void OnSetLocalPlayer() { }
@@ -1221,6 +1273,13 @@ namespace PimPamPum
             CmdEndTurn();
         }
 
+        [Client]
+        public void PassButton()
+        {
+            PlayerView.EnablePassButton(false);
+            CmdMakeDecision(Decision.Pass);
+        }
+
         [Command]
         private void CmdChooseGeneralStoreCard(int choice)
         {
@@ -1237,10 +1296,13 @@ namespace PimPamPum
         private void CmdBeginCardDrag(int index)
         {
             DraggedCardIndex = index;
-            GameController.Instance.HighlightTrash(PlayerNumber, true);
             if (State == State.Play)
             {
                 hand[DraggedCardIndex].BeginCardDrag(this);
+            }
+            else
+            {
+                GameController.Instance.HighlightTrash(PlayerNumber, true);
             }
         }
 
@@ -1253,40 +1315,7 @@ namespace PimPamPum
         [Command]
         private void CmdUseCard(int index, int player, Drop drop, int cardIndex)
         {
-            switch (State)
-            {
-                case State.Play:
-                    if (player > -1)
-                    {
-                        StartCoroutine(PlayCard(player, drop, cardIndex));
-                    }
-                    break;
-                case State.Discard:
-                    if (drop == Drop.Trash)
-                    {
-                        StartCoroutine(DiscardCardEndTurn(index));
-                    }
-                    break;
-                case State.Dying:
-                    if (drop == Drop.Trash)
-                    {
-                        StartCoroutine(PlayCard(PlayerNumber, drop, cardIndex));
-                    }
-                    break;
-                case State.Duel:
-                    if (drop == Drop.Trash)
-                    {
-                        DuelResponse(index);
-                    }
-                    break;
-                case State.Response:
-                    if (drop == Drop.Trash)
-                    {
-                        MakeDecision(Decision.Avoid, index);
-                        UnequipHandCard(index);
-                    }
-                    break;
-            }
+            UseCardState(index, player, drop, cardIndex);
             GameController.Instance.StopTargeting(PlayerNumber);
         }
 
@@ -1453,6 +1482,12 @@ namespace PimPamPum
         private void TargetEnableDieButton(NetworkConnection conn, bool value)
         {
             PlayerView.EnableDieButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnablePassButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnablePassButton(value);
         }
 
         [TargetRpc]

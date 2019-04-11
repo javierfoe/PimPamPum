@@ -9,10 +9,5 @@ namespace PimPamPum
             return c.Suit == Suit.Diamonds;
         }
 
-        protected override string Character()
-        {
-            return "Apache Kid";
-        }
-
     }
 }

@@ -48,11 +48,12 @@ namespace PimPamPum
         void UpdateHP(int hp);
         void SetSheriff();
         void SetRole(Role role);
-        void EnableEndTurnButton(bool enable);
         void SetTextTakeHitButton(string text);
+        void EnableEndTurnButton(bool enable);
         void EnableBarrelButton(bool enable);
         void EnableTakeHitButton(bool enable);
         void EnableDieButton(bool enable);
+        void EnablePassButton(bool enable);
         void EnableCard(int index, bool enable);
         void AddCard();
         void AddCard(int index, CardStruct cs);

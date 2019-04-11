@@ -2,7 +2,7 @@
 namespace PimPamPum
 {
 
-    public class CalamityJanet : PlayerCardConverter
+    public class CalamityJanet : PlayerController
     {
 
         protected override void EnablePhase2Cards()
@@ -23,9 +23,5 @@ namespace PimPamPum
             base.EnablePimPamPumReaction();
         }
 
-        protected override string Character()
-        {
-            return "Calamity Janet";
-        }
     }
 }

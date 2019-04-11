@@ -32,10 +32,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "Mick Defender";
-        }
-
     }
 }

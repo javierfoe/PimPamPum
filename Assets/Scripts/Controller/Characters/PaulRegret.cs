@@ -12,10 +12,5 @@ namespace PimPamPum
             RangeModifier = rangeModifier;
         }
 
-        protected override string Character()
-        {
-            return "Paul Regret";
-        }
-
     }
 }

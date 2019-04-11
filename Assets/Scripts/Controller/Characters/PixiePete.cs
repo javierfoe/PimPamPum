@@ -10,10 +10,5 @@ namespace PimPamPum
             Phase1CardsDrawn = 3;
         }
 
-        protected override string Character()
-        {
-            return "Pixie Pete";
-        }
-
     }
 }

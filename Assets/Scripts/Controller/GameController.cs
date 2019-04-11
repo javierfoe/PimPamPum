@@ -165,7 +165,7 @@ namespace PimPamPum
         {
             for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
-                yield return playerControllers[i].UsedBeer();
+                yield return playerControllers[i].UsedBeer(player);
             }
         }
 
@@ -641,6 +641,21 @@ namespace PimPamPum
             yield return MultipleTargetResponsesFinished(player);
         }
 
+        public IEnumerator LemonadeJimBeerUsed(int player)
+        {
+            float time = 0;
+            decision = Decision.Pending;
+            while (time < decisionTime && decision == Decision.Pending)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+            if(decision == Decision.Heal)
+            {
+                yield return PimPamPumEvent(playerControllers[player] + " has used his special ability and healed 1 HP.");
+            }
+        }
+
         public void Saloon()
         {
             for (int i = 0; i < MaxPlayers; i++)
@@ -676,7 +691,6 @@ namespace PimPamPum
 
         public void SetPlayerViews()
         {
-            Debug.Log(MaxPlayers);
             playerViews = new IPlayerView[MaxPlayers];
             int j = 0;
             int i = 0;

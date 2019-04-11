@@ -1,4 +1,5 @@
-﻿namespace PimPamPum
+﻿
+namespace PimPamPum
 {
 
     public class EndTurnButton : Button

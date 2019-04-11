@@ -16,10 +16,5 @@ namespace PimPamPum
             }
         }
 
-        protected override string Character()
-        {
-            return "Tuco Franziskaner";
-        }
-
     }
 }

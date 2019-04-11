@@ -9,11 +9,6 @@ namespace PimPamPum
             Draw();
         }
 
-        protected override string Character()
-        {
-            return "Suzy Lafayette";
-        }
-
     }
 }
 

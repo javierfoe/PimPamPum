@@ -12,10 +12,5 @@ namespace PimPamPum
             Draw(drawncards);
         }
 
-        protected override string Character()
-        {
-            return "Bill Noface";
-        }
-
     }
 }

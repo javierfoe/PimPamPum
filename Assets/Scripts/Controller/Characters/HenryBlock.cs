@@ -14,10 +14,5 @@ namespace PimPamPum
             yield return base.StolenBy(thief);
         }
 
-        protected override string Character()
-        {
-            return "Henry Block";
-        }
-
     }
 }

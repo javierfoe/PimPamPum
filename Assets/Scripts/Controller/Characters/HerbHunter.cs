@@ -12,10 +12,5 @@ namespace PimPamPum
             return false;
         }
 
-        protected override string Character()
-        {
-            return "Herb Hunter";
-        }
-
     }
 }

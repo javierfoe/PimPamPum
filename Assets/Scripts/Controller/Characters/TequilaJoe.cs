@@ -12,11 +12,5 @@ namespace PimPamPum
             BeerHeal = beerHeal;
         }
 
-
-        protected override string Character()
-        {
-            return "Tequila Joe";
-        }
-
     }
 }

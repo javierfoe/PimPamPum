@@ -2,17 +2,14 @@
 namespace PimPamPum
 {
 
-    public class ElenaFuente : PlayerCardConverter
+    public class ElenaFuente : PlayerController
     {
+
         protected override void EnablePimPamPumReaction()
         {
             ConvertHandTo<Missed>();
             base.EnablePimPamPumReaction();
         }
 
-        protected override string Character()
-        {
-            return "Elena Fuente";
-        }
     }
 }

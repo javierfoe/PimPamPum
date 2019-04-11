@@ -11,10 +11,5 @@ namespace PimPamPum
 
         protected override void EnablePimPamPumReaction() { }
 
-        protected override string Character()
-        {
-            return "Big Spencer";
-        }
-
     }
 }
