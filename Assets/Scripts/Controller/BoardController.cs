@@ -61,6 +61,12 @@ namespace PimPamPum
             return c;
         }
 
+        public void AddCardToDeck(Card c)
+        {
+            deck.Add(c);
+            SetDeckSize();
+        }
+
         public List<Card> DrawGeneralStoreCards(int cards)
         {
             List<Card> result = DrawCards(cards);
@@ -74,6 +80,23 @@ namespace PimPamPum
 
             RpcEnableGeneralStore(true);
             RpcEnableCards(false);
+
+            return result;
+        }
+
+        public List<Card> DrawKitCarlsonCards(NetworkConnection conn)
+        {
+            List<Card> result = DrawCards(3);
+
+            Card c;
+            for (int i = 0; i < result.Count; i++)
+            {
+                c = result[i];
+                TargetAddCardGeneralStore(conn, i, c.Struct);
+            }
+
+            TargetEnableGeneralStore(conn, true);
+            TargetEnableCards(conn, false);
 
             return result;
         }
@@ -225,6 +248,24 @@ namespace PimPamPum
         private void TargetEnableCards(NetworkConnection conn, bool value)
         {
             boardView.EnableGeneralStoreCards(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableGeneralStore(NetworkConnection conn, bool value)
+        {
+            boardView.EnableGeneralStore(value);
+        }
+
+        [TargetRpc]
+        private void TargetAddCardGeneralStore(NetworkConnection conn, int index, CardStruct cs)
+        {
+            boardView.AddGeneralStoreCard(index, cs);
+        }
+
+        [TargetRpc]
+        private void TargetRemoveCardsAndDisableGeneralStore(NetworkConnection conn)
+        {
+
         }
 
         [ClientRpc]
