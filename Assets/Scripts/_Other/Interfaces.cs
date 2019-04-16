@@ -8,6 +8,7 @@ namespace PimPamPum
         void EnableGeneralStoreCards(bool value);
         void AddGeneralStoreCard(int index, CardStruct cs);
         void RemoveGeneralStoreCard(int index);
+        void RemoveAllGeneralStoreCards();
         void SetDeckSize(int cards);
         void SetDiscardTop(CardStruct cs);
         void EmptyDiscardStack();

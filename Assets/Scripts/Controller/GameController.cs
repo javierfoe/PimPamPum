@@ -743,6 +743,35 @@ namespace PimPamPum
             }
         }
 
+        public IEnumerator ChooseCardToPutOnDeckTop(int player)
+        {
+            PlayerController pc = playerControllers[player];
+            NetworkConnection conn = pc.connectionToClient;
+            generalStoreChoices = boardController.DrawKitCarlsonCards(conn);
+            generalStoreChoice = -1;
+
+            float time = 0;
+            while(time < decisionTime && generalStoreChoice < 0)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+            boardController.RemoveCardsAndDisableGeneralStore(conn);
+
+            if(generalStoreChoice < 0)
+            {
+                generalStoreChoice = Random.Range(0, generalStoreChoices.Count);
+            }
+
+            Card choice = generalStoreChoices[generalStoreChoice];
+            generalStoreChoices.RemoveAt(generalStoreChoice);
+
+            pc.AddCard(generalStoreChoices[0]);
+            pc.AddCard(generalStoreChoices[1]);
+            boardController.AddCardToDeck(choice);
+        }
+
         public void PassDynamite(int player, Dynamite d)
         {
             int playerAux = player;

@@ -96,7 +96,7 @@ namespace PimPamPum
             }
 
             TargetEnableGeneralStore(conn, true);
-            TargetEnableCards(conn, false);
+            TargetEnableCards(conn, true);
 
             return result;
         }
@@ -147,6 +147,11 @@ namespace PimPamPum
         public void SetTargetable(NetworkConnection conn, bool value)
         {
             TargetTargetableTrash(conn, value);
+        }
+
+        public void RemoveCardsAndDisableGeneralStore(NetworkConnection conn)
+        {
+            TargetRemoveCardsAndDisableGeneralStore(conn);
         }
 
         private void GenerateDeck()
@@ -265,7 +270,7 @@ namespace PimPamPum
         [TargetRpc]
         private void TargetRemoveCardsAndDisableGeneralStore(NetworkConnection conn)
         {
-
+            boardView.RemoveAllGeneralStoreCards();
         }
 
         [ClientRpc]

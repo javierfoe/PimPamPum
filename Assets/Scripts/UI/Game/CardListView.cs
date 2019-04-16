@@ -31,6 +31,15 @@ namespace PimPamPum
             for (int i = index; i < list.Count; i++) list[i].SetIndex(i);
         }
 
+        public void RemoveAllCardViews()
+        {
+            for(int i = 0; i < list.Count; i++)
+            {
+                Destroy(list[i].GameObject());
+            }
+            list.Clear();
+        }
+
         public void SetDroppable(bool value)
         {
             foreach(T cv in list) cv.SetDroppable(value);

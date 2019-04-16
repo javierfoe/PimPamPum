@@ -48,6 +48,12 @@ namespace PimPamPum
             generalStore.RemoveCardView(index);
         }
 
+        public void RemoveAllGeneralStoreCards()
+        {
+            generalStore.RemoveAllCardViews();
+            EnableGeneralStore(false);
+        }
+
         public void SetDeckSize(int cards)
         {
             deck.text = cards.ToString();
