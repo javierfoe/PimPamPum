@@ -236,7 +236,35 @@ namespace PimPamPum
 
         public IEnumerator DrawEffect(int player)
         {
-            DrawnCard = DrawCard();
+            PlayerController pc = playerControllers[player];
+            NetworkConnection conn = pc.connectionToClient;
+            int drawCards = pc.DrawEffectCards;
+            if (drawCards < 2)
+            {
+                DrawnCard = DrawCard();
+            }
+            else
+            {
+                generalStoreChoices = boardController.GeneralStoreForPlayer(conn, drawCards);
+                generalStoreChoice = -1;
+
+                float time = 0;
+                while (time < decisionTime && generalStoreChoice < 0)
+                {
+                    time += Time.deltaTime;
+                    yield return null;
+                }
+
+                boardController.RemoveCardsAndDisableGeneralStore(conn);
+
+                if (generalStoreChoice < 0)
+                {
+                    generalStoreChoice = Random.Range(0, generalStoreChoices.Count);
+                }
+
+                DrawnCard = generalStoreChoices[generalStoreChoice];
+
+            }
             yield return DrawEffect(player, DrawnCard);
         }
 
@@ -486,7 +514,6 @@ namespace PimPamPum
             float time = 0;
             int dodges = 0, barrelsUsed = 0, barrels = targetPc.Barrels;
             bool dodge;
-            Card barrelDrawn;
             decision = Decision.Pending;
             while (dodges < misses && decision != Decision.TakeHit)
             {
@@ -514,18 +541,12 @@ namespace PimPamPum
                 {
                     decision = Decision.Pending;
                     barrelsUsed++;
-                    barrelDrawn = BarrelDodge(out dodge);
+                    yield return DrawEffect(target);
+                    dodge = Barrel.CheckCondition(DrawnCard);
                     dodges += dodge ? 1 : 0;
-                    yield return BarrelEffect(target, barrelDrawn, dodge);
+                    yield return BarrelEffect(target, DrawnCard, dodge);
                 }
             }
-        }
-
-        private Card BarrelDodge(out bool dodged)
-        {
-            Card c = DrawCard();
-            dodged = Barrel.CheckCondition(c);
-            return c;
         }
 
         private IEnumerator BarrelEffect(int target, Card c, bool dodge)
@@ -650,7 +671,7 @@ namespace PimPamPum
                 time += Time.deltaTime;
                 yield return null;
             }
-            if(decision == Decision.Heal)
+            if (decision == Decision.Heal)
             {
                 yield return PimPamPumEvent(playerControllers[player] + " has used his special ability and healed 1 HP.");
             }
@@ -747,11 +768,11 @@ namespace PimPamPum
         {
             PlayerController pc = playerControllers[player];
             NetworkConnection conn = pc.connectionToClient;
-            generalStoreChoices = boardController.DrawKitCarlsonCards(conn);
+            generalStoreChoices = boardController.GeneralStoreForPlayer(conn, 3);
             generalStoreChoice = -1;
 
             float time = 0;
-            while(time < decisionTime && generalStoreChoice < 0)
+            while (time < decisionTime && generalStoreChoice < 0)
             {
                 time += Time.deltaTime;
                 yield return null;
@@ -759,7 +780,7 @@ namespace PimPamPum
 
             boardController.RemoveCardsAndDisableGeneralStore(conn);
 
-            if(generalStoreChoice < 0)
+            if (generalStoreChoice < 0)
             {
                 generalStoreChoice = Random.Range(0, generalStoreChoices.Count);
             }

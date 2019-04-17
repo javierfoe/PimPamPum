@@ -84,9 +84,9 @@ namespace PimPamPum
             return result;
         }
 
-        public List<Card> DrawKitCarlsonCards(NetworkConnection conn)
+        public List<Card> GeneralStoreForPlayer(NetworkConnection conn, int cards)
         {
-            List<Card> result = DrawCards(3);
+            List<Card> result = DrawCards(cards);
 
             Card c;
             for (int i = 0; i < result.Count; i++)

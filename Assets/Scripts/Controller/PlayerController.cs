@@ -128,6 +128,11 @@ namespace PimPamPum
             get; set;
         }
 
+        public int DrawEffectCards
+        {
+            get; protected set;
+        }
+
         public int PlayerNumber
         {
             get { return playerNum; }
@@ -180,6 +185,7 @@ namespace PimPamPum
             BeerHeal = 1;
             Phase1CardsDrawn = 2;
             MissesToDodge = 1;
+            DrawEffectCards = 1;
             MaxHP = characterHP;
             hand = new List<Card>();
             properties = new List<Card>();
