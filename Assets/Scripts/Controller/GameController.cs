@@ -252,6 +252,7 @@ namespace PimPamPum
             if (drawCards < 2)
             {
                 DrawnCard = DrawCard();
+                yield return DrawEffect(player, DrawnCard);
             }
             else
             {
@@ -271,15 +272,14 @@ namespace PimPamPum
                     cardChoice = Random.Range(0, cardChoices.Count);
                 }
 
-                DrawnCard = cardChoices[cardChoice];
-                cardChoices.RemoveAt(cardChoice);
                 int length = cardChoices.Count;
-                for(int i = 0; i < length; i++)
+                for (int i = 0; i < length; i++)
                 {
-                    DiscardCard(cardChoices[i]);
+                    yield return DrawEffect(player, cardChoices[i]);
                 }
+
+                DrawnCard = cardChoices[cardChoice];
             }
-            yield return DrawEffect(player, DrawnCard);
         }
 
         public IEnumerator DrawEffect(int player, Card c)
