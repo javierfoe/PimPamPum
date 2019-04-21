@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class GeneralStoreListView : CardListView<IGeneralStoreCardView>
+    public class SelectCardListView : CardListView<ISelectView>, ISelectCardListView
     {
         protected override void Awake()
         {
@@ -17,10 +17,16 @@ namespace PimPamPum
 
         public void EnableCards(bool value)
         {
-            foreach(IGeneralStoreCardView cv in list)
+            foreach(ISelectView cv in list)
             {
                 cv.Enable(value);
             }
         }
+
+        public void Enable(bool value)
+        {
+            gameObject.SetActive(value);
+        }
+
     }
 }

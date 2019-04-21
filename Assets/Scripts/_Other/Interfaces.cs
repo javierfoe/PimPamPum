@@ -4,11 +4,6 @@ namespace PimPamPum
 {
     public interface IBoardView : IDropView
     {
-        void EnableGeneralStore(bool value);
-        void EnableGeneralStoreCards(bool value);
-        void AddGeneralStoreCard(int index, CardStruct cs);
-        void RemoveGeneralStoreCard(int index);
-        void RemoveAllGeneralStoreCards();
         void SetDeckSize(int cards);
         void SetDiscardTop(CardStruct cs);
         void EmptyDiscardStack();
@@ -32,12 +27,25 @@ namespace PimPamPum
         void Empty();
     }
 
-    public interface IGeneralStoreCardView : ICardView
+    public interface ISelectView : ICardView
     {
         void Enable(bool value);
     }
 
-    public interface IPlayerView : IDropView
+    public interface ICardHolderView
+    {
+        void AddCard(int index, CardStruct cs);
+        void RemoveCard(int index);
+    }
+
+    public interface ISelectCardListView : ICardHolderView
+    {
+        void Enable(bool value);
+        void EnableCards(bool value);
+        void RemoveAllCards();
+    }
+
+    public interface IPlayerView : ICardHolderView, IDropView
     {
         void SetCharacter(string character);
         void SetPlayerName(string name);
@@ -57,11 +65,9 @@ namespace PimPamPum
         void EnablePassButton(bool enable);
         void EnableCard(int index, bool enable);
         void AddCard();
-        void AddCard(int index, CardStruct cs);
         void EquipProperty(int index, CardStruct cs);
         void RemoveProperty(int index);
         void RemoveCard();
-        void RemoveCard(int index);
         void EquipWeapon(CardStruct cs);
         void Win();
         void Lose();

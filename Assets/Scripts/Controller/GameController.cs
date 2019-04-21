@@ -13,19 +13,22 @@ namespace PimPamPum
             get; private set;
         }
 
-        [SerializeField] private CardView cardPrefab = null;
-        [SerializeField] private PropertyView propertyPrefab = null;
-        [SerializeField] private GeneralStoreView generalStoreCardView = null;
-        [SerializeField] private BoardController boardController = null;
         [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
+        [Header("Card prefabs")]
+        [SerializeField] private CardView cardPrefab = null;
+        [SerializeField] private PropertyView propertyPrefab = null;
+        [SerializeField] private SelectView generalStoreCardView = null;
+        [Header("Controllers")]
+        [SerializeField] private SelectCardController selectCardController = null;
+        [SerializeField] private BoardController boardController = null;
 
         private IPlayerView[] playerViews;
         private Decision decision;
         private Card cardUsed;
-        private int generalStoreChoice;
+        private int cardChoice;
         private PlayerController[] playerControllers;
-        private List<Card> generalStoreChoices;
+        private List<Card> cardChoices;
 
         public GameObject CardPrefab
         {
@@ -229,9 +232,16 @@ namespace PimPamPum
             }
         }
 
-        public void ChooseGeneralStoreCard(int choice)
+        public void ChooseCard(int choice)
         {
-            generalStoreChoice = choice;
+            cardChoice = choice;
+        }
+
+        private void SetSelectableCards(int cards, NetworkConnection conn = null)
+        {
+            cardChoices = boardController.DrawCards(cards);
+            selectCardController.SetCards(cardChoices, conn);
+            cardChoice = -1;
         }
 
         public IEnumerator DrawEffect(int player)
@@ -245,25 +255,29 @@ namespace PimPamPum
             }
             else
             {
-                generalStoreChoices = boardController.GeneralStoreForPlayer(conn, drawCards);
-                generalStoreChoice = -1;
+                SetSelectableCards(drawCards, conn);
 
                 float time = 0;
-                while (time < decisionTime && generalStoreChoice < 0)
+                while (time < decisionTime && cardChoice < 0)
                 {
                     time += Time.deltaTime;
                     yield return null;
                 }
 
-                boardController.RemoveCardsAndDisableGeneralStore(conn);
+                selectCardController.RemoveCardsAndDisable(conn);
 
-                if (generalStoreChoice < 0)
+                if (cardChoice < 0)
                 {
-                    generalStoreChoice = Random.Range(0, generalStoreChoices.Count);
+                    cardChoice = Random.Range(0, cardChoices.Count);
                 }
 
-                DrawnCard = generalStoreChoices[generalStoreChoice];
-
+                DrawnCard = cardChoices[cardChoice];
+                cardChoices.RemoveAt(cardChoice);
+                int length = cardChoices.Count;
+                for(int i = 0; i < length; i++)
+                {
+                    DiscardCard(cardChoices[i]);
+                }
             }
             yield return DrawEffect(player, DrawnCard);
         }
@@ -387,36 +401,36 @@ namespace PimPamPum
         {
             int next = player;
             int players = PlayersAlive;
-            generalStoreChoices = boardController.DrawGeneralStoreCards(players);
+            SetSelectableCards(players);
             NetworkConnection conn;
             float time;
             while (players > 1)
             {
-                generalStoreChoice = -1;
+                cardChoice = -1;
                 time = 0;
                 conn = playerControllers[next].connectionToClient;
-                boardController.EnableCards(conn, true);
-                while (generalStoreChoice < 0 && time < decisionTime)
+                selectCardController.EnableCards(conn, true);
+                while (cardChoice < 0 && time < decisionTime)
                 {
                     time += Time.deltaTime;
                     yield return null;
                 }
-                boardController.EnableCards(conn, false);
-                generalStoreChoice = generalStoreChoice < 0 ? Random.Range(0, generalStoreChoices.Count) : generalStoreChoice;
-                yield return GetCardGeneralStore(next, generalStoreChoice);
+                selectCardController.EnableCards(conn, false);
+                cardChoice = cardChoice < 0 ? Random.Range(0, cardChoices.Count) : cardChoice;
+                yield return GetCardGeneralStore(next, cardChoice);
                 next = NextPlayerAlive(next);
                 players--;
             }
             yield return GetCardGeneralStore(next, 0);
-            boardController.DisableGeneralStore();
+            selectCardController.Disable();
         }
 
         private IEnumerator GetCardGeneralStore(int player, int choice)
         {
-            yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + generalStoreChoices[choice]);
-            boardController.RemoveGeneralStoreCard(choice);
-            playerControllers[player].AddCard(generalStoreChoices[choice]);
-            generalStoreChoices.RemoveAt(choice);
+            yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + cardChoices[choice]);
+            selectCardController.RemoveCard(choice);
+            playerControllers[player].AddCard(cardChoices[choice]);
+            cardChoices.RemoveAt(choice);
         }
 
         public IEnumerator StartDuel(int player, int target)
@@ -768,28 +782,28 @@ namespace PimPamPum
         {
             PlayerController pc = playerControllers[player];
             NetworkConnection conn = pc.connectionToClient;
-            generalStoreChoices = boardController.GeneralStoreForPlayer(conn, 3);
-            generalStoreChoice = -1;
+
+            SetSelectableCards(3, conn);
 
             float time = 0;
-            while (time < decisionTime && generalStoreChoice < 0)
+            while (time < decisionTime && cardChoice < 0)
             {
                 time += Time.deltaTime;
                 yield return null;
             }
 
-            boardController.RemoveCardsAndDisableGeneralStore(conn);
+            selectCardController.RemoveCardsAndDisable(conn);
 
-            if (generalStoreChoice < 0)
+            if (cardChoice < 0)
             {
-                generalStoreChoice = Random.Range(0, generalStoreChoices.Count);
+                cardChoice = Random.Range(0, cardChoices.Count);
             }
 
-            Card choice = generalStoreChoices[generalStoreChoice];
-            generalStoreChoices.RemoveAt(generalStoreChoice);
+            Card choice = cardChoices[cardChoice];
+            cardChoices.RemoveAt(cardChoice);
 
-            pc.AddCard(generalStoreChoices[0]);
-            pc.AddCard(generalStoreChoices[1]);
+            pc.AddCard(cardChoices[0]);
+            pc.AddCard(cardChoices[1]);
             boardController.AddCardToDeck(choice);
         }
 

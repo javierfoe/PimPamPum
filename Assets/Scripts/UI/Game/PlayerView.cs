@@ -109,22 +109,22 @@ namespace PimPamPum
 
         public void AddCard(int index, CardStruct cs)
         {
-            handCards.AddCardView(index, cs);
+            handCards.AddCard(index, cs);
         }
 
         public void EquipProperty(int index, CardStruct cs)
         {
-            propertyCards.AddCardView(index, cs);
+            propertyCards.AddCard(index, cs);
         }
 
         public void RemoveCard(int index)
         {
-            handCards.RemoveCardView(index);
+            handCards.RemoveCard(index);
         }
 
         public void RemoveProperty(int index)
         {
-            propertyCards.RemoveCardView(index);
+            propertyCards.RemoveCard(index);
         }
 
         public void EquipWeapon(CardStruct cs)

@@ -15,7 +15,7 @@ namespace PimPamPum
 
         protected abstract GameObject GetPrefab();
 
-        public void AddCardView(int index, CardStruct cs)
+        public void AddCard(int index, CardStruct cs)
         {
             GameObject prefab = GetPrefab();
             T cv = Instantiate(prefab, transform).GetComponent<T>();
@@ -24,14 +24,14 @@ namespace PimPamPum
             list.Add(cv);
         }
 
-        public void RemoveCardView(int index)
+        public void RemoveCard(int index)
         {
             Destroy(list[index].GameObject());
             list.RemoveAt(index);
             for (int i = index; i < list.Count; i++) list[i].SetIndex(i);
         }
 
-        public void RemoveAllCardViews()
+        public void RemoveAllCards()
         {
             for(int i = 0; i < list.Count; i++)
             {

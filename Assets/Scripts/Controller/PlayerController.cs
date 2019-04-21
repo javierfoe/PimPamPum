@@ -1236,7 +1236,7 @@ namespace PimPamPum
         [Client]
         public void ChooseGeneralStoreCard(int index)
         {
-            CmdChooseGeneralStoreCard(index);
+            CmdChooseCard(index);
         }
 
         [Client]
@@ -1287,9 +1287,9 @@ namespace PimPamPum
         }
 
         [Command]
-        private void CmdChooseGeneralStoreCard(int choice)
+        private void CmdChooseCard(int choice)
         {
-            GameController.Instance.ChooseGeneralStoreCard(choice);
+            GameController.Instance.ChooseCard(choice);
         }
 
         [Command]

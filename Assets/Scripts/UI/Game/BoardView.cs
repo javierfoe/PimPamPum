@@ -9,7 +9,6 @@ namespace PimPamPum
 
         [SerializeField] private CardView discardStackTop = null;
         [SerializeField] private Text deck = null;
-        [SerializeField] private GeneralStoreListView generalStore = null;
 
         private CardStruct defaultCard = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
 
@@ -26,32 +25,6 @@ namespace PimPamPum
         {
             Droppable = value;
             base.SetTargetable(value);
-        }
-
-        public void EnableGeneralStore(bool value)
-        {
-            generalStore.gameObject.SetActive(value);
-        }
-
-        public void EnableGeneralStoreCards(bool value)
-        {
-            generalStore.EnableCards(value);
-        }
-
-        public void AddGeneralStoreCard(int index, CardStruct cs)
-        {
-            generalStore.AddCardView(index, cs);
-        }
-
-        public void RemoveGeneralStoreCard(int index)
-        {
-            generalStore.RemoveCardView(index);
-        }
-
-        public void RemoveAllGeneralStoreCards()
-        {
-            generalStore.RemoveAllCardViews();
-            EnableGeneralStore(false);
         }
 
         public void SetDeckSize(int cards)

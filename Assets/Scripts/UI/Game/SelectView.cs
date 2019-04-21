@@ -1,7 +1,7 @@
 ﻿
 namespace PimPamPum
 {
-    public class GeneralStoreView : CardView, IGeneralStoreCardView
+    public class SelectView : CardView, ISelectView
     {
         private UnityEngine.UI.Button button;
 

@@ -45,11 +45,6 @@ namespace PimPamPum
             GenerateDeck();
         }
 
-        public void EnableCards(NetworkConnection conn, bool value)
-        {
-            TargetEnableCards(conn, value);
-        }
-
         public Card DrawCard()
         {
             if (deck.Count < 1) ShuffleCards(discardStack);
@@ -65,50 +60,6 @@ namespace PimPamPum
         {
             deck.Add(c);
             SetDeckSize();
-        }
-
-        public List<Card> DrawGeneralStoreCards(int cards)
-        {
-            List<Card> result = DrawCards(cards);
-
-            Card c;
-            for (int i = 0; i < result.Count; i++)
-            {
-                c = result[i];
-                RpcAddCardGeneralStore(i, c.Struct);
-            }
-
-            RpcEnableGeneralStore(true);
-            RpcEnableCards(false);
-
-            return result;
-        }
-
-        public List<Card> GeneralStoreForPlayer(NetworkConnection conn, int cards)
-        {
-            List<Card> result = DrawCards(cards);
-
-            Card c;
-            for (int i = 0; i < result.Count; i++)
-            {
-                c = result[i];
-                TargetAddCardGeneralStore(conn, i, c.Struct);
-            }
-
-            TargetEnableGeneralStore(conn, true);
-            TargetEnableCards(conn, true);
-
-            return result;
-        }
-
-        public void DisableGeneralStore()
-        {
-            RpcEnableGeneralStore(false);
-        }
-
-        public void RemoveGeneralStoreCard(int index)
-        {
-            RpcRemoveCardGeneralStore(index);
         }
 
         public List<Card> DrawCards(int cards)
@@ -147,11 +98,6 @@ namespace PimPamPum
         public void SetTargetable(NetworkConnection conn, bool value)
         {
             TargetTargetableTrash(conn, value);
-        }
-
-        public void RemoveCardsAndDisableGeneralStore(NetworkConnection conn)
-        {
-            TargetRemoveCardsAndDisableGeneralStore(conn);
         }
 
         private void GenerateDeck()
@@ -247,54 +193,6 @@ namespace PimPamPum
         private void TargetTargetableTrash(NetworkConnection conn, bool value)
         {
             boardView.SetTargetable(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableCards(NetworkConnection conn, bool value)
-        {
-            boardView.EnableGeneralStoreCards(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableGeneralStore(NetworkConnection conn, bool value)
-        {
-            boardView.EnableGeneralStore(value);
-        }
-
-        [TargetRpc]
-        private void TargetAddCardGeneralStore(NetworkConnection conn, int index, CardStruct cs)
-        {
-            boardView.AddGeneralStoreCard(index, cs);
-        }
-
-        [TargetRpc]
-        private void TargetRemoveCardsAndDisableGeneralStore(NetworkConnection conn)
-        {
-            boardView.RemoveAllGeneralStoreCards();
-        }
-
-        [ClientRpc]
-        private void RpcEnableCards(bool value)
-        {
-            boardView.EnableGeneralStoreCards(value);
-        }
-
-        [ClientRpc]
-        private void RpcEnableGeneralStore(bool value)
-        {
-            boardView.EnableGeneralStore(value);
-        }
-
-        [ClientRpc]
-        private void RpcAddCardGeneralStore(int index, CardStruct cs)
-        {
-            boardView.AddGeneralStoreCard(index, cs);
-        }
-
-        [ClientRpc]
-        private void RpcRemoveCardGeneralStore(int index)
-        {
-            boardView.RemoveGeneralStoreCard(index);
         }
 
         [ClientRpc]
