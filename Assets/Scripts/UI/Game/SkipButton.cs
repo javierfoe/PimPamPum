@@ -1,7 +1,8 @@
-﻿namespace PimPamPum
+﻿
+namespace PimPamPum
 {
 
-    public class PassButton : Button
+    public class SkipButton : Button
     {
 
         protected override void Click()

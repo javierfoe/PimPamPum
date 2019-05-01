@@ -153,7 +153,7 @@ namespace PimPamPum
         Barrel,
         Source,
         Heal,
-        Pass
+        Skip
     }
 
     public enum Role

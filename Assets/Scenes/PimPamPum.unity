@@ -2175,7 +2175,7 @@ GameObject:
   - component: {fileID: 1102458890}
   - component: {fileID: 1102458889}
   m_Layer: 5
-  m_Name: Pass
+  m_Name: Skip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3200,7 +3200,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1960718621
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3676,7 +3676,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Pass
+  m_Text: Skip
 --- !u!222 &2086099541
 CanvasRenderer:
   m_ObjectHideFlags: 0

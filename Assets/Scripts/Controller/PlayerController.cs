@@ -1283,7 +1283,7 @@ namespace PimPamPum
         public void PassButton()
         {
             PlayerView.EnablePassButton(false);
-            CmdMakeDecision(Decision.Pass);
+            CmdMakeDecision(Decision.Skip);
         }
 
         [Command]

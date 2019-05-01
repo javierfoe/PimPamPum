@@ -498,13 +498,7 @@ namespace PimPamPum
         public IEnumerator Dying(int target)
         {
             PlayerController pc = playerControllers[target];
-            float time = 0;
-            decision = Decision.Pending;
-            while (decision != Decision.Die && time < decisionTime && pc.IsDying)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
+            yield return new DyingTimer(decisionTime, pc);
             pc.EnableDieButton(false);
         }
 
@@ -633,13 +627,8 @@ namespace PimPamPum
         public IEnumerator AvoidCard(int player, int target)
         {
             playerControllers[target].EnableMissedsResponse();
-            float time = 0;
             float total = decisionTime / 2;
-            while (time < total && decision == Decision.Pending)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
+            yield return new PendingTimer(total);
         }
 
         public IEnumerator DiscardUsedCard(int target)
@@ -678,14 +667,9 @@ namespace PimPamPum
 
         public IEnumerator LemonadeJimBeerUsed(int player)
         {
-            float time = 0;
-            decision = Decision.Pending;
-            while (time < decisionTime && decision == Decision.Pending)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
-            if (decision == Decision.Heal)
+            PendingTimer timer = new PendingTimer(decisionTime);
+            yield return timer;
+            if (timer.Decision == Decision.Heal)
             {
                 yield return PimPamPumEvent(playerControllers[player] + " has used his special ability and healed 1 HP.");
             }
