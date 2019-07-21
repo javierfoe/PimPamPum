@@ -1,17 +1,27 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace PimPamPum
 {
 
-    public abstract class DecisionMaking : CustomYieldInstruction
+    public abstract class DecisionMaking : IEnumerator
     {
 
-        public virtual void MakeDecision(int player, Card card, Decision decision) { }
+        private static DecisionMaking decisionMaking;
 
-        public virtual void ChooseCard(int choice) { }
+        public object Current { get; protected set; }
 
-        protected DecisionMaking() { }
+        protected DecisionMaking()
+        {
+            decisionMaking = this;
+        }
+
+        protected virtual void MakeDecision(int player, Card card, Decision decision) { }
+
+        public abstract bool MoveNext();
+
+        public void Reset() { }
 
     }
 
@@ -36,15 +46,12 @@ namespace PimPamPum
             get; private set;
         }
 
-        public override bool keepWaiting
+        public override bool MoveNext()
         {
-            get
-            {
-                time += Time.deltaTime;
-                bool timer = time < maxTime;
-                TimeUp = !timer;
-                return timer && !DecisionMade;
-            }
+            time += Time.deltaTime;
+            bool timer = time < maxTime;
+            TimeUp = !timer;
+            return timer && !DecisionMade;
         }
 
         protected DecisionTimer(float maxTime, Decision decision)
@@ -55,7 +62,7 @@ namespace PimPamPum
             Decision = decision;
         }
 
-        public override void MakeDecision(int player, Card card, Decision decision)
+        protected override void MakeDecision(int player, Card card, Decision decision)
         {
             Decision = decision;
             DecisionMade = decision != this.decision;
@@ -75,11 +82,14 @@ namespace PimPamPum
 
         private Func<bool> dying;
 
-        public override bool keepWaiting => dying();
+        public override bool MoveNext()
+        {
+            return dying();
+        }
 
         public DyingTimer(float maxTime, PlayerController pc) : base(maxTime, Decision.Die)
         {
-            dying = () => base.keepWaiting && pc.IsDying;
+            dying = () => base.MoveNext() && pc.IsDying;
         }
 
     }
