@@ -10,7 +10,7 @@ namespace PimPamPum
             if (!button)
             {
                 button = GetComponent<UnityEngine.UI.Button>();
-                button.onClick.AddListener(ClickGeneralStoreCard);
+                button.onClick.AddListener(ClickCard);
             }
             Playable(value);
             button.interactable = value;
@@ -22,9 +22,9 @@ namespace PimPamPum
             Draggable = false;
         }
 
-        private void ClickGeneralStoreCard()
+        private void ClickCard()
         {
-            PlayerController.LocalPlayer.ChooseGeneralStoreCard(index);
+            PlayerController.LocalPlayer.ChooseCard(index);
         }
 
     }

@@ -10,6 +10,8 @@ namespace PimPamPum
         private void Start()
         {
             Slider slider = GetComponent<Slider>();
+            NetworkManager networkManager = FindObjectOfType<NetworkManager>();
+            slider.onValueChanged.AddListener(networkManager.SetPlayerAmount);
             slider.onValueChanged.Invoke(slider.value);
         }
     }

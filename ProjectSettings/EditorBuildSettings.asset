@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MultiplayerLocal.unity
-    guid: a49472a21fab0144c81cbade4dfb17f0
+    path: Assets/Scenes/Test.unity
+    guid: bf8edba722c308d42a0f06c535e9f273
   - enabled: 1
     path: Assets/Scenes/PimPamPum.unity
     guid: e0c068f9a36bc0043ab74911312d2e3b
-  - enabled: 1
-    path: Assets/Scenes/Test.unity
-    guid: bf8edba722c308d42a0f06c535e9f273
+  - enabled: 0
+    path: Assets/Scenes/MultiplayerLocal.unity
+    guid: a49472a21fab0144c81cbade4dfb17f0
   m_configObjects: {}

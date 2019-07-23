@@ -255,6 +255,12 @@ namespace PimPamPum
             RpcAddCard();
         }
 
+        public void AddCards(List<Card> cards)
+        {
+            foreach (Card c in cards)
+                AddCard(c);
+        }
+
         public void EnableProperties(bool value)
         {
             if (value)
@@ -1234,7 +1240,7 @@ namespace PimPamPum
         protected virtual void OnSetLocalPlayer() { }
 
         [Client]
-        public void ChooseGeneralStoreCard(int index)
+        public void ChooseCard(int index)
         {
             CmdChooseCard(index);
         }
@@ -1289,7 +1295,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            GameController.Instance.ChooseCard(choice);
+            DecisionMaking.MakeDecision(choice);
         }
 
         [Command]

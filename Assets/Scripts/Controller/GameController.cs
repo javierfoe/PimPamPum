@@ -232,16 +232,21 @@ namespace PimPamPum
             }
         }
 
-        public void ChooseCard(int choice)
-        {
-            cardChoice = choice;
-        }
-
         private void SetSelectableCards(int cards, NetworkConnection conn = null)
         {
             cardChoices = boardController.DrawCards(cards);
             selectCardController.SetCards(cardChoices, conn);
             cardChoice = -1;
+        }
+
+        public void SetSelectableCards(List<Card> cards, NetworkConnection conn = null)
+        {
+            selectCardController.SetCards(cards, conn);
+        }
+
+        public void RemoveSelectableCardsAndDisable(NetworkConnection conn)
+        {
+            selectCardController.RemoveCardsAndDisable(conn);
         }
 
         public IEnumerator DrawEffect(int player)
@@ -256,29 +261,13 @@ namespace PimPamPum
             }
             else
             {
-                SetSelectableCards(drawCards, conn);
+                ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, drawCards, decisionTime);
+                yield return chooseCardTimer;
 
-                float time = 0;
-                while (time < decisionTime && cardChoice < 0)
-                {
-                    time += Time.deltaTime;
-                    yield return null;
-                }
+                foreach(Card c in chooseCardTimer.Cards)
+                    yield return DrawEffect(player, c);
 
-                selectCardController.RemoveCardsAndDisable(conn);
-
-                if (cardChoice < 0)
-                {
-                    cardChoice = Random.Range(0, cardChoices.Count);
-                }
-
-                int length = cardChoices.Count;
-                for (int i = 0; i < length; i++)
-                {
-                    yield return DrawEffect(player, cardChoices[i]);
-                }
-
-                DrawnCard = cardChoices[cardChoice];
+                DrawnCard = chooseCardTimer.ChosenCard;
             }
         }
 
@@ -303,6 +292,13 @@ namespace PimPamPum
         public List<Card> DrawCards(int cards)
         {
             return boardController.DrawCards(cards);
+        }
+
+        public List<Card> DrawChooseCards(int cards, NetworkConnection conn)
+        {
+            List<Card> res = DrawCards(cards);
+            SetSelectableCards(res, conn);
+            return res;
         }
 
         public void DiscardCard(Card card)
@@ -767,28 +763,12 @@ namespace PimPamPum
             PlayerController pc = playerControllers[player];
             NetworkConnection conn = pc.connectionToClient;
 
-            SetSelectableCards(3, conn);
+            ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, 3, decisionTime);
+            yield return chooseCardTimer;
 
-            float time = 0;
-            while (time < decisionTime && cardChoice < 0)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
 
-            selectCardController.RemoveCardsAndDisable(conn);
-
-            if (cardChoice < 0)
-            {
-                cardChoice = Random.Range(0, cardChoices.Count);
-            }
-
-            Card choice = cardChoices[cardChoice];
-            cardChoices.RemoveAt(cardChoice);
-
-            pc.AddCard(cardChoices[0]);
-            pc.AddCard(cardChoices[1]);
-            boardController.AddCardToDeck(choice);
+            pc.AddCards(chooseCardTimer.NotChosenCards);
+            boardController.AddCardToDeck(chooseCardTimer.ChosenCard);
         }
 
         public void PassDynamite(int player, Dynamite d)
