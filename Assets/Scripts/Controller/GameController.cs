@@ -26,9 +26,7 @@ namespace PimPamPum
         private IPlayerView[] playerViews;
         private Decision decision;
         private Card cardUsed;
-        private int cardChoice;
         private PlayerController[] playerControllers;
-        private List<Card> cardChoices;
 
         public GameObject CardPrefab
         {
@@ -114,7 +112,7 @@ namespace PimPamPum
             }
         }
 
-        private int NextPlayerAlive(int player)
+        public int NextPlayerAlive(int player)
         {
             PlayerController pc;
             int res = player;
@@ -232,16 +230,19 @@ namespace PimPamPum
             }
         }
 
-        private void SetSelectableCards(int cards, NetworkConnection conn = null)
-        {
-            cardChoices = boardController.DrawCards(cards);
-            selectCardController.SetCards(cardChoices, conn);
-            cardChoice = -1;
-        }
-
         public void SetSelectableCards(List<Card> cards, NetworkConnection conn = null)
         {
             selectCardController.SetCards(cards, conn);
+        }
+
+        public void DisableSelectableCards()
+        {
+            selectCardController.Disable();
+        }
+
+        public void EnableGeneralStoreCards(NetworkConnection conn, bool value)
+        {
+            selectCardController.EnableCards(conn, value);
         }
 
         public void RemoveSelectableCardsAndDisable(NetworkConnection conn)
@@ -395,38 +396,35 @@ namespace PimPamPum
 
         public IEnumerator GeneralStore(int player)
         {
-            int next = player;
             int players = PlayersAlive;
-            SetSelectableCards(players);
-            NetworkConnection conn;
-            float time;
-            while (players > 1)
+            List<Card> cardChoices = boardController.DrawCards(players);
+            GeneralStoreTimer generalStoreTimer;
+
+            GeneralStoreCoroutine generalStoreCoroutine = 
+                new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
+            int next;
+            int cardChoice;
+            Card card;
+            do
             {
-                cardChoice = -1;
-                time = 0;
-                conn = playerControllers[next].connectionToClient;
-                selectCardController.EnableCards(conn, true);
-                while (cardChoice < 0 && time < decisionTime)
-                {
-                    time += Time.deltaTime;
-                    yield return null;
-                }
-                selectCardController.EnableCards(conn, false);
-                cardChoice = cardChoice < 0 ? Random.Range(0, cardChoices.Count) : cardChoice;
-                yield return GetCardGeneralStore(next, cardChoice);
-                next = NextPlayerAlive(next);
-                players--;
-            }
-            yield return GetCardGeneralStore(next, 0);
-            selectCardController.Disable();
+                generalStoreTimer = (GeneralStoreTimer)generalStoreCoroutine.Current;
+                yield return generalStoreTimer;
+                generalStoreCoroutine.CardChoices = generalStoreTimer.NotChosenCards;
+                next = generalStoreCoroutine.NextPlayer;
+                cardChoice = generalStoreTimer.Choice;
+                card = generalStoreTimer.ChosenCard;
+                yield return GetCardGeneralStore(next, cardChoice, card);
+            } while (generalStoreCoroutine.MoveNext());
+
+            next = NextPlayerAlive(next);
+            yield return GetCardGeneralStore(next, 0, generalStoreCoroutine.LastCard);
         }
 
-        private IEnumerator GetCardGeneralStore(int player, int choice)
+        public IEnumerator GetCardGeneralStore(int player, int choice, Card card)
         {
-            yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + cardChoices[choice]);
+            yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + card);
             selectCardController.RemoveCard(choice);
-            playerControllers[player].AddCard(cardChoices[choice]);
-            cardChoices.RemoveAt(choice);
+            playerControllers[player].AddCard(card);
         }
 
         public IEnumerator StartDuel(int player, int target)

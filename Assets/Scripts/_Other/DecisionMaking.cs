@@ -57,47 +57,73 @@ namespace PimPamPum
 
     }
 
-    public class ChooseCardTimer : Timer
+    public class GeneralStoreTimer : Timer
     {
 
-        private int cardChoice, cardAmount;
-        private NetworkConnection conn;
+        private int cardAmount;
+        protected NetworkConnection conn;
 
+        public int Choice { get; private set; }
         public Card ChosenCard { get; private set; }
-
-        public List<Card> Cards { get; private set; }
         public List<Card> NotChosenCards { get; private set; }
+        public List<Card> Cards { get; protected set; }
 
         public override bool MoveNext()
         {
-            bool res = base.MoveNext() && cardChoice < 0;
-            if (!res && cardChoice < 0)
+            bool res = base.MoveNext() && Choice < 0;
+            if (!res && Choice < 0)
             {
                 int random = UnityEngine.Random.Range(0, cardAmount);
                 MakeDecision(random);
             }
             if (!res)
             {
-                GameController.Instance.RemoveSelectableCardsAndDisable(conn);
+                FinishedCoroutine();
             }
             return res;
         }
 
-        public ChooseCardTimer(NetworkConnection conn, int cards, float maxTime) : base(maxTime)
+        protected GeneralStoreTimer(NetworkConnection conn, int cards, float maxTime) : base(maxTime)
         {
             this.conn = conn;
+            Choice = -1;
             cardAmount = cards;
-            cardChoice = -1;
-            Cards = GameController.Instance.DrawChooseCards(cards, conn);
+        }
+
+        public GeneralStoreTimer(NetworkConnection conn, List<Card> cards, float maxTime) : this(conn, cards.Count, maxTime)
+        {
+            Cards = cards;
+            GameController.Instance.EnableGeneralStoreCards(conn, true);
         }
 
         protected override void MakeDecision(int player, int card, Decision decision)
         {
-            cardChoice = card;
+            Choice = card;
             NotChosenCards = new List<Card>(Cards);
             ChosenCard = Cards[card];
             NotChosenCards.RemoveAt(card);
         }
+
+        protected virtual void FinishedCoroutine()
+        {
+            GameController.Instance.EnableGeneralStoreCards(conn, false);
+        }
+
+    }
+
+    public class ChooseCardTimer : GeneralStoreTimer
+    {
+
+        public ChooseCardTimer(NetworkConnection conn, int cards, float maxTime) : base(conn, cards, maxTime)
+        {
+            Cards = GameController.Instance.DrawChooseCards(cards, conn);
+        }
+
+        protected override void FinishedCoroutine()
+        {
+            GameController.Instance.RemoveSelectableCardsAndDisable(conn);
+        }
+
     }
 
     public class DecisionTimer : Timer
