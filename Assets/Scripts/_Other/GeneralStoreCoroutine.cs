@@ -48,5 +48,27 @@ namespace PimPamPum
 
         public void Reset() { }
 
+        public static IEnumerator StartGeneralStore(PlayerController[] playerControllers, int player, List<Card> cardChoices, float decisionTime)
+        {
+            GeneralStoreTimer generalStoreTimer;
+            GeneralStoreCoroutine generalStoreCoroutine = new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
+            int next;
+            int cardChoice;
+            Card card;
+            do
+            {
+                generalStoreTimer = (GeneralStoreTimer)generalStoreCoroutine.Current;
+                yield return generalStoreTimer;
+                generalStoreCoroutine.CardChoices = generalStoreTimer.NotChosenCards;
+                next = generalStoreCoroutine.NextPlayer;
+                cardChoice = generalStoreTimer.Choice;
+                card = generalStoreTimer.ChosenCard;
+                yield return GameController.Instance.GetCardGeneralStore(next, cardChoice, card);
+            } while (generalStoreCoroutine.MoveNext());
+
+            next = GameController.Instance.NextPlayerAlive(next);
+            yield return GameController.Instance.GetCardGeneralStore(next, 0, generalStoreCoroutine.LastCard);
+        }
+
     }
 }

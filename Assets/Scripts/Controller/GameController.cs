@@ -398,26 +398,7 @@ namespace PimPamPum
         {
             int players = PlayersAlive;
             List<Card> cardChoices = boardController.DrawCards(players);
-            GeneralStoreTimer generalStoreTimer;
-
-            GeneralStoreCoroutine generalStoreCoroutine = 
-                new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
-            int next;
-            int cardChoice;
-            Card card;
-            do
-            {
-                generalStoreTimer = (GeneralStoreTimer)generalStoreCoroutine.Current;
-                yield return generalStoreTimer;
-                generalStoreCoroutine.CardChoices = generalStoreTimer.NotChosenCards;
-                next = generalStoreCoroutine.NextPlayer;
-                cardChoice = generalStoreTimer.Choice;
-                card = generalStoreTimer.ChosenCard;
-                yield return GetCardGeneralStore(next, cardChoice, card);
-            } while (generalStoreCoroutine.MoveNext());
-
-            next = NextPlayerAlive(next);
-            yield return GetCardGeneralStore(next, 0, generalStoreCoroutine.LastCard);
+            yield return GeneralStoreCoroutine.StartGeneralStore(playerControllers, player, cardChoices, decisionTime);
         }
 
         public IEnumerator GetCardGeneralStore(int player, int choice, Card card)
