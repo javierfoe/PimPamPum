@@ -428,17 +428,9 @@ namespace PimPamPum
 
         protected virtual void CardUsedOutOfTurn() { }
 
-        public IEnumerator DrawEffect(Card c)
+        public virtual bool DrawEffectPickup()
         {
-            if (!IsDead)
-            {
-                yield return DrawEffectTrigger(c);
-            }
-        }
-
-        protected virtual IEnumerator DrawEffectTrigger(Card c)
-        {
-            yield return null;
+            return false;
         }
 
         private IEnumerator DynamiteCheck()
@@ -728,17 +720,9 @@ namespace PimPamPum
             yield return Die(player);
         }
 
-        public IEnumerator EndTurnDiscard(Card c)
+        public virtual bool EndTurnDiscardPickup()
         {
-            if (!IsDead)
-            {
-                yield return EndTurnDiscardTrigger(c);
-            }
-        }
-
-        protected virtual IEnumerator EndTurnDiscardTrigger(Card c)
-        {
-            yield return null;
+            return false;
         }
 
         public virtual bool PimPamPum()

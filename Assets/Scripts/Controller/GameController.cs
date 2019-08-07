@@ -48,11 +48,6 @@ namespace PimPamPum
             get; set;
         }
 
-        public bool PickedCard
-        {
-            get; set;
-        }
-
         public Card DrawnCard
         {
             get; private set;
@@ -274,12 +269,21 @@ namespace PimPamPum
 
         public IEnumerator DrawEffect(int player, Card c)
         {
-            PickedCard = false;
+            bool pickedCard = false;
+            bool playerPickup;
+            PlayerController pc;
             for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
-                yield return playerControllers[i].DrawEffect(c);
+                pc = playerControllers[i];
+                playerPickup = pc.DrawEffectPickup();
+                if (!pickedCard && playerPickup)
+                {
+                    pc.AddCard(c);
+                    pickedCard = true;
+                    yield return PimPamPumEvent(pc + " adds the draw! effect card: " + c);
+                }
             }
-            if (!PickedCard)
+            if (!pickedCard)
             {
                 DiscardCard(c);
             }
@@ -672,12 +676,21 @@ namespace PimPamPum
 
         public IEnumerator DiscardCardEndTurn(Card c, int player)
         {
-            PickedCard = false;
-            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
+            bool pickedCard = false;
+            bool playerPickup;
+            PlayerController pc;
+            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
-                yield return playerControllers[i].EndTurnDiscard(c);
+                pc = playerControllers[i];
+                playerPickup = pc.EndTurnDiscardPickup();
+                if (!pickedCard && playerPickup)
+                {
+                    pc.AddCard(c);
+                    pickedCard = true;
+                    yield return PimPamPumEvent(this + " adds the discarded card to his hand: " + c);
+                }
             }
-            if (!PickedCard)
+            if (!pickedCard)
             {
                 DiscardCard(c);
             }
