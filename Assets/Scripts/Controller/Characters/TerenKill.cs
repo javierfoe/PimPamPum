@@ -7,16 +7,18 @@ namespace PimPamPum
 
         protected override IEnumerator DieTrigger(int killer)
         {
-            yield return GameController.Instance.DrawEffect(PlayerNumber);
-            if (GameController.Instance.DrawnCard.Suit != Suit.Spades)
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            yield return drawEffectCoroutine;
+            Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
+            if (drawEffectCard.Suit != Suit.Spades)
             {
-                yield return PimPamPumEvent(this + " draws! to stay alive: " + GameController.Instance.DrawnCard);
+                yield return PimPamPumEvent(this + " draws! to stay alive: " + drawEffectCard);
                 HP = 1;
                 Draw(1);
             }
             else
             {
-                yield return PimPamPumEvent(this + " draws! and dies: " + GameController.Instance.DrawnCard);
+                yield return PimPamPumEvent(this + " draws! and dies: " + drawEffectCard);
                 yield return base.DieTrigger(killer);
             }
         }

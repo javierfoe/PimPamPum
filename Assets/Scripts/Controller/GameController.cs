@@ -28,6 +28,8 @@ namespace PimPamPum
         private Card cardUsed;
         private PlayerController[] playerControllers;
 
+        public float DecisionTime => decisionTime;
+
         public GameObject CardPrefab
         {
             get { return cardPrefab.gameObject; }
@@ -46,11 +48,6 @@ namespace PimPamPum
         public int MaxPlayers
         {
             get; set;
-        }
-
-        public Card DrawnCard
-        {
-            get; private set;
         }
 
         public int CurrentPlayer
@@ -243,28 +240,6 @@ namespace PimPamPum
         public void RemoveSelectableCardsAndDisable(NetworkConnection conn)
         {
             selectCardController.RemoveCardsAndDisable(conn);
-        }
-
-        public IEnumerator DrawEffect(int player)
-        {
-            PlayerController pc = playerControllers[player];
-            NetworkConnection conn = pc.connectionToClient;
-            int drawCards = pc.DrawEffectCards;
-            if (drawCards < 2)
-            {
-                DrawnCard = DrawCard();
-                yield return DrawEffect(player, DrawnCard);
-            }
-            else
-            {
-                ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, drawCards, decisionTime);
-                yield return chooseCardTimer;
-
-                foreach(Card c in chooseCardTimer.Cards)
-                    yield return DrawEffect(player, c);
-
-                DrawnCard = chooseCardTimer.ChosenCard;
-            }
         }
 
         public IEnumerator DrawEffect(int player, Card c)
@@ -528,10 +503,12 @@ namespace PimPamPum
                 {
                     decision = Decision.Pending;
                     barrelsUsed++;
-                    yield return DrawEffect(target);
-                    dodge = Barrel.CheckCondition(DrawnCard);
+                    DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(targetPc, decisionTime);
+                    yield return drawEffectCoroutine;
+                    Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
+                    dodge = Barrel.CheckCondition(drawEffectCard);
                     dodges += dodge ? 1 : 0;
-                    yield return BarrelEffect(target, DrawnCard, dodge);
+                    yield return BarrelEffect(target, drawEffectCard, dodge);
                 }
             }
         }

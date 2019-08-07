@@ -28,9 +28,11 @@ namespace PimPamPum
         private IEnumerator ExtraTurnCheck()
         {
             DisableCards();
-            yield return GameController.Instance.DrawEffect(PlayerNumber);
-            extraTurn = GameController.Instance.DrawnCard.IsRed;
-            yield return PimPamPumEvent(this + " has drawn: " + GameController.Instance.DrawnCard + (extraTurn ? " he gets another turn. " : " he ends the turn normally."));
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            yield return drawEffectCoroutine;
+            Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
+            extraTurn = drawEffectCard.IsRed;
+            yield return PimPamPumEvent(this + " has drawn: " + drawEffectCard + (extraTurn ? " he gets another turn. " : " he ends the turn normally."));
 
             if (extraTurn)
             {

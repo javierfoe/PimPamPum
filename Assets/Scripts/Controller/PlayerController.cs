@@ -435,11 +435,12 @@ namespace PimPamPum
 
         private IEnumerator DynamiteCheck()
         {
-            yield return GameController.Instance.DrawEffect(PlayerNumber);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            yield return drawEffectCoroutine;
             int index;
             Dynamite d = FindProperty<Dynamite>(out index);
             UnequipProperty(index);
-            if (Dynamite.CheckCondition(GameController.Instance.DrawnCard))
+            if (Dynamite.CheckCondition(drawEffectCoroutine.DrawEffectCard))
             {
                 yield return PimPamPumEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.Instance.DiscardCard(d);
@@ -454,10 +455,11 @@ namespace PimPamPum
 
         public IEnumerator JailCheck()
         {
-            yield return GameController.Instance.DrawEffect(PlayerNumber);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            yield return drawEffectCoroutine;
             int index;
             Jail j = FindProperty<Jail>(out index);
-            endTurn = !Jail.CheckCondition(GameController.Instance.DrawnCard);
+            endTurn = !Jail.CheckCondition(drawEffectCoroutine.DrawEffectCard);
             UnequipProperty(index);
             yield return PimPamPumEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
             GameController.Instance.DiscardCard(j);
