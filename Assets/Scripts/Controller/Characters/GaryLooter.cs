@@ -6,7 +6,7 @@ namespace PimPamPum
 
         public override bool EndTurnDiscardPickup(int player)
         {
-            return PlayerNumber != player;
+            return !IsDead && PlayerNumber != player;
         }
 
     }

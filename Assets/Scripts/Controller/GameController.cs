@@ -664,7 +664,7 @@ namespace PimPamPum
                 {
                     pc.AddCard(c);
                     pickedCard = true;
-                    yield return PimPamPumEvent(this + " adds the discarded card to his hand: " + c);
+                    yield return PimPamPumEvent(pc + " adds the discarded card to his hand: " + c);
                 }
             }
             if (!pickedCard)
