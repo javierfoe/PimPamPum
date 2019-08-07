@@ -722,7 +722,7 @@ namespace PimPamPum
             yield return Die(player);
         }
 
-        public virtual bool EndTurnDiscardPickup()
+        public virtual bool EndTurnDiscardPickup(int player)
         {
             return false;
         }

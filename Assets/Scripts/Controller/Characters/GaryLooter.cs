@@ -4,9 +4,9 @@ namespace PimPamPum
     public class GaryLooter : PlayerController
     {
 
-        public override bool EndTurnDiscardPickup()
+        public override bool EndTurnDiscardPickup(int player)
         {
-            return true;
+            return PlayerNumber != player;
         }
 
     }

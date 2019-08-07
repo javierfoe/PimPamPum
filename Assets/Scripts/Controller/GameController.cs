@@ -659,7 +659,7 @@ namespace PimPamPum
             for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
                 pc = playerControllers[i];
-                playerPickup = pc.EndTurnDiscardPickup();
+                playerPickup = pc.EndTurnDiscardPickup(player);
                 if (!pickedCard && playerPickup)
                 {
                     pc.AddCard(c);
