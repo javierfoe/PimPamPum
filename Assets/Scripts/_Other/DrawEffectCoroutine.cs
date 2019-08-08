@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PimPamPum
 {
@@ -32,8 +33,9 @@ namespace PimPamPum
             if (drawEffectStarted && currentCard < maxCards)
             {
                 Current = GameController.Instance.DrawEffect(player, drawnCards[currentCard++]);
-                if (currentCard == maxCards) return false;
+                return true;
             }
+            if (maxCards > 0 && currentCard == maxCards) return false;
             return true;
         }
 
