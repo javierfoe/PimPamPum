@@ -1005,11 +1005,6 @@ namespace PimPamPum
             yield return GameController.Instance.Panic(PlayerNumber, target, drop, cardIndex);
         }
 
-        public virtual IEnumerator AvoidCard(int player, int target)
-        {
-            yield return null;
-        }
-
         public virtual IEnumerator StolenBy(int thief)
         {
             CheckNoCards();

@@ -301,76 +301,52 @@ namespace PimPamPum
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
-
-            decision = Decision.Pending;
-            yield return targetPc.AvoidCard(player, target);
-
-            if (decision != Decision.Avoid)
+            Card c = null;
+            switch (drop)
             {
-                Card c = null;
-                switch (drop)
-                {
-                    case Drop.Hand:
-                        if (player == target && cardIndex < pc.DraggedCardIndex) pc.DraggedCardIndex--;
-                        c = targetPc.StealCardFromHand(cardIndex);
-                        break;
-                    case Drop.Properties:
-                        c = targetPc.UnequipProperty(cardIndex);
-                        break;
-                    case Drop.Weapon:
-                        c = targetPc.UnequipWeapon();
-                        break;
-                }
-                pc.DiscardCardUsed();
-                DiscardCard(c);
-                yield return targetPc.StolenBy(player);
+                case Drop.Hand:
+                    if (player == target && cardIndex < pc.DraggedCardIndex) pc.DraggedCardIndex--;
+                    c = targetPc.StealCardFromHand(cardIndex);
+                    break;
+                case Drop.Properties:
+                    c = targetPc.UnequipProperty(cardIndex);
+                    break;
+                case Drop.Weapon:
+                    c = targetPc.UnequipWeapon();
+                    break;
             }
-            else
-            {
-                pc.DiscardCardUsed();
-                yield return DiscardUsedCard(target);
-            }
+            pc.DiscardCardUsed();
+            DiscardCard(c);
+            yield return targetPc.StolenBy(player);
         }
 
         public IEnumerator Panic(int player, int target, Drop drop, int cardIndex)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
-
-            decision = Decision.Pending;
-            yield return targetPc.AvoidCard(player, target);
-
-            if (decision != Decision.Avoid)
+            Card c = null;
+            switch (drop)
             {
-                Card c = null;
-                switch (drop)
-                {
-                    case Drop.Hand:
-                        if (target == player)
-                        {
-                            c = null;
-                        }
-                        else
-                        {
-                            c = targetPc.StealCardFromHand(cardIndex);
-                        }
-                        break;
-                    case Drop.Properties:
-                        c = targetPc.UnequipProperty(cardIndex);
-                        break;
-                    case Drop.Weapon:
-                        c = targetPc.UnequipWeapon();
-                        break;
-                }
-                pc.DiscardCardUsed();
-                if (c != null) pc.AddCard(c);
-                yield return targetPc.StolenBy(player);
+                case Drop.Hand:
+                    if (target == player)
+                    {
+                        c = null;
+                    }
+                    else
+                    {
+                        c = targetPc.StealCardFromHand(cardIndex);
+                    }
+                    break;
+                case Drop.Properties:
+                    c = targetPc.UnequipProperty(cardIndex);
+                    break;
+                case Drop.Weapon:
+                    c = targetPc.UnequipWeapon();
+                    break;
             }
-            else
-            {
-                pc.DiscardCardUsed();
-                yield return DiscardUsedCard(target);
-            }
+            pc.DiscardCardUsed();
+            if (c != null) pc.AddCard(c);
+            yield return targetPc.StolenBy(player);
         }
 
         public IEnumerator GeneralStore(int player)
@@ -394,47 +370,38 @@ namespace PimPamPum
 
             decision = Decision.Pending;
 
-            yield return playerControllers[target].AvoidCard(player, target);
+            yield return PimPamPumEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
 
-            if (decision != Decision.Avoid)
+            do
             {
-
-                yield return PimPamPumEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
-
-                do
+                next = next == player ? target : player;
+                playerControllers[next].EnablePimPamPumsDuelResponse();
+                float time = 0;
+                decision = Decision.Pending;
+                while (decision == Decision.Pending && time < decisionTime)
                 {
-                    next = next == player ? target : player;
-                    playerControllers[next].EnablePimPamPumsDuelResponse();
-                    float time = 0;
-                    decision = Decision.Pending;
-                    while (decision == Decision.Pending && time < decisionTime)
+                    time += Time.deltaTime;
+                    yield return null;
+                }
+                if (decision == Decision.Pending)
+                {
+                    decision = Decision.TakeHit;
+                }
+                else if (decision == Decision.Avoid)
+                {
+                    yield return PimPamPumEvent(playerControllers[next] + " keeps dueling.");
+                    if (next == target)
                     {
-                        time += Time.deltaTime;
-                        yield return null;
+                        pimPamPumsTarget++;
                     }
-                    if (decision == Decision.Pending)
-                    {
-                        decision = Decision.TakeHit;
-                    }
-                    else if (decision == Decision.Avoid)
-                    {
-                        yield return PimPamPumEvent(playerControllers[next] + " keeps dueling.");
-                        if (next == target)
-                        {
-                            pimPamPumsTarget++;
-                        }
-                    }
-                } while (decision != Decision.TakeHit);
+                }
+            } while (decision != Decision.TakeHit);
 
-                playerControllers[player].CheckNoCards();
-                playerControllers[target].FinishDuelTarget(pimPamPumsTarget);
+            playerControllers[player].CheckNoCards();
+            playerControllers[target].FinishDuelTarget(pimPamPumsTarget);
 
-                yield return HitPlayer(player, next);
-            }
-            else
-            {
-                yield return DiscardUsedCard(target);
-            }
+            yield return HitPlayer(player, next);
+
         }
 
         public void StealIfHandNotEmpty(int player, int target)
@@ -578,19 +545,6 @@ namespace PimPamPum
             {
                 yield return playerControllers[i].Die(player);
             }
-        }
-
-        public IEnumerator AvoidCard(int player, int target)
-        {
-            playerControllers[target].EnableMissedsResponse();
-            float total = decisionTime / 2;
-            yield return new PendingTimer(total);
-        }
-
-        public IEnumerator DiscardUsedCard(int target)
-        {
-            yield return PimPamPumEvent(playerControllers[target] + " has avoided the card effect with: " + cardUsed);
-            DiscardCard(cardUsed);
         }
 
         private IEnumerator CardResponse(int target)
