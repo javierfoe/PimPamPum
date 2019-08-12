@@ -1,15 +1,15 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PimPamPum
 {
 
-    public class GeneralStoreCoroutine : IEnumerator
+    public class GeneralStoreCoroutine : FirstTimeEnumerator
     {
 
         private PlayerController[] players;
         private int nextPlayer, playersAlive;
         private float maxTime;
+        private bool lastCard;
 
         public int NextPlayer
         {
@@ -21,17 +21,32 @@ namespace PimPamPum
             }
         }
 
-        public object Current { get; private set; }
         public List<Card> CardChoices { get; set; }
         public Card LastCard { get { return CardChoices[0]; } }
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
-            NextPlayer = GameController.Instance.NextPlayerAlive(NextPlayer);
-            bool res = playersAlive-- > 2;
-            if (!res)
+            if (FirstTime) return true;
+            GeneralStoreTimer generalStoreTimer = Current as GeneralStoreTimer;
+            if (generalStoreTimer != null)
             {
+                CardChoices = generalStoreTimer.NotChosenCards;
+                Current = GameController.Instance.GetCardGeneralStore(NextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
+                return true;
+            }
+            bool res = playersAlive-- > 2;
+            if (res)
+            {
+                NextPlayer = GameController.Instance.NextPlayerAlive(NextPlayer);
+                return true;
+            }
+            if (!res && !lastCard)
+            {
+                lastCard = true;
+                nextPlayer = GameController.Instance.NextPlayerAlive(NextPlayer);
+                Current = GameController.Instance.GetCardGeneralStore(NextPlayer, 0, LastCard);
                 GameController.Instance.DisableSelectableCards();
+                return true;
             }
             return res;
         }
@@ -40,34 +55,11 @@ namespace PimPamPum
         {
             this.maxTime = maxTime;
             this.players = players;
+            lastCard = false;
             playersAlive = GameController.Instance.PlayersAlive;
             GameController.Instance.SetSelectableCards(cards);
             CardChoices = cards;
             NextPlayer = start;
-        }
-
-        public void Reset() { }
-
-        public static IEnumerator StartGeneralStore(PlayerController[] playerControllers, int player, List<Card> cardChoices, float decisionTime)
-        {
-            GeneralStoreTimer generalStoreTimer;
-            GeneralStoreCoroutine generalStoreCoroutine = new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
-            int next;
-            int cardChoice;
-            Card card;
-            do
-            {
-                generalStoreTimer = (GeneralStoreTimer)generalStoreCoroutine.Current;
-                yield return generalStoreTimer;
-                generalStoreCoroutine.CardChoices = generalStoreTimer.NotChosenCards;
-                next = generalStoreCoroutine.NextPlayer;
-                cardChoice = generalStoreTimer.Choice;
-                card = generalStoreTimer.ChosenCard;
-                yield return GameController.Instance.GetCardGeneralStore(next, cardChoice, card);
-            } while (generalStoreCoroutine.MoveNext());
-
-            next = GameController.Instance.NextPlayerAlive(next);
-            yield return GameController.Instance.GetCardGeneralStore(next, 0, generalStoreCoroutine.LastCard);
         }
 
     }

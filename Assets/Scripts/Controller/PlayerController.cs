@@ -405,7 +405,7 @@ namespace PimPamPum
             }
         }
 
-        public void FinishDuelTarget(int pimPamPumsUsed = 1)
+        public void FinishResponse(int pimPamPumsUsed = 1)
         {
             for (int i = 0; i < pimPamPumsUsed; i++) CardUsedOutOfTurn();
             CheckNoCards();
@@ -413,7 +413,7 @@ namespace PimPamPum
 
         public void Response()
         {
-            FinishDuelTarget();
+            FinishResponse();
         }
 
         public void CheckNoCards()
@@ -531,6 +531,7 @@ namespace PimPamPum
             OriginalHand();
             EnableTakeHitButton(false);
             EnableEndTurnButton(false);
+            EnableBarrelButton(false);
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
@@ -1089,7 +1090,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? hand[index] : null;
-            GameController.Instance.MakeDecision(PlayerNumber, card, decision);
+            DecisionMaking.CurrentTimer.MakeDecision(card, decision);
         }
 
         public void Win()
@@ -1276,7 +1277,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            DecisionMaking.MakeDecision(choice);
+            DecisionMaking.CurrentTimer.MakeDecision(choice);
         }
 
         [Command]

@@ -1,22 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace PimPamPum
 {
 
-    public class DrawEffectCoroutine : IEnumerator
+    public class DrawEffectCoroutine : Enumerator
     {
 
         public Card DrawEffectCard { get; private set; }
-
-        public object Current { get; private set; }
 
         private List<Card> drawnCards;
         private int player, currentCard, maxCards;
         private bool drawEffectStarted;
 
-        public bool MoveNext()
+        public override bool MoveNext()
         {
             ChooseCardTimer chooseCardTimer = Current as ChooseCardTimer;
             if(chooseCardTimer != null && chooseCardTimer.ChosenCard != null)
@@ -38,8 +34,6 @@ namespace PimPamPum
             if (maxCards > 0 && currentCard == maxCards) return false;
             return true;
         }
-
-        public void Reset() { }
 
         public DrawEffectCoroutine(PlayerController pc, float decisionTime)
         {

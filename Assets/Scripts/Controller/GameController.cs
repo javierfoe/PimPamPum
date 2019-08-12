@@ -25,7 +25,6 @@ namespace PimPamPum
 
         private IPlayerView[] playerViews;
         private Decision decision;
-        private Card cardUsed;
         private PlayerController[] playerControllers;
 
         public float DecisionTime => decisionTime;
@@ -286,12 +285,6 @@ namespace PimPamPum
             boardController.DiscardCard(card);
         }
 
-        public void MakeDecision(int player, Card card, Decision decision)
-        {
-            cardUsed = card;
-            this.decision = decision;
-        }
-
         public void EquipPropertyTo(int target, Property p)
         {
             p.EquipProperty(playerControllers[target]);
@@ -353,7 +346,7 @@ namespace PimPamPum
         {
             int players = PlayersAlive;
             List<Card> cardChoices = boardController.DrawCards(players);
-            yield return GeneralStoreCoroutine.StartGeneralStore(playerControllers, player, cardChoices, decisionTime);
+            yield return new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
         }
 
         public IEnumerator GetCardGeneralStore(int player, int choice, Card card)
@@ -368,7 +361,7 @@ namespace PimPamPum
             int next = player;
             int pimPamPumsTarget = 0;
 
-            decision = Decision.Pending;
+            Decision decision;
 
             yield return PimPamPumEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
 
@@ -376,18 +369,10 @@ namespace PimPamPum
             {
                 next = next == player ? target : player;
                 playerControllers[next].EnablePimPamPumsDuelResponse();
-                float time = 0;
-                decision = Decision.Pending;
-                while (decision == Decision.Pending && time < decisionTime)
-                {
-                    time += Time.deltaTime;
-                    yield return null;
-                }
-                if (decision == Decision.Pending)
-                {
-                    decision = Decision.TakeHit;
-                }
-                else if (decision == Decision.Avoid)
+                ResponseTimer responseTimer = new ResponseTimer(decisionTime);
+                yield return responseTimer;
+                decision = responseTimer.Decision;
+                if (decision == Decision.Avoid)
                 {
                     yield return PimPamPumEvent(playerControllers[next] + " keeps dueling.");
                     if (next == target)
@@ -395,13 +380,16 @@ namespace PimPamPum
                         pimPamPumsTarget++;
                     }
                 }
+                else
+                {
+                    yield return PimPamPumEvent(playerControllers[next] + " loses the duel.");
+                }
             } while (decision != Decision.TakeHit);
 
             playerControllers[player].CheckNoCards();
-            playerControllers[target].FinishDuelTarget(pimPamPumsTarget);
+            playerControllers[target].FinishResponse(pimPamPumsTarget);
 
             yield return HitPlayer(player, next);
-
         }
 
         public void StealIfHandNotEmpty(int player, int target)
@@ -440,10 +428,9 @@ namespace PimPamPum
         private IEnumerator PimPamPumTo(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
-            float time = 0;
             int dodges = 0, barrelsUsed = 0, barrels = targetPc.Barrels;
             bool dodge;
-            decision = Decision.Pending;
+            Decision decision = Decision.Pending;
             while (dodges < misses && decision != Decision.TakeHit)
             {
                 targetPc.EnableMissedsResponse();
@@ -451,20 +438,14 @@ namespace PimPamPum
                 {
                     targetPc.EnableBarrelButton(true);
                 }
-                while (time < decisionTime && decision == Decision.Pending)
-                {
-                    time += Time.deltaTime;
-                    yield return null;
-                }
-                if (decisionTime - time < 0.01f)
-                {
-                    decision = Decision.TakeHit;
-                }
-                else if (decision == Decision.Avoid)
+                ResponseTimer responseTimer = new ResponseTimer(decisionTime);
+                yield return responseTimer;
+                decision = responseTimer.Decision;
+                if (decision == Decision.Avoid)
                 {
                     decision = Decision.Pending;
                     dodges++;
-                    yield return CardResponse(target);
+                    yield return CardResponse(target, responseTimer.ResponseCard);
                 }
                 else if (decision == Decision.Barrel)
                 {
@@ -509,22 +490,17 @@ namespace PimPamPum
         public IEnumerator Indians(int player, Card c)
         {
             PlayerController pc;
-            float time = 0;
             for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
                 {
-                    decision = Decision.Pending;
                     pc.EnablePimPamPumsResponse();
-                    while (time < decisionTime && decision == Decision.Pending)
+                    ResponseTimer responseTimer = new ResponseTimer(decisionTime);
+                    yield return responseTimer;
+                    if (responseTimer.Decision == Decision.Avoid)
                     {
-                        time += Time.deltaTime;
-                        yield return null;
-                    }
-                    if (decision == Decision.Avoid)
-                    {
-                        yield return CardResponse(i);
+                        yield return CardResponse(i, responseTimer.ResponseCard);
                     }
                     else
                     {
@@ -547,14 +523,12 @@ namespace PimPamPum
             }
         }
 
-        private IEnumerator CardResponse(int target)
+        private IEnumerator CardResponse(int player, Card card)
         {
-            PlayerController pc = playerControllers[target];
-            int playerNum = pc.PlayerNumber;
-            Card used = cardUsed;
-            yield return PimPamPumEvent(pc + " has avoided the hit with: " + cardUsed);
+            PlayerController pc = playerControllers[player];
+            yield return PimPamPumEvent(pc + " has avoided the hit with: " + card);
             pc.Response();
-            DiscardCard(used);
+            DiscardCard(card);
         }
 
         public IEnumerator Gatling(int player, Card c)

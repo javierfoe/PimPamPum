@@ -36,7 +36,7 @@ namespace PimPamPum
 
             if (extraTurn)
             {
-                yield return OnStartTurn();
+                yield return base.OnStartTurn();
             }
             else
             {

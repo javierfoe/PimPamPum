@@ -1,34 +1,24 @@
 ﻿using Mirror;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace PimPamPum
 {
 
-    public abstract class DecisionMaking : IEnumerator
+    public abstract class DecisionMaking : Enumerator
     {
 
-        private static DecisionMaking decisionMaking;
-
-        public object Current { get; protected set; }
+        public static DecisionMaking CurrentTimer;
 
         protected DecisionMaking()
         {
-            decisionMaking = this;
+            CurrentTimer = this;
         }
 
-        public static void MakeDecision(int card)
-        {
-            decisionMaking.MakeDecision(0, card, Decision.Pending);
-        }
-
-        protected virtual void MakeDecision(int player, int card, Decision decision) { }
-
-        public abstract bool MoveNext();
-
-        public void Reset() { }
+        public virtual void MakeDecision(int card) { }
+        public virtual void MakeDecision(Decision decision) { }
+        public virtual void MakeDecision(Card card, Decision decision) { }
 
     }
 
@@ -96,7 +86,7 @@ namespace PimPamPum
             GameController.Instance.EnableGeneralStoreCards(conn, true);
         }
 
-        protected override void MakeDecision(int player, int card, Decision decision)
+        public override void MakeDecision(int card)
         {
             Choice = card;
             NotChosenCards = new List<Card>(Cards);
@@ -130,20 +120,16 @@ namespace PimPamPum
     {
 
         private Decision decision;
+        private bool decisionMade;
 
         public Decision Decision
         {
             get; private set;
         }
 
-        public bool DecisionMade
-        {
-            get; private set;
-        }
-
         public override bool MoveNext()
         {
-            return base.MoveNext() && !DecisionMade;
+            return base.MoveNext() && !decisionMade;
         }
 
         protected DecisionTimer(float maxTime, Decision decision) : base(maxTime)
@@ -152,10 +138,10 @@ namespace PimPamPum
             Decision = decision;
         }
 
-        protected override void MakeDecision(int player, int card, Decision decision)
+        public override void MakeDecision(Decision decision)
         {
             Decision = decision;
-            DecisionMade = decision != this.decision;
+            decisionMade = decision != this.decision;
         }
 
     }
@@ -164,6 +150,15 @@ namespace PimPamPum
     {
 
         public PendingTimer(float maxTime) : base(maxTime, Decision.Pending) { }
+
+    }
+
+    public class ResponseTimer : PendingTimer
+    {
+
+        public Card ResponseCard { get; private set; }
+
+        public ResponseTimer(float maxTime) : base(maxTime) { }
 
     }
 
