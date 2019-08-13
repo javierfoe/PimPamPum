@@ -508,7 +508,7 @@ namespace PimPamPum
                     yield return pimPamPumCoroutine;
                     if (pimPamPumCoroutine.TakeHit)
                     {
-                        yield return HitPlayer(player, i);
+                        yield return pc.Hit(player);
                     }
                 }
             }
