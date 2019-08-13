@@ -24,7 +24,6 @@ namespace PimPamPum
         [SerializeField] private BoardController boardController = null;
 
         private IPlayerView[] playerViews;
-        private Decision decision;
         private PlayerController[] playerControllers;
 
         public float DecisionTime => decisionTime;
@@ -413,8 +412,10 @@ namespace PimPamPum
 
         public IEnumerator PimPamPum(int player, int target, int misses = 1)
         {
-            yield return PimPamPumTo(player, target, misses);
-            if (decision == Decision.TakeHit)
+            PlayerController targetPc = playerControllers[target];
+            PimPamPumCoroutine pimPamPumCoroutine = new PimPamPumCoroutine(targetPc, misses);
+            yield return pimPamPumCoroutine;
+            if (pimPamPumCoroutine.TakeHit)
             {
                 yield return HitPlayer(player, target);
             }
@@ -425,43 +426,7 @@ namespace PimPamPum
             yield return playerControllers[target].GetHitBy(player);
         }
 
-        private IEnumerator PimPamPumTo(int player, int target, int misses = 1)
-        {
-            PlayerController targetPc = playerControllers[target];
-            int dodges = 0, barrelsUsed = 0, barrels = targetPc.Barrels;
-            bool dodge;
-            Decision decision = Decision.Pending;
-            while (dodges < misses && decision != Decision.TakeHit)
-            {
-                targetPc.EnableMissedsResponse();
-                if (barrelsUsed < barrels)
-                {
-                    targetPc.EnableBarrelButton(true);
-                }
-                ResponseTimer responseTimer = new ResponseTimer(decisionTime);
-                yield return responseTimer;
-                decision = responseTimer.Decision;
-                if (decision == Decision.Avoid)
-                {
-                    decision = Decision.Pending;
-                    dodges++;
-                    yield return CardResponse(target, responseTimer.ResponseCard);
-                }
-                else if (decision == Decision.Barrel)
-                {
-                    decision = Decision.Pending;
-                    barrelsUsed++;
-                    DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(targetPc, decisionTime);
-                    yield return drawEffectCoroutine;
-                    Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
-                    dodge = Barrel.CheckCondition(drawEffectCard);
-                    dodges += dodge ? 1 : 0;
-                    yield return BarrelEffect(target, drawEffectCard, dodge);
-                }
-            }
-        }
-
-        private IEnumerator BarrelEffect(int target, Card c, bool dodge)
+        public IEnumerator BarrelEffect(int target, Card c, bool dodge)
         {
             yield return DrawEffect(target, c);
             yield return PimPamPumEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
@@ -523,7 +488,7 @@ namespace PimPamPum
             }
         }
 
-        private IEnumerator CardResponse(int player, Card card)
+        public IEnumerator CardResponse(int player, Card card)
         {
             PlayerController pc = playerControllers[player];
             yield return PimPamPumEvent(pc + " has avoided the hit with: " + card);
@@ -539,10 +504,11 @@ namespace PimPamPum
                 pc = playerControllers[i];
                 if (!pc.IsDead && !pc.Immune(c))
                 {
-                    yield return PimPamPumTo(player, i);
-                    if (decision == Decision.TakeHit)
+                    PimPamPumCoroutine pimPamPumCoroutine = new PimPamPumCoroutine(pc);
+                    yield return pimPamPumCoroutine;
+                    if (pimPamPumCoroutine.TakeHit)
                     {
-                        yield return pc.Hit(player);
+                        yield return HitPlayer(player, i);
                     }
                 }
             }
