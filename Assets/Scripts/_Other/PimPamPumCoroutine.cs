@@ -17,20 +17,20 @@ namespace PimPamPum
             ResponseTimer responseTimer = Current as ResponseTimer;
             if (responseTimer != null)
             {
+                currentDecision = responseTimer.Decision;
                 switch (responseTimer.Decision)
                 {
                     case Decision.Avoid:
                         currentDecision = Decision.Pending;
                         dodges++;
                         Current = GameController.Instance.CardResponse(player, responseTimer.ResponseCard);
-                        break;
+                        return true;
                     case Decision.Barrel:
                         currentDecision = Decision.Pending;
                         barrelsUsed++;
                         Current = new DrawEffectCoroutine(playerController, GameController.Instance.DecisionTime);
-                        break;
+                        return true;
                 }
-                return true;
             }
             DrawEffectCoroutine drawEffectCoroutine = Current as DrawEffectCoroutine;
             if (drawEffectCoroutine != null)

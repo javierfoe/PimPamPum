@@ -160,6 +160,12 @@ namespace PimPamPum
 
         public ResponseTimer(float maxTime) : base(maxTime) { }
 
+        public override void MakeDecision(Card card, Decision decision)
+        {
+            base.MakeDecision(decision);
+            ResponseCard = card;
+        }
+
     }
 
     public class DyingTimer : DecisionTimer
