@@ -23,10 +23,9 @@ namespace PimPamPum
             return false;
         }
 
-        public IndianCoroutine() : base() { }
-
-        public IndianCoroutine(PlayerController playerController) : base(playerController)
+        public override void SetPlayerController(PlayerController playerController)
         {
+            base.SetPlayerController(playerController);
             playerController.EnableMissedsResponse();
             Current = new ResponseTimer(GameController.Instance.DecisionTime);
         }

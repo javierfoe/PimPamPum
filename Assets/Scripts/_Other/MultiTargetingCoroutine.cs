@@ -49,8 +49,9 @@ namespace PimPamPum
         {
             this.playerControllers = playerControllers;
             this.player = player;
-            this.next = player;
             this.card = card;
+            next = player;
+            hitPlayers = new bool[playerControllers.Length];
         }
 
     }

@@ -52,11 +52,10 @@ namespace PimPamPum
             return false;
         }
 
-        public PimPamPumCoroutine() : base() { }
+        public PimPamPumCoroutine() { }
 
         public PimPamPumCoroutine(PlayerController playerController, int misses = 1) : base(playerController)
         {
-            SetPlayerController(playerController);
             this.misses = misses;
         }
 

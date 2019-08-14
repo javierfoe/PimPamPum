@@ -19,15 +19,10 @@ namespace PimPamPum
 
         public ResponseCoroutine(PlayerController playerController)
         {
-            SetPlayerInt(playerController);
+            SetPlayerController(playerController);
         }
 
         public virtual void SetPlayerController(PlayerController playerController)
-        {
-            SetPlayerInt(playerController);
-        }
-
-        private void SetPlayerInt(PlayerController playerController)
         {
             player = playerController.PlayerNumber;
         }
