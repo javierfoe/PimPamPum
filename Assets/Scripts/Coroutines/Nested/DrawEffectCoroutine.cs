@@ -14,7 +14,7 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            ChooseCardTimer chooseCardTimer = Current as ChooseCardTimer;
+            WaitForCardSelection chooseCardTimer = Current as WaitForCardSelection;
             if(chooseCardTimer != null && chooseCardTimer.ChosenCard != null)
             {
                 DrawEffectCard = chooseCardTimer.ChosenCard;
@@ -46,7 +46,7 @@ namespace PimPamPum
             }
             else
             {
-                Current = new ChooseCardTimer(pc.connectionToClient, pc.DrawEffectCards);
+                Current = new WaitForCardSelection(pc.connectionToClient, pc.DrawEffectCards);
             }
         }
     }

@@ -6,12 +6,12 @@ using UnityEngine;
 namespace PimPamPum
 {
 
-    public abstract class DecisionMaking : Enumerator
+    public abstract class WaitFor : Enumerator
     {
 
-        public static DecisionMaking CurrentTimer;
+        public static WaitFor CurrentTimer;
 
-        protected DecisionMaking()
+        protected WaitFor()
         {
             CurrentTimer = this;
         }
@@ -21,7 +21,7 @@ namespace PimPamPum
 
     }
 
-    public class Timer : DecisionMaking
+    public abstract class WaitForTimer : WaitFor
     {
         private float time;
 
@@ -38,14 +38,14 @@ namespace PimPamPum
             return timer;
         }
 
-        protected Timer()
+        protected WaitForTimer()
         {
             time = 0;
         }
 
     }
 
-    public class GeneralStoreTimer : Timer
+    public class WaitForGeneralStoreSelection : WaitForTimer
     {
 
         private int cardAmount;
@@ -71,14 +71,14 @@ namespace PimPamPum
             return res;
         }
 
-        protected GeneralStoreTimer(NetworkConnection conn, int cards) : base()
+        protected WaitForGeneralStoreSelection(NetworkConnection conn, int cards) : base()
         {
             this.conn = conn;
             Choice = -1;
             cardAmount = cards;
         }
 
-        public GeneralStoreTimer(NetworkConnection conn, List<Card> cards) : this(conn, cards.Count)
+        public WaitForGeneralStoreSelection(NetworkConnection conn, List<Card> cards) : this(conn, cards.Count)
         {
             Cards = cards;
             GameController.Instance.EnableGeneralStoreCards(conn, true);
@@ -99,10 +99,10 @@ namespace PimPamPum
 
     }
 
-    public class ChooseCardTimer : GeneralStoreTimer
+    public class WaitForCardSelection : WaitForGeneralStoreSelection
     {
 
-        public ChooseCardTimer(NetworkConnection conn, int cards) : base(conn, cards)
+        public WaitForCardSelection(NetworkConnection conn, int cards) : base(conn, cards)
         {
             Cards = GameController.Instance.DrawChooseCards(cards, conn);
         }
@@ -114,7 +114,7 @@ namespace PimPamPum
 
     }
 
-    public class DecisionTimer : Timer
+    public class WaitForDecision : WaitForTimer
     {
         private const Decision startDecision = Decision.Pending;
         private Decision timeOutDecision;
@@ -135,9 +135,9 @@ namespace PimPamPum
             return res;
         }
 
-        public DecisionTimer() : this(Decision.Pending) { }
+        public WaitForDecision() : this(Decision.Pending) { }
 
-        protected DecisionTimer(Decision timeOutDecision) : base()
+        protected WaitForDecision(Decision timeOutDecision) : base()
         {
             this.timeOutDecision = timeOutDecision;
             Decision = startDecision;
@@ -151,12 +151,12 @@ namespace PimPamPum
 
     }
 
-    public class ResponseTimer : DecisionTimer
+    public class WaitForResponse : WaitForDecision
     {
 
         public Card ResponseCard { get; private set; }
 
-        public ResponseTimer() : base(Decision.TakeHit) { }
+        public WaitForResponse() : base(Decision.TakeHit) { }
 
         public override void MakeDecision(Decision decision, Card card)
         {
@@ -166,7 +166,7 @@ namespace PimPamPum
 
     }
 
-    public class DyingTimer : DecisionTimer
+    public class WaitForDying : WaitForDecision
     {
 
         private Func<bool> dying;
@@ -176,7 +176,7 @@ namespace PimPamPum
             return dying();
         }
 
-        public DyingTimer(PlayerController pc) : base()
+        public WaitForDying(PlayerController pc) : base()
         {
             dying = () => base.MoveNext() && pc.IsDying;
         }

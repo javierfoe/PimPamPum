@@ -16,7 +16,7 @@ namespace PimPamPum
             private set
             {
                 nextPlayer = value;
-                Current = new GeneralStoreTimer(players[NextPlayer].connectionToClient, CardChoices);
+                Current = new WaitForGeneralStoreSelection(players[NextPlayer].connectionToClient, CardChoices);
             }
         }
 
@@ -26,7 +26,7 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             if (FirstTime) return true;
-            GeneralStoreTimer generalStoreTimer = Current as GeneralStoreTimer;
+            WaitForGeneralStoreSelection generalStoreTimer = Current as WaitForGeneralStoreSelection;
             if (generalStoreTimer != null)
             {
                 CardChoices = generalStoreTimer.NotChosenCards;

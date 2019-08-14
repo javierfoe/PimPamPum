@@ -10,7 +10,7 @@ namespace PimPamPum
 
         public override abstract bool MoveNext();
 
-        protected void SetCardResponse(int player, ResponseTimer timer)
+        protected void SetCardResponse(int player, WaitForResponse timer)
         {
             Current = GameController.Instance.CardResponse(player, timer.ResponseCard);
         }

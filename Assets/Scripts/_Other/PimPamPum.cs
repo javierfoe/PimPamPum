@@ -151,7 +151,6 @@ namespace PimPamPum
         Die,
         Avoid,
         Barrel,
-        Source,
         Heal,
         Skip
     }

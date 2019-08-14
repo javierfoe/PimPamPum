@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace PimPamPum
 {
-
     public class NetworkManager : Mirror.NetworkManager
     {
 
@@ -64,6 +63,5 @@ namespace PimPamPum
                 gc.SetMatch(players);
             }
         }
-
     }
 }

@@ -8,7 +8,7 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             if (FirstTime) return true;
-            ResponseTimer responseTimer = Current as ResponseTimer;
+            WaitForResponse responseTimer = Current as WaitForResponse;
             if (responseTimer != null)
             {
                 currentDecision = responseTimer.Decision;
@@ -27,7 +27,7 @@ namespace PimPamPum
         {
             base.SetPlayerController(playerController);
             playerController.EnablePimPamPumsResponse();
-            Current = new ResponseTimer();
+            Current = new WaitForResponse();
         }
 
     }

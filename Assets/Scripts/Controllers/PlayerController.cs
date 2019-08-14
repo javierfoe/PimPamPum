@@ -872,7 +872,7 @@ namespace PimPamPum
                 if (IsDying)
                 {
                     EnableCardsDying();
-                    yield return new DyingTimer(this);
+                    yield return new WaitForDying(this);
                     EnableDieButton(false);
                     DisableCards();
                 }
@@ -1091,7 +1091,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? hand[index] : null;
-            DecisionMaking.CurrentTimer.MakeDecision(decision, card);
+            WaitFor.CurrentTimer.MakeDecision(decision, card);
         }
 
         public void Win()
@@ -1278,7 +1278,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            DecisionMaking.CurrentTimer.MakeDecision(choice);
+            WaitFor.CurrentTimer.MakeDecision(choice);
         }
 
         [Command]

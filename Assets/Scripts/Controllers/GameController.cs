@@ -368,7 +368,7 @@ namespace PimPamPum
             {
                 next = next == player ? target : player;
                 playerControllers[next].EnablePimPamPumsDuelResponse();
-                ResponseTimer responseTimer = new ResponseTimer();
+                WaitForResponse responseTimer = new WaitForResponse();
                 yield return responseTimer;
                 decision = responseTimer.Decision;
                 if (decision == Decision.Avoid)
@@ -465,7 +465,7 @@ namespace PimPamPum
 
         public IEnumerator LemonadeJimBeerUsed(int player)
         {
-            DecisionTimer timer = new DecisionTimer();
+            WaitForDecision timer = new WaitForDecision();
             yield return timer;
             if (timer.Decision == Decision.Heal)
             {
@@ -574,7 +574,7 @@ namespace PimPamPum
             PlayerController pc = playerControllers[player];
             NetworkConnection conn = pc.connectionToClient;
 
-            ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, 3);
+            WaitForCardSelection chooseCardTimer = new WaitForCardSelection(conn, 3);
             yield return chooseCardTimer;
 
 
