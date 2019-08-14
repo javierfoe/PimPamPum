@@ -403,13 +403,6 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator Dying(int target)
-        {
-            PlayerController pc = playerControllers[target];
-            yield return new DyingTimer(decisionTime, pc);
-            pc.EnableDieButton(false);
-        }
-
         public IEnumerator PimPamPum(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
@@ -472,7 +465,7 @@ namespace PimPamPum
 
         public IEnumerator LemonadeJimBeerUsed(int player)
         {
-            PendingTimer timer = new PendingTimer(decisionTime);
+            DecisionTimer timer = new DecisionTimer(decisionTime);
             yield return timer;
             if (timer.Decision == Decision.Heal)
             {

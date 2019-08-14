@@ -872,10 +872,11 @@ namespace PimPamPum
                 if (IsDying)
                 {
                     EnableCardsDying();
-                    yield return GameController.Instance.Dying(PlayerNumber);
+                    yield return new DyingTimer(GameController.Instance.DecisionTime, this);
+                    EnableDieButton(false);
                     DisableCards();
                 }
-                if (!IsDead)
+                if (!IsDying)
                 {
                     for (int i = 0; i < amount; i++) HitTrigger(attacker);
                 }
@@ -1090,7 +1091,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? hand[index] : null;
-            DecisionMaking.CurrentTimer.MakeDecision(card, decision);
+            DecisionMaking.CurrentTimer.MakeDecision(decision, card);
         }
 
         public void Win()

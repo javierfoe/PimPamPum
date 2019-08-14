@@ -7,11 +7,13 @@ namespace PimPamPum
     {
         private int player, next;
         private Card card;
+        private bool finished;
         private bool[] hitPlayers;
         private PlayerController[] playerControllers;
 
         public override bool MoveNext()
         {
+            if (finished) return false;
             T responseCoroutine = Current as T;
             if (responseCoroutine != null)
             {
@@ -29,12 +31,18 @@ namespace PimPamPum
                 ((ResponseCoroutine)Current).SetPlayerController(pc);
                 return true;
             }
-            return false;
+            Current = FinishMultiTargeting();
+            finished = true;
+            return true;
         }
 
         private IEnumerator FinishMultiTargeting()
         {
             int MaxPlayers = playerControllers.Length;
+            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
+            {
+                if (hitPlayers[i]) yield return playerControllers[i].Hit(player);
+            }
             for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
                 if (hitPlayers[i]) yield return playerControllers[i].Dying(player);

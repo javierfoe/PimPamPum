@@ -26,7 +26,7 @@ namespace PimPamPum
         public override void SetPlayerController(PlayerController playerController)
         {
             base.SetPlayerController(playerController);
-            playerController.EnableMissedsResponse();
+            playerController.EnablePimPamPumsResponse();
             Current = new ResponseTimer(GameController.Instance.DecisionTime);
         }
 

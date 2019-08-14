@@ -17,8 +17,7 @@ namespace PimPamPum
         }
 
         public virtual void MakeDecision(int card) { }
-        public virtual void MakeDecision(Decision decision) { }
-        public virtual void MakeDecision(Card card, Decision decision) { }
+        public virtual void MakeDecision(Decision decision, Card card = null) { }
 
     }
 
@@ -118,8 +117,8 @@ namespace PimPamPum
 
     public class DecisionTimer : Timer
     {
-
-        private Decision decision;
+        private const Decision startDecision = Decision.Pending;
+        private Decision timeOutDecision;
         private bool decisionMade;
 
         public Decision Decision
@@ -129,40 +128,40 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            return base.MoveNext() && !decisionMade;
+            bool res = base.MoveNext() && !decisionMade;
+            if (!res && !decisionMade)
+            {
+                MakeDecision(timeOutDecision);
+            }
+            return res;
         }
 
-        protected DecisionTimer(float maxTime, Decision decision) : base(maxTime)
+        public DecisionTimer(float maxTime) : this(maxTime, Decision.Pending) { }
+
+        protected DecisionTimer(float maxTime, Decision timeOutDecision) : base(maxTime)
         {
-            this.decision = decision;
-            Decision = decision;
+            this.timeOutDecision = timeOutDecision;
+            Decision = startDecision;
         }
 
-        public override void MakeDecision(Decision decision)
+        public override void MakeDecision(Decision decision, Card card = null)
         {
             Decision = decision;
-            decisionMade = decision != this.decision;
+            decisionMade = decision != startDecision;
         }
 
     }
 
-    public class PendingTimer : DecisionTimer
-    {
-
-        public PendingTimer(float maxTime) : base(maxTime, Decision.Pending) { }
-
-    }
-
-    public class ResponseTimer : PendingTimer
+    public class ResponseTimer : DecisionTimer
     {
 
         public Card ResponseCard { get; private set; }
 
-        public ResponseTimer(float maxTime) : base(maxTime) { }
+        public ResponseTimer(float maxTime) : base(maxTime, Decision.TakeHit) { }
 
-        public override void MakeDecision(Card card, Decision decision)
+        public override void MakeDecision(Decision decision, Card card)
         {
-            base.MakeDecision(decision);
+            base.MakeDecision(decision, card);
             ResponseCard = card;
         }
 
@@ -178,7 +177,7 @@ namespace PimPamPum
             return dying();
         }
 
-        public DyingTimer(float maxTime, PlayerController pc) : base(maxTime, Decision.Die)
+        public DyingTimer(float maxTime, PlayerController pc) : base(maxTime)
         {
             dying = () => base.MoveNext() && pc.IsDying;
         }
