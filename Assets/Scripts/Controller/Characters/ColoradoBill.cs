@@ -7,7 +7,7 @@ namespace PimPamPum
 
         protected override IEnumerator ShotPimPamPumTrigger(int target)
         {
-            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this);
             yield return drawEffectCoroutine;
             Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
             if (drawEffectCard.Suit == Suit.Spades)

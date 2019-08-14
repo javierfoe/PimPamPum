@@ -27,7 +27,7 @@ namespace PimPamPum
         {
             base.SetPlayerController(playerController);
             playerController.EnablePimPamPumsResponse();
-            Current = new ResponseTimer(GameController.Instance.DecisionTime);
+            Current = new ResponseTimer();
         }
 
     }

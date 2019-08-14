@@ -23,7 +23,7 @@ namespace PimPamPum
 
     public class Timer : DecisionMaking
     {
-        private float time, maxTime;
+        private float time;
 
         public bool TimeUp
         {
@@ -33,15 +33,14 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             time += Time.deltaTime;
-            bool timer = time < maxTime;
+            bool timer = time < GameController.MaxTime;
             TimeUp = !timer;
             return timer;
         }
 
-        protected Timer(float maxTime)
+        protected Timer()
         {
             time = 0;
-            this.maxTime = maxTime;
         }
 
     }
@@ -72,14 +71,14 @@ namespace PimPamPum
             return res;
         }
 
-        protected GeneralStoreTimer(NetworkConnection conn, int cards, float maxTime) : base(maxTime)
+        protected GeneralStoreTimer(NetworkConnection conn, int cards) : base()
         {
             this.conn = conn;
             Choice = -1;
             cardAmount = cards;
         }
 
-        public GeneralStoreTimer(NetworkConnection conn, List<Card> cards, float maxTime) : this(conn, cards.Count, maxTime)
+        public GeneralStoreTimer(NetworkConnection conn, List<Card> cards) : this(conn, cards.Count)
         {
             Cards = cards;
             GameController.Instance.EnableGeneralStoreCards(conn, true);
@@ -103,7 +102,7 @@ namespace PimPamPum
     public class ChooseCardTimer : GeneralStoreTimer
     {
 
-        public ChooseCardTimer(NetworkConnection conn, int cards, float maxTime) : base(conn, cards, maxTime)
+        public ChooseCardTimer(NetworkConnection conn, int cards) : base(conn, cards)
         {
             Cards = GameController.Instance.DrawChooseCards(cards, conn);
         }
@@ -136,9 +135,9 @@ namespace PimPamPum
             return res;
         }
 
-        public DecisionTimer(float maxTime) : this(maxTime, Decision.Pending) { }
+        public DecisionTimer() : this(Decision.Pending) { }
 
-        protected DecisionTimer(float maxTime, Decision timeOutDecision) : base(maxTime)
+        protected DecisionTimer(Decision timeOutDecision) : base()
         {
             this.timeOutDecision = timeOutDecision;
             Decision = startDecision;
@@ -157,7 +156,7 @@ namespace PimPamPum
 
         public Card ResponseCard { get; private set; }
 
-        public ResponseTimer(float maxTime) : base(maxTime, Decision.TakeHit) { }
+        public ResponseTimer() : base(Decision.TakeHit) { }
 
         public override void MakeDecision(Decision decision, Card card)
         {
@@ -177,7 +176,7 @@ namespace PimPamPum
             return dying();
         }
 
-        public DyingTimer(float maxTime, PlayerController pc) : base(maxTime)
+        public DyingTimer(PlayerController pc) : base()
         {
             dying = () => base.MoveNext() && pc.IsDying;
         }

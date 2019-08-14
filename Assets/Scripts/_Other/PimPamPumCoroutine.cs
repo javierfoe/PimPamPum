@@ -25,7 +25,7 @@ namespace PimPamPum
                     case Decision.Barrel:
                         currentDecision = Decision.Pending;
                         barrelsUsed++;
-                        Current = new DrawEffectCoroutine(playerController, GameController.Instance.DecisionTime);
+                        Current = new DrawEffectCoroutine(playerController);
                         return true;
                 }
             }
@@ -45,7 +45,7 @@ namespace PimPamPum
                 {
                     playerController.EnableBarrelButton(true);
                 }
-                Current = new ResponseTimer(GameController.Instance.DecisionTime);
+                Current = new ResponseTimer();
                 return true;
             }
             TakeHit = dodges < misses || currentDecision == Decision.TakeHit;

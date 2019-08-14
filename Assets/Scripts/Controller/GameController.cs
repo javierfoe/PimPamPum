@@ -13,6 +13,8 @@ namespace PimPamPum
             get; private set;
         }
 
+        public static float MaxTime => Instance.decisionTime;
+
         [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
         [Header("Card prefabs")]
@@ -25,8 +27,6 @@ namespace PimPamPum
 
         private IPlayerView[] playerViews;
         private PlayerController[] playerControllers;
-
-        public float DecisionTime => decisionTime;
 
         public GameObject CardPrefab
         {
@@ -345,7 +345,7 @@ namespace PimPamPum
         {
             int players = PlayersAlive;
             List<Card> cardChoices = boardController.DrawCards(players);
-            yield return new GeneralStoreCoroutine(playerControllers, player, cardChoices, decisionTime);
+            yield return new GeneralStoreCoroutine(playerControllers, player, cardChoices);
         }
 
         public IEnumerator GetCardGeneralStore(int player, int choice, Card card)
@@ -368,7 +368,7 @@ namespace PimPamPum
             {
                 next = next == player ? target : player;
                 playerControllers[next].EnablePimPamPumsDuelResponse();
-                ResponseTimer responseTimer = new ResponseTimer(decisionTime);
+                ResponseTimer responseTimer = new ResponseTimer();
                 yield return responseTimer;
                 decision = responseTimer.Decision;
                 if (decision == Decision.Avoid)
@@ -465,7 +465,7 @@ namespace PimPamPum
 
         public IEnumerator LemonadeJimBeerUsed(int player)
         {
-            DecisionTimer timer = new DecisionTimer(decisionTime);
+            DecisionTimer timer = new DecisionTimer();
             yield return timer;
             if (timer.Decision == Decision.Heal)
             {
@@ -574,7 +574,7 @@ namespace PimPamPum
             PlayerController pc = playerControllers[player];
             NetworkConnection conn = pc.connectionToClient;
 
-            ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, 3, decisionTime);
+            ChooseCardTimer chooseCardTimer = new ChooseCardTimer(conn, 3);
             yield return chooseCardTimer;
 
 

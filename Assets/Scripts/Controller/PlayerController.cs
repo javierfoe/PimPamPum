@@ -435,7 +435,7 @@ namespace PimPamPum
 
         private IEnumerator DynamiteCheck()
         {
-            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this);
             yield return drawEffectCoroutine;
             int index;
             Dynamite d = FindProperty<Dynamite>(out index);
@@ -455,7 +455,7 @@ namespace PimPamPum
 
         public IEnumerator JailCheck()
         {
-            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this);
             yield return drawEffectCoroutine;
             int index;
             Jail j = FindProperty<Jail>(out index);
@@ -872,7 +872,7 @@ namespace PimPamPum
                 if (IsDying)
                 {
                     EnableCardsDying();
-                    yield return new DyingTimer(GameController.Instance.DecisionTime, this);
+                    yield return new DyingTimer(this);
                     EnableDieButton(false);
                     DisableCards();
                 }

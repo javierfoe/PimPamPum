@@ -35,7 +35,7 @@ namespace PimPamPum
             return true;
         }
 
-        public DrawEffectCoroutine(PlayerController pc, float decisionTime)
+        public DrawEffectCoroutine(PlayerController pc)
         {
             player = pc.PlayerNumber;
             if (pc.DrawEffectCards < 2)
@@ -46,7 +46,7 @@ namespace PimPamPum
             }
             else
             {
-                Current = new ChooseCardTimer(pc.connectionToClient, pc.DrawEffectCards, decisionTime);
+                Current = new ChooseCardTimer(pc.connectionToClient, pc.DrawEffectCards);
             }
         }
     }

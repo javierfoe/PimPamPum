@@ -28,7 +28,7 @@ namespace PimPamPum
         private IEnumerator ExtraTurnCheck()
         {
             DisableCards();
-            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this, GameController.Instance.DecisionTime);
+            DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this);
             yield return drawEffectCoroutine;
             Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
             extraTurn = drawEffectCard.IsRed;

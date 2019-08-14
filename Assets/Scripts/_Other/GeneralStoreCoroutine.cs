@@ -8,7 +8,6 @@ namespace PimPamPum
 
         private PlayerController[] players;
         private int nextPlayer, playersAlive;
-        private float maxTime;
         private bool lastCard;
 
         public int NextPlayer
@@ -17,7 +16,7 @@ namespace PimPamPum
             private set
             {
                 nextPlayer = value;
-                Current = new GeneralStoreTimer(players[NextPlayer].connectionToClient, CardChoices, maxTime);
+                Current = new GeneralStoreTimer(players[NextPlayer].connectionToClient, CardChoices);
             }
         }
 
@@ -51,9 +50,8 @@ namespace PimPamPum
             return res;
         }
 
-        public GeneralStoreCoroutine(PlayerController[] players, int start, List<Card> cards, float maxTime)
+        public GeneralStoreCoroutine(PlayerController[] players, int start, List<Card> cards)
         {
-            this.maxTime = maxTime;
             this.players = players;
             lastCard = false;
             playersAlive = GameController.Instance.PlayersAlive;
