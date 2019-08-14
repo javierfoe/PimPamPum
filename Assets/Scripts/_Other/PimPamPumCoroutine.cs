@@ -2,14 +2,11 @@
 namespace PimPamPum
 {
 
-    public class PimPamPumCoroutine : FirstTimeEnumerator
+    public class PimPamPumCoroutine : ResponseCoroutine
     {
         private PlayerController playerController;
-        private int misses, dodges, barrelsUsed, barrels, player;
+        private int misses, dodges, barrelsUsed, barrels;
         private bool dodge;
-        private Decision currentDecision;
-
-        public bool TakeHit { get; private set; }
 
         public override bool MoveNext()
         {
@@ -23,7 +20,7 @@ namespace PimPamPum
                     case Decision.Avoid:
                         currentDecision = Decision.Pending;
                         dodges++;
-                        Current = GameController.Instance.CardResponse(player, responseTimer.ResponseCard);
+                        SetCardResponse(player, responseTimer);
                         return true;
                     case Decision.Barrel:
                         currentDecision = Decision.Pending;
@@ -55,11 +52,19 @@ namespace PimPamPum
             return false;
         }
 
-        public PimPamPumCoroutine(PlayerController playerController, int misses = 1)
+        public PimPamPumCoroutine() : base() { }
+
+        public PimPamPumCoroutine(PlayerController playerController, int misses = 1) : base(playerController)
         {
-            this.playerController = playerController;
+            SetPlayerController(playerController);
             this.misses = misses;
-            player = playerController.PlayerNumber;
+        }
+
+        public override void SetPlayerController(PlayerController playerController)
+        {
+            base.SetPlayerController(playerController);
+            this.playerController = playerController;
+            misses = 1;
             barrels = playerController.Barrels;
             barrelsUsed = 0;
             dodges = 0;

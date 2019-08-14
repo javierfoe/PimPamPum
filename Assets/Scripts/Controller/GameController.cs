@@ -454,38 +454,7 @@ namespace PimPamPum
 
         public IEnumerator Indians(int player, Card c)
         {
-            PlayerController pc;
-            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
-            {
-                pc = playerControllers[i];
-                if (!pc.IsDead && !pc.Immune(c))
-                {
-                    pc.EnablePimPamPumsResponse();
-                    ResponseTimer responseTimer = new ResponseTimer(decisionTime);
-                    yield return responseTimer;
-                    if (responseTimer.Decision == Decision.Avoid)
-                    {
-                        yield return CardResponse(i, responseTimer.ResponseCard);
-                    }
-                    else
-                    {
-                        yield return pc.Hit(player);
-                    }
-                }
-            }
-            yield return MultipleTargetResponsesFinished(player);
-        }
-
-        private IEnumerator MultipleTargetResponsesFinished(int player)
-        {
-            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
-            {
-                yield return playerControllers[i].Dying(player);
-            }
-            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
-            {
-                yield return playerControllers[i].Die(player);
-            }
+            yield return new MultiTargetingCoroutine<IndianCoroutine>(playerControllers, player, c);
         }
 
         public IEnumerator CardResponse(int player, Card card)
@@ -498,21 +467,7 @@ namespace PimPamPum
 
         public IEnumerator Gatling(int player, Card c)
         {
-            PlayerController pc;
-            for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
-            {
-                pc = playerControllers[i];
-                if (!pc.IsDead && !pc.Immune(c))
-                {
-                    PimPamPumCoroutine pimPamPumCoroutine = new PimPamPumCoroutine(pc);
-                    yield return pimPamPumCoroutine;
-                    if (pimPamPumCoroutine.TakeHit)
-                    {
-                        yield return pc.Hit(player);
-                    }
-                }
-            }
-            yield return MultipleTargetResponsesFinished(player);
+            yield return new MultiTargetingCoroutine<PimPamPumCoroutine>(playerControllers, player, c);
         }
 
         public IEnumerator LemonadeJimBeerUsed(int player)
