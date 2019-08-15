@@ -14,7 +14,12 @@ namespace PimPamPum
                 State = State.SpecialEvent;
                 EnablePassButton(true);
                 EnableAllCards();
-                yield return GameController.Instance.LemonadeJimBeerUsed(PlayerNumber);
+                WaitForDecision timer = new WaitForDecision();
+                yield return timer;
+                if (timer.Decision == Decision.Heal)
+                {
+                    yield return PimPamPumEvent(this + " has used his special ability and healed 1 HP.");
+                }
                 DisableCards();
                 EnablePassButton(false);
                 if (previousState == State.Play)

@@ -468,16 +468,6 @@ namespace PimPamPum
             yield return new MultiTargetingCoroutine<PimPamPumCoroutine>(playerControllers, player, c);
         }
 
-        public IEnumerator LemonadeJimBeerUsed(int player)
-        {
-            WaitForDecision timer = new WaitForDecision();
-            yield return timer;
-            if (timer.Decision == Decision.Heal)
-            {
-                yield return PimPamPumEvent(playerControllers[player] + " has used his special ability and healed 1 HP.");
-            }
-        }
-
         public void Saloon()
         {
             for (int i = 0; i < MaxPlayers; i++)
