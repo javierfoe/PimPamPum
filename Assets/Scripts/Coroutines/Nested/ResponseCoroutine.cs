@@ -1,7 +1,6 @@
-﻿
-namespace PimPamPum
+﻿namespace PimPamPum
 {
-    public abstract class ResponseCoroutine : FirstTimeEnumerator
+    public abstract class ResponseCoroutine : Enumerator
     {
         protected int player;
         protected Decision currentDecision;
@@ -26,6 +25,5 @@ namespace PimPamPum
         {
             player = playerController.PlayerNumber;
         }
-
     }
 }

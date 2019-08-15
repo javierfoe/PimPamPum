@@ -5,9 +5,15 @@ namespace PimPamPum
     public class IndianCoroutine : ResponseCoroutine
     {
 
+        private bool first = true;
+
         public override bool MoveNext()
         {
-            if (FirstTime) return true;
+            if (first)
+            {
+                first = false;
+                return true;
+            }
             WaitForResponse responseTimer = Current as WaitForResponse;
             if (responseTimer != null)
             {

@@ -10,7 +10,6 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            if (FirstTime) return true;
             WaitForResponse responseTimer = Current as WaitForResponse;
             if (responseTimer != null)
             {

@@ -2,48 +2,36 @@
 
 namespace PimPamPum
 {
-
-    public class GeneralStoreCoroutine : FirstTimeEnumerator
+    public class GeneralStoreCoroutine : Enumerator
     {
-
         private PlayerController[] players;
         private int nextPlayer, playersAlive;
         private bool lastCard;
-
-        public int NextPlayer
-        {
-            get { return nextPlayer; }
-            private set
-            {
-                nextPlayer = value;
-                Current = new WaitForGeneralStoreSelection(players[NextPlayer].connectionToClient, CardChoices);
-            }
-        }
 
         public List<Card> CardChoices { get; set; }
         public Card LastCard { get { return CardChoices[0]; } }
 
         public override bool MoveNext()
         {
-            if (FirstTime) return true;
             WaitForGeneralStoreSelection generalStoreTimer = Current as WaitForGeneralStoreSelection;
             if (generalStoreTimer != null)
             {
                 CardChoices = generalStoreTimer.NotChosenCards;
-                Current = GameController.Instance.GetCardGeneralStore(NextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
+                Current = GameController.Instance.GetCardGeneralStore(nextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
+                nextPlayer = GameController.Instance.NextPlayerAlive(nextPlayer);
                 return true;
             }
             bool res = playersAlive-- > 2;
             if (res)
             {
-                NextPlayer = GameController.Instance.NextPlayerAlive(NextPlayer);
+                Current = new WaitForGeneralStoreSelection(players[nextPlayer].connectionToClient, CardChoices);
                 return true;
             }
             if (!res && !lastCard)
             {
                 lastCard = true;
-                nextPlayer = GameController.Instance.NextPlayerAlive(NextPlayer);
-                Current = GameController.Instance.GetCardGeneralStore(NextPlayer, 0, LastCard);
+                nextPlayer = GameController.Instance.NextPlayerAlive(nextPlayer);
+                Current = GameController.Instance.GetCardGeneralStore(nextPlayer, 0, LastCard);
                 GameController.Instance.DisableSelectableCards();
                 return true;
             }
@@ -57,8 +45,7 @@ namespace PimPamPum
             playersAlive = GameController.Instance.PlayersAlive;
             GameController.Instance.SetSelectableCards(cards);
             CardChoices = cards;
-            NextPlayer = start;
+            nextPlayer = start;
         }
-
     }
 }

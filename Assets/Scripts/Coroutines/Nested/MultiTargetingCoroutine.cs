@@ -7,7 +7,6 @@ namespace PimPamPum
     {
         private int player, next;
         private Card card;
-        private bool finished;
         private bool[] hitPlayers;
         private PlayerController[] playerControllers;
 

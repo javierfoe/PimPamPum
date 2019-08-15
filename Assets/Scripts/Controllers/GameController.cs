@@ -419,9 +419,14 @@ namespace PimPamPum
             }
         }
 
+        public IEnumerator HitPlayer(int player, PlayerController target)
+        {
+            yield return target.GetHitBy(player);
+        }
+
         public IEnumerator HitPlayer(int player, int target)
         {
-            yield return playerControllers[target].GetHitBy(player);
+            yield return HitPlayer(player, playerControllers[target]);
         }
 
         public IEnumerator BarrelEffect(int target, Card c, bool dodge)
