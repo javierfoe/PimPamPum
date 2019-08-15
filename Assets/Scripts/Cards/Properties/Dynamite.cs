@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class Dynamite : Property
+    public class Dynamite : Property, ICondition
     {
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -25,7 +25,7 @@ namespace PimPamPum
             yield return pc.Equip<Dynamite>(this);
         }
 
-        public static bool CheckCondition(Card c)
+        public bool CheckCondition(Card c)
         {
             return c.Suit == Suit.Spades && c.Rank <= Rank.Nine && c.Rank >= Rank.Two;
         }

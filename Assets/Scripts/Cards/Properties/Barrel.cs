@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class Barrel : Property
+    public class Barrel : Property, ICondition
     {
         public override void BeginCardDrag(PlayerController pc)
         {
@@ -20,7 +20,7 @@ namespace PimPamPum
             pc.UnequipBarrel();
         }
 
-        public static bool CheckCondition(Card c)
+        public bool CheckCondition(Card c)
         {
             return c.Suit == Suit.Hearts;
         }

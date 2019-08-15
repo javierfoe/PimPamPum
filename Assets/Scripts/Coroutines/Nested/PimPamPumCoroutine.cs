@@ -33,7 +33,7 @@ namespace PimPamPum
             if (drawEffectCoroutine != null)
             {
                 Card drawEffectCard = drawEffectCoroutine.DrawEffectCard;
-                dodge = Barrel.CheckCondition(drawEffectCard);
+                dodge = GameController.Instance.CheckCondition<Barrel>(drawEffectCard);
                 dodges += dodge ? 1 : 0;
                 Current = GameController.Instance.BarrelEffect(player, drawEffectCard, dodge);
                 return true;

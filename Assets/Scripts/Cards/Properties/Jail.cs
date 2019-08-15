@@ -2,9 +2,9 @@
 
 namespace PimPamPum
 {
-    public class Jail : Property
+    public class Jail : Property, ICondition
     {
-        public static bool CheckCondition(Card c)
+        public bool CheckCondition(Card c)
         {
             return c.Suit == Suit.Hearts;
         }

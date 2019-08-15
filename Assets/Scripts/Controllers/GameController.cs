@@ -136,6 +136,12 @@ namespace PimPamPum
             }
         }
 
+        public bool CheckCondition<T>(Card card) where T : ICondition, new()
+        {
+            ICondition checkCondition = new T();
+            return checkCondition.CheckCondition(card);
+        }
+
         public void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
