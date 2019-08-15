@@ -440,7 +440,7 @@ namespace PimPamPum
             int index;
             Dynamite d = FindProperty<Dynamite>(out index);
             UnequipProperty(index);
-            if (GameController.Instance.CheckCondition<Dynamite>(drawEffectCoroutine.DrawEffectCard))
+            if (GameController.CheckCondition<Dynamite>(drawEffectCoroutine.DrawEffectCard))
             {
                 yield return PimPamPumEvent(this + ": Dynamite exploded. 3 damage inflicted");
                 GameController.Instance.DiscardCard(d);
@@ -459,7 +459,7 @@ namespace PimPamPum
             yield return drawEffectCoroutine;
             int index;
             Jail j = FindProperty<Jail>(out index);
-            endTurn = !GameController.Instance.CheckCondition<Jail>(drawEffectCoroutine.DrawEffectCard);
+            endTurn = !GameController.CheckCondition<Jail>(drawEffectCoroutine.DrawEffectCard);
             UnequipProperty(index);
             yield return PimPamPumEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
             GameController.Instance.DiscardCard(j);

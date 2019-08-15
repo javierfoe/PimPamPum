@@ -28,6 +28,12 @@ namespace PimPamPum
         private IPlayerView[] playerViews;
         private PlayerController[] playerControllers;
 
+        public static bool CheckCondition<T>(Card card) where T : ICondition, new()
+        {
+            ICondition checkCondition = new T();
+            return checkCondition.CheckCondition(card);
+        }
+
         public GameObject CardPrefab
         {
             get { return cardPrefab.gameObject; }
@@ -134,12 +140,6 @@ namespace PimPamPum
             {
                 playerControllers[i].EnableProperties(value);
             }
-        }
-
-        public bool CheckCondition<T>(Card card) where T : ICondition, new()
-        {
-            ICondition checkCondition = new T();
-            return checkCondition.CheckCondition(card);
         }
 
         public void CheckDeath(List<Card> list)
@@ -401,10 +401,9 @@ namespace PimPamPum
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
-            Card c = null;
             if (targetPc.HasCards)
             {
-                c = targetPc.StealCardFromHand();
+                Card c = targetPc.StealCardFromHand();
                 pc.AddCard(c);
             }
         }
