@@ -889,6 +889,7 @@ namespace PimPamPum
         {
             if (!IsDead && IsDying)
             {
+                IsDead = true;
                 yield return DieTrigger(killer);
             }
         }
@@ -896,7 +897,6 @@ namespace PimPamPum
         protected virtual IEnumerator DieTrigger(int killer)
         {
             yield return PimPamPumEvent(this + " has died.");
-            IsDead = true;
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
             for (int i = hand.Count - 1; i > -1; i--)
@@ -927,7 +927,13 @@ namespace PimPamPum
             DiscardWeapon();
         }
 
-        public virtual bool CheckDeath(List<Card> list)
+        public bool CheckDeath(List<Card> list)
+        {
+            if (IsDead || IsDying) return false;
+            return CheckDeathTrigger(list);
+        }
+
+        public virtual bool CheckDeathTrigger(List<Card> list)
         {
             return false;
         }

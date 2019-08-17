@@ -5,7 +5,7 @@ namespace PimPamPum
     public class GeneralStoreCoroutine : Enumerator
     {
         private PlayerController[] players;
-        private int nextPlayer, playersAlive;
+        private int nextPlayer, pendingPlayers;
         private bool lastCard;
 
         public List<Card> CardChoices { get; set; }
@@ -19,9 +19,10 @@ namespace PimPamPum
                 CardChoices = generalStoreTimer.NotChosenCards;
                 Current = GameController.Instance.GetCardGeneralStore(nextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
                 nextPlayer = GameController.Instance.NextPlayerAlive(nextPlayer);
+                pendingPlayers--;
                 return true;
             }
-            bool res = playersAlive-- > 2;
+            bool res = pendingPlayers > 1;
             if (res)
             {
                 Current = new WaitForGeneralStoreSelection(players[nextPlayer].connectionToClient, CardChoices);
@@ -30,7 +31,6 @@ namespace PimPamPum
             if (!res && !lastCard)
             {
                 lastCard = true;
-                nextPlayer = GameController.Instance.NextPlayerAlive(nextPlayer);
                 Current = GameController.Instance.GetCardGeneralStore(nextPlayer, 0, LastCard);
                 GameController.Instance.DisableSelectableCards();
                 return true;
@@ -42,8 +42,7 @@ namespace PimPamPum
         {
             this.players = players;
             lastCard = false;
-            playersAlive = GameController.Instance.PlayersAlive;
-            GameController.Instance.SetSelectableCards(cards);
+            pendingPlayers = cards.Count;
             CardChoices = cards;
             nextPlayer = start;
         }

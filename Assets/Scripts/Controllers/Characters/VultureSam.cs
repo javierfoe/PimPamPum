@@ -6,7 +6,7 @@ namespace PimPamPum
     public class VultureSam : PlayerController
     {
 
-        public override bool CheckDeath(List<Card> list)
+        public override bool CheckDeathTrigger(List<Card> list)
         {
             foreach(Card c in list)
             {

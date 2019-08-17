@@ -6,7 +6,7 @@ namespace PimPamPum
     public class GregDigger : PlayerController
     {
 
-        public override bool CheckDeath(List<Card> list)
+        public override bool CheckDeathTrigger(List<Card> list)
         {
             Heal(2);
             return false;

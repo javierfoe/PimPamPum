@@ -351,6 +351,7 @@ namespace PimPamPum
         {
             int players = PlayersAlive;
             List<Card> cardChoices = boardController.DrawCards(players);
+            SetSelectableCards(cardChoices);
             yield return new GeneralStoreCoroutine(playerControllers, player, cardChoices);
         }
 
