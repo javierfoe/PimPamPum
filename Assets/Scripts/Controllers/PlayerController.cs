@@ -428,7 +428,7 @@ namespace PimPamPum
 
         protected virtual void CardUsedOutOfTurn() { }
 
-        public virtual bool DrawEffectPickup()
+        public virtual bool DrawEffectPickup(int player)
         {
             return false;
         }
@@ -685,7 +685,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card c = UnequipHandCard(index);
-            yield return GameController.Instance.DiscardCardEndTurn(c, PlayerNumber);
+            yield return GameController.Instance.DiscardEffect(PlayerNumber, c);
             EndTurn();
         }
 

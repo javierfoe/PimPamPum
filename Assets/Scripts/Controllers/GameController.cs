@@ -246,26 +246,45 @@ namespace PimPamPum
             selectCardController.RemoveCardsAndDisable(conn);
         }
 
+        public IEnumerator DiscardEffect(int player, Card c)
+        {
+            yield return DiscardDrawEffect(player, c, true);
+        }
+
         public IEnumerator DrawEffect(int player, Card c)
         {
-            bool pickedCard = false;
-            bool playerPickup;
+            yield return DiscardDrawEffect(player, c, false);
+        }
+
+        private IEnumerator DiscardDrawEffect(int player, Card c, bool discardDrawEffect)
+        {
             PlayerController pc;
-            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
+            if (DiscardDrawEffectTriggers(player, c, discardDrawEffect, out pc))
             {
-                pc = playerControllers[i];
-                playerPickup = pc.DrawEffectPickup();
-                if (!pickedCard && playerPickup)
-                {
-                    pc.AddCard(c);
-                    pickedCard = true;
-                    yield return PimPamPumEvent(pc + " adds the draw! effect card: " + c);
-                }
+                string eventText = discardDrawEffect ?
+                    " adds the discarded card to his hand: " :
+                    " adds the draw! effect card to his hand: ";
+                yield return PimPamPumEvent(pc + eventText + c);
+                pc.AddCard(c);
             }
-            if (!pickedCard)
+            else
             {
                 DiscardCard(c);
             }
+        }
+
+        private bool DiscardDrawEffectTriggers(int player, Card c, bool discardDrawEffect, out PlayerController pc)
+        {
+            pc = null;
+            bool res = false;
+            PlayerController aux;
+            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
+            {
+                aux = playerControllers[i];
+                res |= discardDrawEffect ? aux.EndTurnDiscardPickup(player) : aux.DrawEffectPickup(player);
+                pc = pc == null && res ? aux : pc;
+            }
+            return res;
         }
 
         public Card DrawCard()
@@ -461,28 +480,6 @@ namespace PimPamPum
                     pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
 
             StartGame();
-        }
-
-        public IEnumerator DiscardCardEndTurn(Card c, int player)
-        {
-            bool pickedCard = false;
-            bool playerPickup;
-            PlayerController pc;
-            for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
-            {
-                pc = playerControllers[i];
-                playerPickup = pc.EndTurnDiscardPickup(player);
-                if (!pickedCard && playerPickup)
-                {
-                    pc.AddCard(c);
-                    pickedCard = true;
-                    yield return PimPamPumEvent(pc + " adds the discarded card to his hand: " + c);
-                }
-            }
-            if (!pickedCard)
-            {
-                DiscardCard(c);
-            }
         }
 
         public void SetPlayerViews()
