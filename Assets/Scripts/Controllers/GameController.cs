@@ -364,38 +364,7 @@ namespace PimPamPum
 
         public IEnumerator StartDuel(int player, int target)
         {
-            int next = player;
-            int pimPamPumsTarget = 0;
-
-            Decision decision;
-
-            yield return PimPamPumEvent("Starts the duel between: " + playerControllers[player] + " and " + playerControllers[target]);
-
-            do
-            {
-                next = next == player ? target : player;
-                playerControllers[next].EnablePimPamPumsDuelResponse();
-                WaitForResponse responseTimer = new WaitForResponse();
-                yield return responseTimer;
-                decision = responseTimer.Decision;
-                if (decision == Decision.Avoid)
-                {
-                    yield return PimPamPumEvent(playerControllers[next] + " keeps dueling.");
-                    if (next == target)
-                    {
-                        pimPamPumsTarget++;
-                    }
-                }
-                else
-                {
-                    yield return PimPamPumEvent(playerControllers[next] + " loses the duel.");
-                }
-            } while (decision != Decision.TakeHit);
-
-            playerControllers[player].CheckNoCards();
-            playerControllers[target].FinishResponse(pimPamPumsTarget);
-
-            yield return HitPlayer(player, next);
+            yield return new DuelCoroutine(playerControllers[player], playerControllers[target]);
         }
 
         public void StealIfHandNotEmpty(int player, int target)

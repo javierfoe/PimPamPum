@@ -4,12 +4,12 @@
     {
         private PlayerController player, target, next;
         private int pimPamPumsTarget;
+        private Decision decision;
 
         public override bool MoveNext()
         {
             if (finished) return false;
             WaitForResponse responseCoroutine = Current as WaitForResponse;
-            Decision decision = Decision.Pending;
             if (responseCoroutine != null)
             {
                 decision = responseCoroutine.Decision;
@@ -50,6 +50,7 @@
             this.player = player;
             this.target = target;
             next = player;
+            decision = Decision.Pending;
         }
     }
 }
