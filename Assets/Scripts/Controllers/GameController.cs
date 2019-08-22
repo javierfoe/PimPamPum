@@ -528,7 +528,7 @@ namespace PimPamPum
             playerControllers[i] = pc;
         }
 
-        public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property
+        public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property, new()
         {
             for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
@@ -677,7 +677,7 @@ namespace PimPamPum
             pc.SetTargetable(pc.connectionToClient, true);
         }
 
-        public void TargetSelfProperty<T>(int player) where T : Property
+        public void TargetSelfProperty<T>(int player) where T : Property, new()
         {
             PlayerController pc = playerControllers[player];
             pc.SetTargetable(pc.connectionToClient, !pc.HasProperty<T>());

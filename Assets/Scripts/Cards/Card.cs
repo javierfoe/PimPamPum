@@ -7,58 +7,34 @@ namespace PimPamPum
     {
         private static Color brownCard = Color.red;
 
-        public Suit Suit
-        {
-            get
-            {
-                return Struct.suit;
-            }
-        }
+        public virtual Suit Suit => Struct.suit;
 
-        public Rank Rank
-        {
-            get
-            {
-                return Struct.rank;
-            }
-        }
+        public virtual Rank Rank => Struct.rank;
 
-        public bool IsRed
-        {
-            get
-            {
-                return Suit == Suit.Hearts || Suit == Suit.Diamonds;
-            }
-        }
+        public bool IsRed => Suit == Suit.Hearts || Suit == Suit.Diamonds;
 
         public CardStruct Struct
         {
-            get; private set;
+            get; protected set;
         }
 
-        public Card Original
+        public virtual Card Original => null;
+
+        public virtual Color Color => brownCard;
+
+        public virtual bool Is<T>() where T : Card, new()
         {
-            get; private set;
+            return this is T;
         }
 
-        protected virtual Color GetColor()
-        {
-            return brownCard;
-        }
-
-        public Card()
-        {
-            SetSuitRank(Suit.Null, Rank.Null);
-        }
-
-        private void SetSuitRank(Suit suit, Rank rank)
+        protected void SetSuitRank(Suit suit = Suit.Null, Rank rank = Rank.Null)
         {
             Struct = new CardStruct
             {
                 suit = suit,
                 rank = rank,
                 name = ToString(),
-                color = GetColor()
+                color = Color
             };
         }
 
@@ -87,12 +63,8 @@ namespace PimPamPum
 
         public Card ConvertTo<T>() where T : Card, new()
         {
-            Card res = new T
-            {
-                Struct = Struct,
-                Original = this
-            };
-            return res;
+            Card converted = new T();
+            return new ConvertedCard(this, converted);
         }
 
         public static Card CreateNew<T>(Suit suit, Rank rank) where T : Card, new()

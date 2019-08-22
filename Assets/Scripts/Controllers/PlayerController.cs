@@ -299,7 +299,7 @@ namespace PimPamPum
             GameController.Instance.EquipPropertyTo(target, p);
         }
 
-        public IEnumerator DiscardCopiesOf<T>(Property p) where T : Property
+        public IEnumerator DiscardCopiesOf<T>(Property p) where T : Property, new()
         {
             if (HasProperty<T>())
             {
@@ -311,14 +311,14 @@ namespace PimPamPum
                     DiscardProperty(index);
                 }
             }
-            else if (Weapon is T && Weapon != p)
+            else if (Weapon.Is<T>() && Weapon != p)
             {
                 yield return PimPamPumEvent(this + " has discarded: " + Weapon);
                 DiscardWeapon();
             }
         }
 
-        public virtual IEnumerator Equip<T>(Property p) where T : Property
+        public virtual IEnumerator Equip<T>(Property p) where T : Property, new()
         {
             yield return null;
         }
@@ -465,7 +465,7 @@ namespace PimPamPum
             GameController.Instance.DiscardCard(j);
         }
 
-        private T FindProperty<T>(out int index) where T : Card
+        private T FindProperty<T>(out int index) where T : Card, new()
         {
             bool found = false;
             T res = null;
@@ -474,7 +474,7 @@ namespace PimPamPum
             for (int i = 0; i < properties.Count && !found; i++)
             {
                 c = properties[i];
-                found = c is T;
+                found = c.Is<T>();
                 index = found ? i : index;
                 res = found ? (T)c : res;
             }
@@ -504,7 +504,7 @@ namespace PimPamPum
             for (int i = 0; i < length; i++)
             {
                 c = hand[i];
-                if (c is O)
+                if (c.Is<O>())
                 {
                     hand[i] = c.ConvertTo<D>();
                 }
@@ -625,8 +625,8 @@ namespace PimPamPum
             for (int i = 0; i < length; i++)
             {
                 c = hand[i];
-                isMissed = c is Missed;
-                isPimPamPum = c is PimPamPum;
+                isMissed = c.Is<Missed>();
+                isPimPamPum = c.Is<PimPamPum>();
                 TargetEnableCard(connectionToClient, i, !isPimPamPum && !isMissed || !isMissed && pimPamPums);
             }
         }
@@ -661,7 +661,7 @@ namespace PimPamPum
             int length = hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableCard(connectionToClient, i, hand[i] is T);
+                TargetEnableCard(connectionToClient, i, hand[i].Is<T>());
             }
         }
 
@@ -744,23 +744,23 @@ namespace PimPamPum
             Weapon = weapon;
         }
 
-        public bool HasProperty<T>() where T : Property
+        public bool HasProperty<T>() where T : Property, new()
         {
             return Has<T>(properties);
         }
 
-        public bool HasHand<T>() where T : Card
+        public bool HasHand<T>() where T : Card, new()
         {
             return Has<T>(hand);
         }
 
-        private bool Has<T>(List<Card> list) where T : Card
+        private bool Has<T>(List<Card> list) where T : Card, new()
         {
             bool res = false;
             int length = list.Count;
             for (int i = 0; i < length && !res; i++)
             {
-                res = list[i] is T;
+                res = list[i].Is<T>();
             }
             return res;
         }
@@ -806,7 +806,7 @@ namespace PimPamPum
             GameController.Instance.TargetSelf(PlayerNumber);
         }
 
-        public void SelfTargetPropertyCard<T>() where T : Property
+        public void SelfTargetPropertyCard<T>() where T : Property, new()
         {
             GameController.Instance.TargetSelfProperty<T>(PlayerNumber);
         }

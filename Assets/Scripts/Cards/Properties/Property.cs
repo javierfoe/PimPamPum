@@ -7,10 +7,7 @@ namespace PimPamPum
     {
         private static Color property = Color.blue;
 
-        protected override Color GetColor()
-        {
-            return property;
-        }
+        public override Color Color => property;
 
         protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
