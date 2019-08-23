@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public abstract class PlayerController : NetworkBehaviour
     {
@@ -673,10 +674,22 @@ using Mirror;
             }
         }
 
-        private void DuelResponse(int index)
+        private IEnumerator Response(int index)
         {
-            MakeDecision(Decision.Avoid, index);
+            yield return ResponseSub(index);
+            UnequipHandCard(index);
+        }
+
+        private IEnumerator DuelResponse(int index)
+        {
+            yield return ResponseSub(index);
             DiscardCardFromHand(index);
+        }
+
+        private IEnumerator ResponseSub(int index)
+        {
+            yield return hand[index].CardUsed(this);
+            MakeDecision(Decision.Avoid, index);
         }
 
         public IEnumerator DiscardCardEndTurn(int index)
@@ -1202,14 +1215,13 @@ using Mirror;
                 case State.Duel:
                     if (drop == Drop.Trash)
                     {
-                        DuelResponse(index);
+                        StartCoroutine(DuelResponse(index));
                     }
                     break;
                 case State.Response:
                     if (drop == Drop.Trash)
                     {
-                        MakeDecision(Decision.Avoid, index);
-                        UnequipHandCard(index);
+                        StartCoroutine(Response(index));
                     }
                     break;
             }
