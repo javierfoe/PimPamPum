@@ -782,7 +782,7 @@ namespace PimPamPum
             SetStealable(conn, value, HasCards, !HasColt45);
         }
 
-        public void BeginCardDrag(Card c)
+        public virtual void BeginCardDrag(Card c)
         {
             draggedCard = c;
         }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public abstract class Card
     {
@@ -21,7 +22,7 @@ using UnityEngine;
 
         public virtual Color Color => brownCard;
 
-        public virtual bool Is<T>() where T : Card, new()
+        public virtual bool Is<T>() where T : Card
         {
             return this is T;
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public class Barrel : Property, ICondition
     {
