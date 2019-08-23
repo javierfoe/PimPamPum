@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Jail : Property, ICondition
     {
@@ -28,6 +27,11 @@ namespace PimPamPum
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {
             yield return pc.Equip<Jail>(this);
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Jail>(pc);
         }
 
         public override string ToString()

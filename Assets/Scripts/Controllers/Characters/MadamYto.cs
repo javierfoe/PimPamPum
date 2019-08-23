@@ -1,16 +1,16 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class MadamYto : PlayerController
     {
-
-        protected override IEnumerator UsedBeerTrigger(int player)
+        public override IEnumerator UsedCard<T>(int player)
         {
-            yield return PimPamPumEvent(this + " draws a card for the beer just used.");
-            Draw(1);
+            if (typeof(T) == typeof(Beer))
+            {
+                yield return PimPamPumEvent(this + " draws a card for the beer just used.");
+                Draw(1);
+            }
         }
-
     }
 }
 

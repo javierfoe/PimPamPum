@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Beer : Card
     {
@@ -13,7 +12,12 @@ namespace PimPamPum
         protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
-            yield return pc.HealFromBeer();
+            pc.HealFromBeer();
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Beer>(pc);
         }
 
         public override string ToString()

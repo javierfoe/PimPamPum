@@ -1,4 +1,5 @@
-﻿namespace PimPamPum
+﻿using System.Collections;
+namespace PimPamPum
 {
     public abstract class Weapon : Property
     {
@@ -26,6 +27,11 @@
         public virtual bool PimPamPum(PlayerController pc)
         {
             return pc.PimPamPum();
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Weapon>(pc);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Scope : Property
     {
@@ -23,6 +22,11 @@ namespace PimPamPum
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {
             yield return pc.Equip<Scope>(this);
+        }
+        
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Scope>(pc);
         }
 
         public override string ToString()

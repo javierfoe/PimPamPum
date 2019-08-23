@@ -1,10 +1,8 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Indians : Card
     {
-
         public override void BeginCardDrag(PlayerController pc)
         {
             base.BeginCardDrag(pc);
@@ -16,6 +14,11 @@ namespace PimPamPum
             yield return base.CardEffect(pc, player, drop, cardIndex);
             pc.CheckNoCards();
             yield return pc.Indians();
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Indians>(pc);
         }
 
         public override string ToString()

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Duel : Card
     {
@@ -14,6 +13,11 @@ namespace PimPamPum
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
             yield return pc.Duel(player);
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Duel>(pc);
         }
 
         public override string ToString()

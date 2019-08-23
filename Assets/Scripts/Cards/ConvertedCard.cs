@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-
-namespace PimPamPum
+﻿using System.Collections;
+using UnityEngine;
+namespace PimPamPum
 {
-
     public class ConvertedCard : Card
     {
         private Card original, converted;
@@ -19,5 +18,9 @@ namespace PimPamPum
             this.converted = converted;
         }
 
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return original.CardUsed(pc);
+        }
     }
 }

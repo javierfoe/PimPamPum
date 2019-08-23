@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public abstract class PlayerController : NetworkBehaviour
     {
-
         public static PlayerController LocalPlayer { get; private set; }
 
         private static Colt45 colt45 = new Colt45();
@@ -938,21 +936,12 @@ namespace PimPamPum
             return false;
         }
 
-        public virtual IEnumerator HealFromBeer()
+        public void HealFromBeer()
         {
-            yield return GameController.Instance.UsedBeer(PlayerNumber);
             if (!GameController.Instance.FinalDuel) Heal(BeerHeal);
         }
 
-        public IEnumerator UsedBeer(int player)
-        {
-            if (!IsDead)
-            {
-                yield return UsedBeerTrigger(player);
-            }
-        }
-
-        protected virtual IEnumerator UsedBeerTrigger(int player)
+        public virtual IEnumerator UsedCard<T>(int player) where T : Card
         {
             yield return null;
         }
@@ -1508,6 +1497,5 @@ namespace PimPamPum
         {
             PlayerView.Lose();
         }
-
     }
 }

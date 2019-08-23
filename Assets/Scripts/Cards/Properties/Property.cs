@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public abstract class Property : Card
     {

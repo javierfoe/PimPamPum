@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Dynamite : Property, ICondition
     {
@@ -28,6 +27,11 @@ namespace PimPamPum
         public bool CheckCondition(Card c)
         {
             return c.Suit == Suit.Spades && c.Rank <= Rank.Nine && c.Rank >= Rank.Two;
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Dynamite>(pc);
         }
 
         public override string ToString()

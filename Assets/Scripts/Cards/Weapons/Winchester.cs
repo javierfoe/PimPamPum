@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Winchester : Weapon
     {
@@ -9,6 +8,11 @@ namespace PimPamPum
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {
             yield return pc.Equip<Winchester>(this);
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Winchester>(pc);
         }
 
         public override string ToString()

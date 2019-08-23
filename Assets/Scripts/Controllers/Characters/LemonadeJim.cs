@@ -1,14 +1,11 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
-
     public class LemonadeJim : PlayerController
     {
-
-        protected override IEnumerator UsedBeerTrigger(int player)
+        public override IEnumerator UsedCard<T>(int player)
         {
-            if (player != PlayerNumber)
+            if (typeof(T) == typeof(Beer) && player != PlayerNumber)
             {
                 State previousState = State;
                 State = State.SpecialEvent;
@@ -45,7 +42,5 @@ namespace PimPamPum
                 base.UseCardState(index, player, drop, cardIndex);
             }
         }
-
     }
-
 }

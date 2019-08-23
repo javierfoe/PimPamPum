@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
-namespace PimPamPum
+namespace PimPamPum
 {
-
     public class BoardController : NetworkBehaviour
     {
         [SerializeField] private GameObject boardViewGO = null;
@@ -212,6 +210,5 @@ namespace PimPamPum
         {
             boardView.EmptyDiscardStack();
         }
-
     }
 }

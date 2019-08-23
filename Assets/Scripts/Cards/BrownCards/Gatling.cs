@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Gatling : Card
     {
@@ -15,6 +14,11 @@ namespace PimPamPum
             yield return base.CardEffect(pc, player, drop, cardIndex);
             pc.CheckNoCards();
             yield return pc.Gatling();
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Gatling>(pc);
         }
 
         public override string ToString()

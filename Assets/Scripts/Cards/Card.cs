@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public abstract class Card
     {
@@ -47,6 +46,7 @@ namespace PimPamPum
         {
             yield return CardEvent(pc, player, drop, cardIndex);
             yield return CardEffect(pc, player, drop, cardIndex);
+            yield return CardUsed(pc);
             pc.FinishCardUsed();
         }
 
@@ -60,6 +60,8 @@ namespace PimPamPum
         {
             yield return GameController.Instance.PimPamPumEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
         }
+
+        public abstract IEnumerator CardUsed(PlayerController pc);
 
         public Card ConvertTo<T>() where T : Card, new()
         {

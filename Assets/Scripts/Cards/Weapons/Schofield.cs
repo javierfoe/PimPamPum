@@ -1,6 +1,5 @@
 ﻿using System.Collections;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class Schofield : Weapon
     {
@@ -9,6 +8,11 @@ namespace PimPamPum
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {
             yield return pc.Equip<Schofield>(this);
+        }
+
+        public override IEnumerator CardUsed(PlayerController pc)
+        {
+            yield return GameController.Instance.UsedCard<Schofield>(pc);
         }
 
         public override string ToString()

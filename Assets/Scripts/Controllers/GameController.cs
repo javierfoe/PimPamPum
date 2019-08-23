@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-
-namespace PimPamPum
+namespace PimPamPum
 {
     public class GameController : NetworkBehaviour
     {
-
         public static GameController Instance
         {
             get; private set;
@@ -158,11 +156,15 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator UsedBeer(int player)
+        public IEnumerator UsedCard<T>(PlayerController pc) where T : Card
         {
+            int player = pc.PlayerNumber;
+            PlayerController aux;
             for (int i = player, j = 0; j < MaxPlayers; i = i == MaxPlayers - 1 ? 0 : i + 1, j++)
             {
-                yield return playerControllers[i].UsedBeer(player);
+                aux = playerControllers[i];
+                if (!aux.IsDead)
+                    yield return playerControllers[i].UsedCard<T>(player);
             }
         }
 
@@ -741,6 +743,5 @@ namespace PimPamPum
             foreach (PlayerController pc in playerControllers)
                 pc.SetPlayerName();
         }
-
     }
 }
