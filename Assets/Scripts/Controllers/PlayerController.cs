@@ -25,7 +25,11 @@ namespace PimPamPum
         private Card draggedCard;
 
         protected int pimPamPumsUsed;
-        protected List<Card> hand;
+
+        public List<Card> Hand
+        {
+            get; protected set;
+        }
 
         public State State
         {
@@ -82,7 +86,7 @@ namespace PimPamPum
         {
             get
             {
-                return hand.Count > 0;
+                return Hand.Count > 0;
             }
         }
 
@@ -186,7 +190,7 @@ namespace PimPamPum
             MissesToDodge = 1;
             DrawEffectCards = 1;
             MaxHP = characterHP;
-            hand = new List<Card>();
+            Hand = new List<Card>();
             properties = new List<Card>();
         }
 
@@ -249,8 +253,8 @@ namespace PimPamPum
 
         public void AddCard(Card c)
         {
-            hand.Add(c);
-            TargetAddCard(connectionToClient, hand.Count - 1, c.Struct);
+            Hand.Add(c);
+            TargetAddCard(connectionToClient, Hand.Count - 1, c.Struct);
             RpcAddCard();
         }
 
@@ -276,14 +280,14 @@ namespace PimPamPum
 
         public Card UnequipDraggedCard()
         {
-            Card c = hand[DraggedCardIndex];
+            Card c = Hand[DraggedCardIndex];
             RemoveCardFromHand(DraggedCardIndex);
             return c;
         }
 
         private void RemoveCardFromHand(int index)
         {
-            hand.RemoveAt(index);
+            Hand.RemoveAt(index);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
         }
@@ -489,23 +493,23 @@ namespace PimPamPum
 
         protected void ConvertHandTo<T>() where T : Card, new()
         {
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                hand[i] = hand[i].ConvertTo<T>();
+                Hand[i] = Hand[i].ConvertTo<T>();
             }
         }
 
         protected void ConvertHandCardTo<O, D>() where O : Card, new() where D : Card, new()
         {
             Card c;
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                c = hand[i];
+                c = Hand[i];
                 if (c.Is<O>())
                 {
-                    hand[i] = c.ConvertTo<D>();
+                    Hand[i] = c.ConvertTo<D>();
                 }
             }
         }
@@ -513,14 +517,14 @@ namespace PimPamPum
         protected void OriginalHand()
         {
             Card c, original;
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                c = hand[i];
+                c = Hand[i];
                 original = c.Original;
                 if (original != null)
                 {
-                    hand[i] = original;
+                    Hand[i] = original;
                 }
             }
         }
@@ -531,7 +535,7 @@ namespace PimPamPum
             EnableTakeHitButton(false);
             EnableEndTurnButton(false);
             EnableBarrelButton(false);
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, false);
@@ -540,7 +544,7 @@ namespace PimPamPum
 
         protected void EnableAllCards()
         {
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
                 TargetEnableCard(connectionToClient, i, true);
@@ -617,13 +621,13 @@ namespace PimPamPum
         protected virtual void EnablePhase2Cards()
         {
             bool pimPamPums = Weapon.PimPamPum(this);
-            int length = hand.Count;
+            int length = Hand.Count;
             Card c;
             bool isMissed;
             bool isPimPamPum;
             for (int i = 0; i < length; i++)
             {
-                c = hand[i];
+                c = Hand[i];
                 isMissed = c.Is<Missed>();
                 isPimPamPum = c.Is<PimPamPum>();
                 TargetEnableCard(connectionToClient, i, !isPimPamPum && !isMissed || !isMissed && pimPamPums);
@@ -657,17 +661,17 @@ namespace PimPamPum
 
         protected void EnableReactionCards<T>() where T : Card, new()
         {
-            int length = hand.Count;
+            int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableCard(connectionToClient, i, hand[i].Is<T>());
+                TargetEnableCard(connectionToClient, i, Hand[i].Is<T>());
             }
         }
 
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
             DisableCards();
-            yield return hand[DraggedCardIndex].PlayCard(this, player, drop, cardIndex);
+            yield return Hand[DraggedCardIndex].PlayCard(this, player, drop, cardIndex);
             if (!ActivePlayer)
             {
                 CardUsedOutOfTurn();
@@ -688,7 +692,7 @@ namespace PimPamPum
 
         private IEnumerator ResponseSub(int index)
         {
-            yield return hand[index].CardUsed(this);
+            yield return Hand[index].CardUsed(this);
             MakeDecision(Decision.Avoid, index);
         }
 
@@ -762,7 +766,7 @@ namespace PimPamPum
 
         public bool HasHand<T>() where T : Card, new()
         {
-            return Has<T>(hand);
+            return Has<T>(Hand);
         }
 
         private bool Has<T>(List<Card> list) where T : Card, new()
@@ -910,7 +914,7 @@ namespace PimPamPum
             yield return PimPamPumEvent(this + " has died.");
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
-            for (int i = hand.Count - 1; i > -1; i--)
+            for (int i = Hand.Count - 1; i > -1; i--)
             {
                 deadCards.Add(UnequipHandCard(i));
             }
@@ -927,7 +931,7 @@ namespace PimPamPum
 
         public void DiscardAll()
         {
-            for (int i = hand.Count - 1; i > -1; i--)
+            for (int i = Hand.Count - 1; i > -1; i--)
             {
                 DiscardCardFromHand(i);
             }
@@ -1041,15 +1045,15 @@ namespace PimPamPum
         {
             if (index < 0)
             {
-                index = Random.Range(0, hand.Count - 1);
+                index = Random.Range(0, Hand.Count - 1);
             }
             return UnequipHandCard(index);
         }
 
         public Card UnequipHandCard(int index)
         {
-            Card card = hand[index];
-            hand.RemoveAt(index);
+            Card card = Hand[index];
+            Hand.RemoveAt(index);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
             return card;
@@ -1098,7 +1102,7 @@ namespace PimPamPum
         protected void MakeDecision(Decision decision, int index = -1)
         {
             DisableCards();
-            Card card = index > -1 ? hand[index] : null;
+            Card card = index > -1 ? Hand[index] : null;
             WaitFor.CurrentTimer.MakeDecision(decision, card);
         }
 
@@ -1124,7 +1128,7 @@ namespace PimPamPum
 
         private void EndTurn()
         {
-            if (hand.Count <= CardLimit())
+            if (Hand.Count <= CardLimit())
             {
                 WillinglyEndTurn();
             }
@@ -1178,16 +1182,6 @@ namespace PimPamPum
         {
             PlayerView.EnableTakeHitButton(false);
             PlayerView.EnableBarrelButton(false);
-        }
-
-        protected void AvoidButton()
-        {
-            TargetAvoidButton(connectionToClient);
-        }
-
-        protected void TakeHitButton()
-        {
-            TargetTakeHitButton(connectionToClient);
         }
 
         protected virtual void UseCardState(int index, int player, Drop drop, int cardIndex)
@@ -1300,7 +1294,7 @@ namespace PimPamPum
             DraggedCardIndex = index;
             if (State == State.Play)
             {
-                hand[DraggedCardIndex].BeginCardDrag(this);
+                Hand[DraggedCardIndex].BeginCardDrag(this);
             }
             else
             {
@@ -1445,18 +1439,6 @@ namespace PimPamPum
         private void TargetSetRole(NetworkConnection conn, Role role)
         {
             PlayerView.SetRole(role);
-        }
-
-        [TargetRpc]
-        private void TargetAvoidButton(NetworkConnection conn)
-        {
-            PlayerView.SetTextTakeHitButton("Take card effect");
-        }
-
-        [TargetRpc]
-        private void TargetTakeHitButton(NetworkConnection conn)
-        {
-            PlayerView.SetTextTakeHitButton("Take hit");
         }
 
         [TargetRpc]

@@ -299,13 +299,6 @@ using Mirror;
             return boardController.DrawCards(cards);
         }
 
-        public List<Card> DrawChooseCards(int cards, NetworkConnection conn)
-        {
-            List<Card> res = DrawCards(cards);
-            SetSelectableCards(res, conn);
-            return res;
-        }
-
         public void DiscardCard(Card card)
         {
             boardController.DiscardCard(card);
@@ -314,6 +307,11 @@ using Mirror;
         public void EquipPropertyTo(int target, Property p)
         {
             p.EquipProperty(playerControllers[target]);
+        }
+
+        public IEnumerator YoulGrinnerSkill(int player)
+        {
+            yield return new YoulGrinnerSkillCoroutine(player, playerControllers);
         }
 
         public IEnumerator CatBalou(int player, int target, Drop drop, int cardIndex)
@@ -545,7 +543,6 @@ using Mirror;
 
             WaitForCardSelection chooseCardTimer = new WaitForCardSelection(conn, 3);
             yield return chooseCardTimer;
-
 
             pc.AddCards(chooseCardTimer.NotChosenCards);
             boardController.AddCardToDeck(chooseCardTimer.ChosenCard);

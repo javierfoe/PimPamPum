@@ -1,12 +1,18 @@
 ﻿using Mirror;
+using System.Collections.Generic;
 
 namespace PimPamPum
 {
     public class WaitForCardSelection : WaitForGeneralStoreSelection
     {
-        public WaitForCardSelection(NetworkConnection conn, int cards) : base(conn, cards)
+        public WaitForCardSelection(NetworkConnection conn, int cards) :
+            this(conn, GameController.Instance.DrawCards(cards))
+        { }
+
+        public WaitForCardSelection(NetworkConnection conn, List<Card> cards) : base(conn, cards.Count)
         {
-            Cards = GameController.Instance.DrawChooseCards(cards, conn);
+            GameController.Instance.SetSelectableCards(cards, conn);
+            Cards = cards;
         }
 
         protected override void FinishedCoroutine()

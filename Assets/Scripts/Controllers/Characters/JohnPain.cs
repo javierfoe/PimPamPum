@@ -6,7 +6,7 @@ namespace PimPamPum
 
         public override bool DrawEffectPickup(int player)
         {
-            return !IsDead && hand.Count < 6;
+            return !IsDead && Hand.Count < 6;
         }
 
     }
