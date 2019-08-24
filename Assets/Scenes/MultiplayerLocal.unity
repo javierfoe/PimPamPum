@@ -187,7 +187,6 @@ MonoBehaviour:
   - {fileID: 5389608874815740603, guid: fc53ac13cda49da46a0ee5659408cdaa, type: 3}
   - {fileID: 7833244474940123917, guid: ecde99424b687744197227b9823e8032, type: 3}
   - {fileID: 1871004436593324, guid: 6b4f1dac654034d4cb9808f1ea983abd, type: 3}
-  - {fileID: 1802868390545486, guid: 7ac4f27781c0b864d8d388f1dc675e1d, type: 3}
   - {fileID: 3279534552043588200, guid: b231de2e611f66c4189f93e692e277ea, type: 3}
   - {fileID: 1001886743864804, guid: 8f7ee45e56a32184eac9fd54a8656327, type: 3}
   - {fileID: 1251744854656538, guid: 12ffdffec55f7f34b81a519f738f0def, type: 3}
@@ -200,6 +199,7 @@ MonoBehaviour:
   - {fileID: 1898146779560658, guid: 9f1c7fd72cf9d8740ad778eef339a280, type: 3}
   - {fileID: 1265278354071078, guid: aeec00b775953d14c98f942782fb6b9d, type: 3}
   - {fileID: 1054144581137644, guid: e28682c66e8e2ed40be5276e542af9d6, type: 3}
+  - {fileID: 2462047725291590460, guid: 0f1f2f54beafbb74893bfb2ecea9a793, type: 3}
 --- !u!4 &486509228
 Transform:
   m_ObjectHideFlags: 0
