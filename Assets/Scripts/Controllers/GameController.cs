@@ -18,7 +18,6 @@ using Mirror;
         [Header("Card prefabs")]
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
-        [SerializeField] private SelectView generalStoreCardView = null;
         [Header("Controllers")]
         [SerializeField] private SelectCardController selectCardController = null;
         [SerializeField] private BoardController boardController = null;
@@ -26,25 +25,14 @@ using Mirror;
         private IPlayerView[] playerViews;
         private PlayerController[] playerControllers;
 
+        public bool FinalDuel => PlayersAlive < 3;
+        public GameObject CardPrefab => cardPrefab.gameObject;
+        public GameObject PropertyPrefab => propertyPrefab.gameObject;
+
         public static bool CheckCondition<T>(Card card) where T : ICondition, new()
         {
             ICondition checkCondition = new T();
             return checkCondition.CheckCondition(card);
-        }
-
-        public GameObject CardPrefab
-        {
-            get { return cardPrefab.gameObject; }
-        }
-
-        public GameObject PropertyPrefab
-        {
-            get { return propertyPrefab.gameObject; }
-        }
-
-        public GameObject GeneralStorePrefab
-        {
-            get { return generalStoreCardView.gameObject; }
         }
 
         public int MaxPlayers
@@ -95,14 +83,6 @@ using Mirror;
                     foes = (pc.Role == Role.Outlaw || pc.Role == Role.Renegade) && !pc.IsDead;
                 }
                 return foes;
-            }
-        }
-
-        public bool FinalDuel
-        {
-            get
-            {
-                return PlayersAlive < 3;
             }
         }
 

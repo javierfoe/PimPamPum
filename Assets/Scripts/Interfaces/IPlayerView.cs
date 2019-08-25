@@ -1,6 +1,6 @@
 ﻿namespace PimPamPum
 {
-    public interface IPlayerView : ICardHolderView, IDropView
+    public interface IPlayerView : ICardHolderView, ISelectView
     {
         void SetCharacter(string character);
         void SetPlayerName(string name);

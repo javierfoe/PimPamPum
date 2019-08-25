@@ -1,31 +1,22 @@
-﻿
+﻿using UnityEngine;
+using System.Collections;
+
 namespace PimPamPum
 {
-    public class SelectView : CardView, ISelectView
+    public abstract class SelectView : DropView
     {
         private UnityEngine.UI.Button button;
 
-        public void Enable(bool value)
+        public virtual void EnableClick(bool value)
         {
             if (!button)
             {
-                button = GetComponent<UnityEngine.UI.Button>();
-                button.onClick.AddListener(ClickCard);
+                button = gameObject.AddComponent<UnityEngine.UI.Button>();
+                button.onClick.AddListener(Click);
             }
-            Playable(value);
             button.interactable = value;
         }
 
-        public override void Playable(bool value)
-        {
-            base.Playable(value);
-            Draggable = false;
-        }
-
-        private void ClickCard()
-        {
-            PlayerController.LocalPlayer.ChooseCard(index);
-        }
-
+        protected abstract void Click();
     }
 }

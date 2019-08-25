@@ -23,8 +23,14 @@ namespace PimPamPum
         private bool endTurn, jail, dynamite;
         private string playerName;
         private Card draggedCard;
-
         protected int pimPamPumsUsed;
+
+        public bool Stealable => HasCards || HasProperties || !HasColt45;
+        public bool HasCards => Hand.Count > 0;
+        public bool HasProperties => properties.Count > 0;
+        public bool HasColt45 => Weapon == colt45;
+        public bool IsDying => HP < 1;
+        protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
 
         public List<Card> Hand
         {
@@ -74,46 +80,9 @@ namespace PimPamPum
             }
         }
 
-        public bool Stealable
-        {
-            get
-            {
-                return HasCards || HasProperties || !HasColt45;
-            }
-        }
-
-        public bool HasCards
-        {
-            get
-            {
-                return Hand.Count > 0;
-            }
-        }
-
-        public bool HasProperties
-        {
-            get
-            {
-                return properties.Count > 0;
-            }
-        }
-
-        public bool HasColt45
-        {
-            get
-            {
-                return Weapon == colt45;
-            }
-        }
-
         public bool IsDead
         {
             get; private set;
-        }
-
-        public bool IsDying
-        {
-            get { return HP < 1; }
         }
 
         protected int MaxHP
@@ -160,11 +129,6 @@ namespace PimPamPum
         public int Barrels
         {
             get; protected set;
-        }
-
-        protected bool ActivePlayer
-        {
-            get { return GameController.Instance.CurrentPlayer == PlayerNumber; }
         }
 
         public Role Role

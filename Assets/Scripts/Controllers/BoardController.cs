@@ -20,19 +20,12 @@ using Mirror;
         private List<Card> deck;
         private List<Card> discardStack;
 
+        public int DeckSize => deck.Count;
+        public Card DiscardStackTop => discardStack[discardStack.Count - 1];
+
         public override void OnStartClient()
         {
             boardView = boardViewGO.GetComponent<IBoardView>();
-        }
-
-        public int DeckSize
-        {
-            get { return deck.Count; }
-        }
-
-        public Card DiscardStackTop
-        {
-            get { return discardStack[discardStack.Count - 1]; }
         }
 
         public void ConstructorBoard()

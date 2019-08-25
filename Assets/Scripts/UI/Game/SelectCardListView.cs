@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class SelectCardListView : CardListView<ISelectView>, ISelectCardListView
+    public class SelectCardListView : CardListView, ISelectCardListView
     {
         protected override void Awake()
         {
@@ -12,14 +12,14 @@ namespace PimPamPum
 
         protected override GameObject GetPrefab()
         {
-            return GameController.Instance.GeneralStorePrefab;
+            return GameController.Instance.CardPrefab;
         }
 
         public void EnableCards(bool value)
         {
-            foreach(ISelectView cv in list)
+            foreach(ICardView cv in list)
             {
-                cv.Enable(value);
+                cv.EnableClick(value);
             }
         }
 

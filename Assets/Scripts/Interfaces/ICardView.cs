@@ -1,6 +1,6 @@
 ﻿namespace PimPamPum
 {
-    public interface ICardView : IDropView
+    public interface ICardView : ISelectView
     {
         void Playable(bool value);
         void SetIndex(int index);

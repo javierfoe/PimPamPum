@@ -199,5 +199,10 @@ namespace PimPamPum
         {
             passButton.Active = value;
         }
+
+        public void EnableClick(bool value)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

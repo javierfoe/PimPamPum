@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace PimPamPum
 {
-    public class CardView : DropView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class CardView : SelectView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         private readonly string[] Suits = { "", "S", "H", "D", "C" };
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
@@ -20,14 +20,27 @@ namespace PimPamPum
         private GameObject ghostCard;
         private MaskableGraphic[] maskableGraphics;
 
+        public override int GetDropIndex() => index;
+
         protected bool Draggable
         {
             get; set;
         }
 
-        public override int GetDropIndex()
+        public override void EnableClick(bool value)
         {
-            return index;
+            base.EnableClick(value);
+            Playable(value);
+            if (value)
+            {
+                SetBackgroundColor(clickable);
+            }
+            Draggable = false;
+        }
+
+        protected override void Click()
+        {
+            PlayerController.LocalPlayer.ChooseCard(index);
         }
 
         public virtual void Playable(bool value)
@@ -43,7 +56,7 @@ namespace PimPamPum
 
         private void PlayableColor(bool value)
         {
-            background.color = value ? playable : idle;
+            SetBackgroundColor(value ? playable : idle);
         }
 
         public void SetIndex(int index)

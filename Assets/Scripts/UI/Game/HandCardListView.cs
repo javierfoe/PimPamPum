@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class HandCardListView : CardListView<ICardView>
+    public class HandCardListView : CardListView
     {
         protected override GameObject GetPrefab()
         {

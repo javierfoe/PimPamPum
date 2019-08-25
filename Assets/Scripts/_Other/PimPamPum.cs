@@ -115,6 +115,13 @@ namespace PimPamPum
         SpecialEvent
     }
 
+    public enum PhaseOneOptions
+    {
+        Deck,
+        Discard,
+        Player
+    }
+
     public enum Event
     {
         Hit,

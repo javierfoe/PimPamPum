@@ -3,14 +3,14 @@ using UnityEngine;
 
 namespace PimPamPum
 {
-    public abstract class CardListView<T> : MonoBehaviour where T : ICardView
+    public abstract class CardListView : MonoBehaviour
     {
 
-        protected List<T> list;
+        protected List<ICardView> list;
 
         protected virtual void Awake()
         {
-            list = new List<T>();
+            list = new List<ICardView>();
         }
 
         protected abstract GameObject GetPrefab();
@@ -18,7 +18,7 @@ namespace PimPamPum
         public void AddCard(int index, CardStruct cs)
         {
             GameObject prefab = GetPrefab();
-            T cv = Instantiate(prefab, transform).GetComponent<T>();
+            ICardView cv = Instantiate(prefab, transform).GetComponent<ICardView>();
             cv.SetIndex(index);
             cv.SetCard(cs);
             list.Add(cv);
@@ -42,7 +42,7 @@ namespace PimPamPum
 
         public void SetDroppable(bool value)
         {
-            foreach(T cv in list) cv.SetDroppable(value);
+            foreach(ICardView cv in list) cv.SetDroppable(value);
         }
 
         public void SetPlayable(int index, bool value)

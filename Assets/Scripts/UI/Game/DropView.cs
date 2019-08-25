@@ -5,13 +5,18 @@ namespace PimPamPum
 {
     public abstract class DropView : MonoBehaviour, IDropView
     {
+        [SerializeField] protected Color highlight = new Color(), target = new Color(), clickable = new Color();
 
-        [SerializeField] protected Color highlight = new Color(), target = new Color();
+        private Image background;
 
         protected Drop drop;
-        protected Image background;
         protected Color idle;
         private bool droppable;
+
+        public virtual int GetDropIndex() => -1;
+        public GameObject GameObject() => gameObject;
+        public bool GetDroppable() => Droppable;
+        public Drop GetDropEnum() => drop;
 
         private bool Targetable
         {
@@ -43,22 +48,18 @@ namespace PimPamPum
 
         private void SetBackgroundColor(bool highlight = false)
         {
-            background.color = GetColor(highlight);
+            Color color = GetColor(highlight);
+            SetBackgroundColor(color);
+        }
+
+        protected void SetBackgroundColor(Color color)
+        {
+            background.color = color;
         }
 
         protected virtual Color GetColor(bool highlight)
         {
             return highlight ? this.highlight : Droppable || Targetable ? target : idle;
-        }
-
-        public GameObject GameObject()
-        {
-            return gameObject;
-        }
-
-        public bool GetDroppable()
-        {
-            return Droppable;
         }
 
         public void SetDroppable(bool value)
@@ -69,16 +70,6 @@ namespace PimPamPum
         public void Highlight(bool value)
         {
             SetBackgroundColor(value);
-        }
-
-        public Drop GetDropEnum()
-        {
-            return drop;
-        }
-
-        public virtual int GetDropIndex()
-        {
-            return -1;
         }
     }
 }

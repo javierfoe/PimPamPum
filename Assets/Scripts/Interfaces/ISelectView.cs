@@ -1,7 +1,7 @@
 ﻿namespace PimPamPum
 {
-    public interface ISelectView : ICardView
+    public interface ISelectView : IDropView
     {
-        void Enable(bool value);
+        void EnableClick(bool value);
     }
 }
