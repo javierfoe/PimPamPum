@@ -1153,6 +1153,7 @@ namespace PimPamPum
             switch (State)
             {
                 case State.Play:
+                case State.Dying:
                     if (player > -1)
                     {
                         StartCoroutine(PlayCard(player, drop, cardIndex));
@@ -1162,12 +1163,6 @@ namespace PimPamPum
                     if (drop == Drop.Trash)
                     {
                         StartCoroutine(DiscardCardEndTurn(index));
-                    }
-                    break;
-                case State.Dying:
-                    if (drop == Drop.Trash)
-                    {
-                        StartCoroutine(PlayCard(PlayerNumber, drop, cardIndex));
                     }
                     break;
                 case State.Duel:
@@ -1256,13 +1251,15 @@ namespace PimPamPum
         private void CmdBeginCardDrag(int index)
         {
             DraggedCardIndex = index;
-            if (State == State.Play)
+            switch (State)
             {
-                Hand[DraggedCardIndex].BeginCardDrag(this);
-            }
-            else
-            {
-                GameController.Instance.HighlightTrash(PlayerNumber, true);
+                case State.Play:
+                case State.Dying:
+                    Hand[DraggedCardIndex].BeginCardDrag(this);
+                    break;
+                default:
+                    GameController.Instance.HighlightTrash(PlayerNumber, true);
+                    break;
             }
         }
 
