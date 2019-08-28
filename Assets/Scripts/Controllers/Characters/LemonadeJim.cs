@@ -31,7 +31,7 @@ namespace PimPamPum
         {
             if (State == State.SpecialEvent)
             {
-                if(drop == Drop.Trash)
+                if(drop == Drop.Board)
                 {
                     DiscardCardFromHand(index);
                     Heal();

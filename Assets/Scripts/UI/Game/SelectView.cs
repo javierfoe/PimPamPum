@@ -1,22 +1,24 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.EventSystems;
+using System;
 
 namespace PimPamPum
 {
-    public abstract class SelectView : DropView
+    public abstract class SelectView : MonoBehaviour, IClickView
     {
-        private UnityEngine.UI.Button button;
+        private bool clickable;
 
         public virtual void EnableClick(bool value)
         {
-            if (!button)
-            {
-                button = gameObject.AddComponent<UnityEngine.UI.Button>();
-                button.onClick.AddListener(Click);
-            }
-            button.interactable = value;
+            clickable = value;
         }
 
-        protected abstract void Click();
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!clickable) return;
+            Click();
+        }
+
+        public virtual void Click() { throw new NotImplementedException(); }
     }
 }

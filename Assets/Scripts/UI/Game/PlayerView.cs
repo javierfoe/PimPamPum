@@ -9,19 +9,20 @@ namespace PimPamPum
 
         [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
         [SerializeField] private HandView handHidden = null;
-        [SerializeField] private GameObject weapon = null, turn = null;
-        [SerializeField] private HandCardListView handCards = null;
-        [SerializeField] private PropertyCardListView propertyCards = null;
+        [SerializeField] private GameObject weaponGO = null, handCardsGO = null, propertyCardsGO = null, turn = null;
 
         private int playerIndex;
         private int hiddenCards;
         private ICardView weaponCard;
+        private ICardListView handCards, propertyCards;
         private EndGamePanelView endGamePanel;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
         private DieButton dieButton;
         private BarrelButton barrelButton;
         private SkipButton passButton;
+
+        public override int PlayerNumber => PlayerIndex;
 
         private int HiddenCards
         {
@@ -36,11 +37,18 @@ namespace PimPamPum
             }
         }
 
+        public int PlayerIndex
+        {
+            get; set;
+        }
+
         protected override void Awake()
         {
             base.Awake();
             SetTurn(false);
-            weaponCard = weapon.GetComponent<ICardView>();
+            weaponCard = weaponGO.GetComponent<ICardView>();
+            handCards = handCardsGO.GetComponent<ICardListView>();
+            propertyCards = propertyCardsGO.GetComponent<ICardListView>();
         }
 
         public void SetLocalPlayer()
@@ -62,16 +70,6 @@ namespace PimPamPum
         public void SetTurn(bool value)
         {
             turn.SetActive(value);
-        }
-
-        public void SetPlayerIndex(int index)
-        {
-            playerIndex = index;
-        }
-
-        public int GetPlayerIndex()
-        {
-            return playerIndex;
         }
 
         public void SetSheriff()
@@ -97,27 +95,27 @@ namespace PimPamPum
             this.hp.text = hp.ToString();
         }
 
-        public void AddCard()
+        public void AddHandCard()
         {
             HiddenCards += 1;
         }
 
-        public void RemoveCard()
+        public void RemoveHandCard()
         {
             HiddenCards -= 1;
         }
 
-        public void AddCard(int index, CardStruct cs)
+        public void AddHandCard(int index, CardStruct cs)
         {
-            handCards.AddCard(index, cs);
+            handCards.AddCard(index, cs, this);
         }
 
         public void EquipProperty(int index, CardStruct cs)
         {
-            propertyCards.AddCard(index, cs);
+            propertyCards.AddCard(index, cs, this);
         }
 
-        public void RemoveCard(int index)
+        public void RemoveHandCard(int index)
         {
             handCards.RemoveCard(index);
         }
@@ -151,7 +149,7 @@ namespace PimPamPum
                     handCards.SetDroppable(value);
                 }
             }
-            if (!value || weapon) weaponCard.SetDroppable(value);
+            if (!value || weapon) weaponCard.Droppable = value;
             propertyCards.SetDroppable(value);
         }
 
@@ -200,9 +198,9 @@ namespace PimPamPum
             passButton.Active = value;
         }
 
-        public void EnableClick(bool value)
+        public override void Click()
         {
-            throw new System.NotImplementedException();
+            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, DropIndex);
         }
     }
 }

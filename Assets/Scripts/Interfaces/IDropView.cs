@@ -2,13 +2,15 @@
 
 namespace PimPamPum
 {
-    public interface IDropView
+    public interface IDropView : IClickView
     {
-        GameObject GameObject();
+        GameObject gameObject { get; }
+        IPlayerView IPlayerView { get; set; }
+        int PlayerNumber { get; }
+        bool Droppable { get; set; }
+        Drop DropEnum { get; }
+        int DropIndex { get; }
         void SetTargetable(bool value);
-        bool GetDroppable();
-        void SetDroppable(bool value);
-        Drop GetDropEnum();
-        int GetDropIndex();
+        void Highlight(bool value);
     }
 }

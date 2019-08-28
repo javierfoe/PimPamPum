@@ -19,7 +19,7 @@ namespace PimPamPum
         {
             foreach(ICardView cv in list)
             {
-                cv.EnableClick(value);
+                cv.Selectable(value);
             }
         }
 

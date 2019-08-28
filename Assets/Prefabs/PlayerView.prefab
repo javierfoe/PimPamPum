@@ -63,7 +63,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlight: {r: 0.15143289, g: 0.25129318, b: 0.7830189, a: 0.7137255}
   target: {r: 0.8988769, g: 1, b: 0, a: 0.7137255}
-  clickable: {r: 0, g: 0, b: 0, a: 0}
+  click: {r: 0, g: 0, b: 0, a: 0}
   playable: {r: 0, g: 0, b: 0, a: 0}
   cardName: {fileID: 114896613605669552}
   suit: {fileID: 114035818257721444}
@@ -465,18 +465,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e463f54924ce354ea9148337502d494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlight: {r: 1, g: 0.427451, b: 0.80260396, a: 0.6}
+  highlight: {r: 0.50980395, g: 0.91764706, b: 0.14509805, a: 0.6}
   target: {r: 1, g: 0.5087127, b: 0.427451, a: 0.6}
-  clickable: {r: 1, g: 0.11764706, b: 0.49019608, a: 0.70980394}
+  click: {r: 1, g: 0.11764706, b: 0.49019608, a: 0.6}
   hp: {fileID: 114052992191238756}
   playerName: {fileID: 114419989799728440}
   info: {fileID: 114362346429122152}
   character: {fileID: 114540138901617784}
   handHidden: {fileID: 114173720284591736}
-  weapon: {fileID: 1008839709338664}
+  weaponGO: {fileID: 1008839709338664}
+  handCardsGO: {fileID: 1141441758357850}
+  propertyCardsGO: {fileID: 1072511573029250}
   turn: {fileID: 1943273300553166}
-  handCards: {fileID: 114051561526155490}
-  propertyCards: {fileID: 114873486073680014}
 --- !u!114 &114675510857793648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1429,4 +1429,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   highlight: {r: 0.3100347, g: 0.9622642, b: 0.14978641, a: 0.48235294}
   target: {r: 0, g: 0, b: 0, a: 0}
-  clickable: {r: 0, g: 0, b: 0, a: 0}
+  click: {r: 0, g: 0, b: 0, a: 0}

@@ -5,7 +5,7 @@ using Mirror;
 {
     public class BoardController : NetworkBehaviour
     {
-        [SerializeField] private GameObject boardViewGO = null;
+        [SerializeField] private GameObject boardViewGO = null, deckViewGO = null, discardViewGO = null;
         [SerializeField] private CardDefinition[] deckCards = null;
 
         [System.Serializable]
@@ -16,7 +16,9 @@ using Mirror;
             public Rank rank;
         }
 
-        private IBoardView boardView;
+        private IDropView boardView;
+        private IDeckView deckView;
+        private IDiscardView discardView;
         private List<Card> deck;
         private List<Card> discardStack;
 
@@ -25,7 +27,9 @@ using Mirror;
 
         public override void OnStartClient()
         {
-            boardView = boardViewGO.GetComponent<IBoardView>();
+            boardView = boardViewGO.GetComponent<IDropView>();
+            deckView = deckViewGO.GetComponent<IDeckView>();
+            discardView = discardViewGO.GetComponent<IDiscardView>();
         }
 
         public void ConstructorBoard()
@@ -189,19 +193,19 @@ using Mirror;
         [ClientRpc]
         private void RpcSetDeckSize(int cards)
         {
-            boardView.SetDeckSize(cards);
+            deckView.SetDeckSize(cards);
         }
 
         [ClientRpc]
         private void RpcSetDiscardTop(CardStruct cs)
         {
-            boardView.SetDiscardTop(cs);
+            discardView.SetDiscardTop(cs);
         }
 
         [ClientRpc]
         private void RpcEmptyDiscardStack()
         {
-            boardView.EmptyDiscardStack();
+            discardView.EmptyDiscardStack();
         }
     }
 }

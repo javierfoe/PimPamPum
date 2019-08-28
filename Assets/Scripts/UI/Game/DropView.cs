@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 namespace PimPamPum
 {
-    public abstract class DropView : MonoBehaviour, IDropView
+    public abstract class DropView : SelectView, IDropView
     {
-        [SerializeField] protected Color highlight = new Color(), target = new Color(), clickable = new Color();
+        [SerializeField] protected Color highlight = new Color(), target = new Color(), click = new Color();
 
         private Image background;
 
@@ -13,10 +13,14 @@ namespace PimPamPum
         protected Color idle;
         private bool droppable;
 
-        public virtual int GetDropIndex() => -1;
-        public GameObject GameObject() => gameObject;
-        public bool GetDroppable() => Droppable;
-        public Drop GetDropEnum() => drop;
+        public virtual int PlayerNumber => IPlayerView.PlayerIndex;
+        public virtual int DropIndex => -1;
+        public Drop DropEnum => drop;
+
+        public IPlayerView IPlayerView
+        {
+            get; set;
+        }
 
         private bool Targetable
         {
@@ -69,6 +73,7 @@ namespace PimPamPum
 
         public void Highlight(bool value)
         {
+            IPlayerView?.Highlight(value);
             SetBackgroundColor(value);
         }
     }

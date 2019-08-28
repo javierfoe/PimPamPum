@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace PimPamPum
 {
-    public class CardView : SelectView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
+    public class CardView : DropView, ICardView, IDragHandler, IBeginDragHandler, IEndDragHandler
     {
         private readonly string[] Suits = { "", "S", "H", "D", "C" };
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
@@ -15,32 +15,36 @@ namespace PimPamPum
         [SerializeField] private Text cardName = null, suit = null, rank = null;
 
         protected int index;
+        private bool selectable;
         private DropView currentDropView;
-        private PlayerView currentPlayerView;
         private GameObject ghostCard;
         private MaskableGraphic[] maskableGraphics;
 
-        public override int GetDropIndex() => index;
+        public override int DropIndex => index;
 
         protected bool Draggable
         {
             get; set;
         }
 
-        public override void EnableClick(bool value)
+        public void Selectable(bool value)
         {
             base.EnableClick(value);
             Playable(value);
             if (value)
             {
-                SetBackgroundColor(clickable);
+                SetBackgroundColor(click);
             }
+            selectable = true;
             Draggable = false;
         }
 
-        protected override void Click()
+        public override void Click()
         {
-            PlayerController.LocalPlayer.ChooseCard(index);
+            if (selectable)
+                PlayerController.LocalPlayer.ChooseCard(index);
+            else
+                PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, PlayerNumber, DropIndex);
         }
 
         public virtual void Playable(bool value)
@@ -147,7 +151,6 @@ namespace PimPamPum
             if (!Draggable) return;
 
             DropView drop = null;
-            PlayerView pv = null;
             List<GameObject> hovered = eventData.hovered;
             GameObject hover;
             for (int i = 0; i < hovered.Count && drop == null; i++)
@@ -156,22 +159,10 @@ namespace PimPamPum
                 drop = hover.GetComponent<DropView>();
                 drop = (drop != null && drop != this && drop.Droppable) ? drop : null;
             }
-            if (drop != null)
-            {
-                for (int i = 0; i < hovered.Count && pv == null; i++)
-                {
-                    hover = hovered[i];
-                    pv = hover.GetComponent<PlayerView>();
-                }
-            }
 
             if (currentDropView != null && drop != currentDropView)
             {
                 currentDropView.Highlight(false);
-            }
-            if (currentPlayerView != null && pv != currentPlayerView)
-            {
-                currentPlayerView.Highlight(false);
             }
 
             currentDropView = null;
@@ -179,12 +170,6 @@ namespace PimPamPum
             {
                 currentDropView = drop;
                 drop.Highlight(true);
-            }
-            currentPlayerView = null;
-            if (pv != null)
-            {
-                currentPlayerView = pv;
-                pv.Highlight(true);
             }
 
             SetDraggedPosition(eventData);
@@ -198,20 +183,15 @@ namespace PimPamPum
             int targetIndex = -1;
             if (currentDropView != null)
             {
-                drop = currentDropView.GetDropEnum();
-                targetIndex = currentDropView.GetDropIndex();
+                drop = currentDropView.DropEnum;
+                targetIndex = currentDropView.DropIndex;
                 currentDropView.Highlight(false);
-            }
-            if (currentPlayerView != null)
-            {
-                player = currentPlayerView.GetPlayerIndex();
-                currentPlayerView.Highlight(false);
+                player = currentDropView.PlayerNumber;
             }
 
             PlayableColor(true);
 
             PlayerController.LocalPlayer.UseCard(index, player, drop, targetIndex);
-            currentPlayerView = null;
             currentDropView = null;
 
             SetVisibility(true);

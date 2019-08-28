@@ -115,7 +115,7 @@ namespace PimPamPum
         SpecialEvent
     }
 
-    public enum PhaseOneOptions
+    public enum PhaseOneOption
     {
         Deck,
         Discard,
@@ -145,7 +145,7 @@ namespace PimPamPum
     public enum Drop
     {
         Nothing,
-        Trash,
+        Board,
         Hand,
         Properties,
         Weapon

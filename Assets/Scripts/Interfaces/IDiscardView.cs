@@ -1,8 +1,7 @@
 ﻿namespace PimPamPum
 {
-    public interface IBoardView : IDropView
+    public interface IDiscardView : IClickView
     {
-        void SetDeckSize(int cards);
         void SetDiscardTop(CardStruct cs);
         void EmptyDiscardStack();
     }

@@ -56,7 +56,7 @@ namespace PimPamPum
             set
             {
                 playerView = value;
-                playerView.SetPlayerIndex(PlayerNumber);
+                playerView.PlayerIndex = PlayerNumber;
             }
         }
 
@@ -1160,19 +1160,19 @@ namespace PimPamPum
                     }
                     break;
                 case State.Discard:
-                    if (drop == Drop.Trash)
+                    if (drop == Drop.Board)
                     {
                         StartCoroutine(DiscardCardEndTurn(index));
                     }
                     break;
                 case State.Duel:
-                    if (drop == Drop.Trash)
+                    if (drop == Drop.Board)
                     {
                         StartCoroutine(DuelResponse(index));
                     }
                     break;
                 case State.Response:
-                    if (drop == Drop.Trash)
+                    if (drop == Drop.Board)
                     {
                         StartCoroutine(Response(index));
                     }
@@ -1181,6 +1181,12 @@ namespace PimPamPum
         }
 
         protected virtual void OnSetLocalPlayer() { }
+
+        [Client]
+        public void PhaseOneOption(PhaseOneOption option, int index = -1, int property = -1)
+        {
+            CmdPhaseOneOption(option, index, property);
+        }
 
         [Client]
         public void ChooseCard(int index)
@@ -1248,6 +1254,12 @@ namespace PimPamPum
         }
 
         [Command]
+        private void CmdPhaseOneOption(PhaseOneOption option, int index, int property)
+        {
+
+        }
+
+        [Command]
         private void CmdBeginCardDrag(int index)
         {
             DraggedCardIndex = index;
@@ -1305,14 +1317,14 @@ namespace PimPamPum
         private void RpcAddCard()
         {
             if (isLocalPlayer) return;
-            PlayerView.AddCard();
+            PlayerView.AddHandCard();
         }
 
         [ClientRpc]
         private void RpcRemoveCard()
         {
             if (isLocalPlayer) return;
-            PlayerView.RemoveCard();
+            PlayerView.RemoveHandCard();
         }
 
         [ClientRpc]
@@ -1369,7 +1381,7 @@ namespace PimPamPum
         [TargetRpc]
         private void TargetSetTargetable(NetworkConnection conn, bool value)
         {
-            PlayerView.SetDroppable(value);
+            PlayerView.Droppable = value;
         }
 
         [TargetRpc]
@@ -1387,13 +1399,13 @@ namespace PimPamPum
         [TargetRpc]
         private void TargetAddCard(NetworkConnection conn, int index, CardStruct cs)
         {
-            PlayerView.AddCard(index, cs);
+            PlayerView.AddHandCard(index, cs);
         }
 
         [TargetRpc]
         private void TargetRemoveCard(NetworkConnection conn, int index)
         {
-            PlayerView.RemoveCard(index);
+            PlayerView.RemoveHandCard(index);
         }
 
         [TargetRpc]

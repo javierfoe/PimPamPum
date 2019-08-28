@@ -25,7 +25,7 @@ namespace PimPamPum
 
         protected override void UseCardState(int index, int player, Drop drop, int cardIndex)
         {
-            if(State == State.Play && drop == Drop.Trash)
+            if(State == State.Play && drop == Drop.Board)
             {
                 DiscardCardFromHand(index);
                 Draw(2);

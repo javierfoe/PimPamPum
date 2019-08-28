@@ -19,5 +19,10 @@ namespace PimPamPum
             text = GetComponentInChildren<Text>();
             drop = Drop.Hand;
         }
+
+        public override void Click()
+        {
+            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, IPlayerView.PlayerIndex, DropIndex);
+        }
     }
 }

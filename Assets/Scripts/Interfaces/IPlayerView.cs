@@ -1,14 +1,13 @@
 ﻿namespace PimPamPum
 {
-    public interface IPlayerView : ICardHolderView, ISelectView
+    public interface IPlayerView : IDropView, IClickView
     {
         void SetCharacter(string character);
         void SetPlayerName(string name);
         void SetTurn(bool value);
         void SetStealable(bool value, bool hand, bool weapon);
-        void SetPlayerIndex(int index);
+        int PlayerIndex { get; set; }
         void SetLocalPlayer();
-        int GetPlayerIndex();
         void UpdateHP(int hp);
         void SetSheriff();
         void SetRole(Role role);
@@ -19,10 +18,12 @@
         void EnableDieButton(bool enable);
         void EnablePassButton(bool enable);
         void EnableCard(int index, bool enable);
-        void AddCard();
+        void AddHandCard();
+        void AddHandCard(int index, CardStruct cs);
         void EquipProperty(int index, CardStruct cs);
         void RemoveProperty(int index);
-        void RemoveCard();
+        void RemoveHandCard();
+        void RemoveHandCard(int index);
         void EquipWeapon(CardStruct cs);
         void Win();
         void Lose();
