@@ -13,7 +13,7 @@ namespace PimPamPum
         protected Color idle;
         private bool droppable;
 
-        public virtual int PlayerNumber => IPlayerView.PlayerIndex;
+        public virtual int PlayerNumber => IPlayerView != null ? IPlayerView.PlayerIndex : -1;
         public virtual int DropIndex => -1;
         public Drop DropEnum => drop;
 
