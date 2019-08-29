@@ -200,7 +200,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, DropIndex);
+            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Player, DropIndex);
         }
     }
 }

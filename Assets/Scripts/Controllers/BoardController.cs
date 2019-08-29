@@ -23,7 +23,8 @@ using Mirror;
         private List<Card> discardStack;
 
         public int DeckSize => deck.Count;
-        public Card DiscardStackTop => discardStack[discardStack.Count - 1];
+        public int DiscardStackSize => discardStack.Count;
+        private Card DiscardStackTop => discardStack[discardStack.Count - 1];
 
         public override void OnStartClient()
         {
@@ -38,6 +39,16 @@ using Mirror;
             discardStack = new List<Card>();
 
             GenerateDeck();
+        }
+
+        public void EnableClickableDeck(NetworkConnection conn, bool value)
+        {
+            TargetEnableClickableDeck(conn, value);
+        }
+
+        public void EnableClickableDiscard(NetworkConnection conn, bool value)
+        {
+            TargetEnableClickableDiscard(conn, value);
         }
 
         public Card DrawCard()
@@ -69,6 +80,14 @@ using Mirror;
         {
             discardStack.Add(card);
             RpcSetDiscardTop(card.Struct);
+        }
+
+        public Card GetDiscardTopCard()
+        {
+            Card res = DiscardStackTop;
+            discardStack.RemoveAt(discardStack.Count - 1);
+            RpcSetDiscardTop(DiscardStackTop.Struct);
+            return res;
         }
 
         public void ShuffleCards(List<Card> temp)
@@ -184,10 +203,35 @@ using Mirror;
             if (c != null) list.Add(c);
         }
 
+        [Client]
+        private void EnableClickableDeck(bool value)
+        {
+            deckView.EnableClick(value);
+        }
+
+        [Client]
+        private void EnableClickableDiscard(bool value)
+        {
+            discardView.EnableClick(value);
+            EnableClickableDeck(value);
+        }
+
         [TargetRpc]
         private void TargetTargetableTrash(NetworkConnection conn, bool value)
         {
             boardView.SetTargetable(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableClickableDeck(NetworkConnection conn, bool value)
+        {
+            EnableClickableDeck(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableClickableDiscard(NetworkConnection conn, bool value)
+        {
+            EnableClickableDiscard(value);
         }
 
         [ClientRpc]

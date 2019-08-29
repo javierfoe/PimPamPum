@@ -22,7 +22,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, IPlayerView.PlayerIndex, DropIndex);
+            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Player, IPlayerView.PlayerIndex, DropIndex);
         }
     }
 }

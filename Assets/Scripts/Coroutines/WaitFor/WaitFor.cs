@@ -2,16 +2,15 @@
 {
     public abstract class WaitFor : Enumerator
     {
-
-        public static WaitFor CurrentTimer;
+        public static WaitFor CurrentWaitFor;
 
         protected WaitFor()
         {
-            CurrentTimer = this;
+            CurrentWaitFor = this;
         }
 
         public virtual void MakeDecision(int card) { }
         public virtual void MakeDecision(Decision decision, Card card = null) { }
-
+        public virtual void MakeDecision(PhaseOneOption phaseOneOption, int player, int card) { }
     }
 }

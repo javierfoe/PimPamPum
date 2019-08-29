@@ -39,12 +39,18 @@ namespace PimPamPum
             Draggable = false;
         }
 
+        public override void EnableClick(bool value)
+        {
+            base.EnableClick(value);
+            SetBackgroundColor(value ? click : idle);
+        }
+
         public override void Click()
         {
             if (selectable)
                 PlayerController.LocalPlayer.ChooseCard(index);
             else
-                PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Player, PlayerNumber, DropIndex);
+                PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Player, PlayerNumber, DropIndex);
         }
 
         public virtual void Playable(bool value)

@@ -12,7 +12,7 @@ namespace PimPamPum
         {
             clickable = value;
         }
-
+        
         public void OnPointerClick(PointerEventData eventData)
         {
             if (!clickable) return;

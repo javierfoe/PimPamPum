@@ -15,6 +15,12 @@ namespace PimPamPum
             discardTopCard = discardTopCardGO.GetComponent<ICardView>();
         }
 
+        public override void EnableClick(bool value)
+        {
+            base.EnableClick(value);
+            discardTopCard.EnableClick(value);
+        }
+
         public void SetDiscardTop(CardStruct cs)
         {
             discardTopCard.SetCard(cs);
@@ -27,7 +33,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Discard);
+            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Discard);
         }
     }
 }

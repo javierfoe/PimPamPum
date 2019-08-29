@@ -5,6 +5,7 @@ namespace PimPamPum
 {
     public class DeckView : SelectView, IDeckView
     {
+        [SerializeField] Image image = null;
         [SerializeField] Text deck = null;
 
         public void SetDeckSize(int cards)
@@ -12,9 +13,15 @@ namespace PimPamPum
             deck.text = cards.ToString();
         }
 
+        public override void EnableClick(bool value)
+        {
+            base.EnableClick(value);
+            image.color = value ? Color.magenta : new Color(0, 0, 0, 0);
+        }
+
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOption(PhaseOneOption.Deck);
+            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Deck);
         }
     }
 }

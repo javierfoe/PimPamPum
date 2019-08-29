@@ -117,6 +117,7 @@ namespace PimPamPum
 
     public enum PhaseOneOption
     {
+        Nothing,
         Deck,
         Discard,
         Player

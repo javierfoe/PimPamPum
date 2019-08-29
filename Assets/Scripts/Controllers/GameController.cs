@@ -12,6 +12,8 @@ using Mirror;
         }
 
         public static float MaxTime => Instance.decisionTime;
+        public static bool HasDiscardStackCards => Instance.boardController.DiscardStackSize > 0;
+        public static bool FinalDuel => Instance.PlayersAlive < 3;
 
         [SerializeField] private Transform players = null;
         [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
@@ -24,8 +26,6 @@ using Mirror;
 
         private IPlayerView[] playerViews;
         private PlayerController[] playerControllers;
-
-        public bool FinalDuel => PlayersAlive < 3;
         public GameObject CardPrefab => cardPrefab.gameObject;
         public GameObject PropertyPrefab => propertyPrefab.gameObject;
 
@@ -206,6 +206,21 @@ using Mirror;
                     pc.Lose();
                 }
             }
+        }
+
+        public Card GetDiscardTopCard()
+        {
+            return boardController.GetDiscardTopCard();
+        }
+
+        public void SetPhaseOneDiscardClickable(int player)
+        {
+            boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, true);
+        }
+
+        public void DisablePhaseOneClickable(int player)
+        {
+            boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, false);
         }
 
         public void SetSelectableCards(List<Card> cards, NetworkConnection conn = null)

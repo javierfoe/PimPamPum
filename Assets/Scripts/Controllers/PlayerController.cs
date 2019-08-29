@@ -919,7 +919,7 @@ namespace PimPamPum
 
         public void HealFromBeer()
         {
-            if (!GameController.Instance.FinalDuel) Heal(BeerHeal);
+            if (!GameController.FinalDuel) Heal(BeerHeal);
         }
 
         public virtual IEnumerator UsedCard<T>(int player) where T : Card
@@ -1067,7 +1067,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? Hand[index] : null;
-            WaitFor.CurrentTimer.MakeDecision(decision, card);
+            WaitFor.CurrentWaitFor.MakeDecision(decision, card);
         }
 
         public void Win()
@@ -1183,7 +1183,7 @@ namespace PimPamPum
         protected virtual void OnSetLocalPlayer() { }
 
         [Client]
-        public void PhaseOneOption(PhaseOneOption option, int index = -1, int property = -1)
+        public void PhaseOneOptionDecision(PhaseOneOption option, int index = -1, int property = -1)
         {
             CmdPhaseOneOption(option, index, property);
         }
@@ -1244,7 +1244,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            WaitFor.CurrentTimer.MakeDecision(choice);
+            WaitFor.CurrentWaitFor.MakeDecision(choice);
         }
 
         [Command]
@@ -1254,9 +1254,9 @@ namespace PimPamPum
         }
 
         [Command]
-        private void CmdPhaseOneOption(PhaseOneOption option, int index, int property)
+        private void CmdPhaseOneOption(PhaseOneOption option, int player, int card)
         {
-
+            WaitFor.CurrentWaitFor.MakeDecision(option, player, card);
         }
 
         [Command]
