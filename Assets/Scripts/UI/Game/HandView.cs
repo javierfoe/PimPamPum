@@ -1,4 +1,5 @@
-﻿using UnityEngine.UI;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace PimPamPum
 {
@@ -18,11 +19,17 @@ namespace PimPamPum
             base.Awake();
             text = GetComponentInChildren<Text>();
             drop = Drop.Hand;
+            Transform transform = this.transform;
+            do
+            {
+                IPlayerView = transform.gameObject.GetComponent<IPlayerView>();
+                transform = transform.parent;
+            } while (IPlayerView == null);
         }
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Player, IPlayerView.PlayerIndex, DropIndex);
+            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, IPlayerView.PlayerIndex, DropIndex);
         }
     }
 }

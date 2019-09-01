@@ -33,7 +33,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneOptionDecision(PhaseOneOption.Discard);
+            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Discard);
         }
     }
 }

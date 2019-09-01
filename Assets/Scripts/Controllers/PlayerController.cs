@@ -1183,7 +1183,7 @@ namespace PimPamPum
         protected virtual void OnSetLocalPlayer() { }
 
         [Client]
-        public void PhaseOneOptionDecision(PhaseOneOption option, int index = -1, int property = -1)
+        public void PhaseOneDecision(Decision option, int index = -1, int property = -1)
         {
             CmdPhaseOneOption(option, index, property);
         }
@@ -1254,7 +1254,7 @@ namespace PimPamPum
         }
 
         [Command]
-        private void CmdPhaseOneOption(PhaseOneOption option, int player, int card)
+        private void CmdPhaseOneOption(Decision option, int player, int card)
         {
             WaitFor.CurrentWaitFor.MakeDecision(option, player, card);
         }

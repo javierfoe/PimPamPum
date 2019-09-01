@@ -13,10 +13,10 @@ namespace PimPamPum
                 yield return phaseOneChoice;
                 switch (phaseOneChoice.PhaseOneOption)
                 {
-                    case PhaseOneOption.Deck:
+                    case Decision.Deck:
                         yield return base.DrawPhase1();
                         break;
-                    case PhaseOneOption.Discard:
+                    case Decision.Discard:
                         Card discard = GameController.Instance.GetDiscardTopCard();
                         AddCard(discard);
                         Draw();

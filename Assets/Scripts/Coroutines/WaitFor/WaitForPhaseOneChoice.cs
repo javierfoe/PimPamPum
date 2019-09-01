@@ -1,10 +1,10 @@
 ﻿namespace PimPamPum
 {
-    public class WaitForPhaseOneChoice : WaitForTimer
+    public class WaitForPhaseOneChoice : WaitForDecision
     {
         private int player;
 
-        public PhaseOneOption PhaseOneOption
+        public Decision PhaseOneOption
         {
             get; private set;
         }
@@ -22,10 +22,10 @@
         public override bool MoveNext()
         {
             bool res = base.MoveNext();
-            bool option = PhaseOneOption == PhaseOneOption.Nothing;
+            bool option = PhaseOneOption == Decision.Pending;
             if (!res && option)
             {
-                PhaseOneOption = PhaseOneOption.Deck;
+                PhaseOneOption = Decision.Deck;
                 Finished();
                 return false;
             }
@@ -38,13 +38,12 @@
             GameController.Instance.DisablePhaseOneClickable(player);
         }
 
-        public WaitForPhaseOneChoice(int player)
+        public WaitForPhaseOneChoice(int player) : base(Decision.Deck)
         {
             this.player = player;
-            PhaseOneOption = PhaseOneOption.Nothing;
         }
 
-        public override void MakeDecision(PhaseOneOption phaseOneOption, int player, int card)
+        public override void MakeDecision(Decision phaseOneOption, int player, int card)
         {
             PhaseOneOption = phaseOneOption;
             Player = player;

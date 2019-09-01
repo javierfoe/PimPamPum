@@ -115,14 +115,6 @@ namespace PimPamPum
         SpecialEvent
     }
 
-    public enum PhaseOneOption
-    {
-        Nothing,
-        Deck,
-        Discard,
-        Player
-    }
-
     public enum Event
     {
         Hit,
@@ -160,7 +152,11 @@ namespace PimPamPum
         Avoid,
         Barrel,
         Heal,
-        Skip
+        Skip,
+        Cancel,
+        Deck,
+        Discard,
+        Player
     }
 
     public enum Role
