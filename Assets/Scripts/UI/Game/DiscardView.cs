@@ -2,7 +2,7 @@
 
 namespace PimPamPum
 {
-    public class DiscardView : SelectView, IDiscardView
+    public class DiscardView : ClickView, IDiscardView
     {
         private static readonly CardStruct defaultCard = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
 

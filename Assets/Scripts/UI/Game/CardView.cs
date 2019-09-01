@@ -50,7 +50,7 @@ namespace PimPamPum
             if (selectable)
                 PlayerController.LocalPlayer.ChooseCard(index);
             else
-                PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerNumber, DropIndex);
+                PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerNumber, DropEnum, DropIndex);
         }
 
         public virtual void Playable(bool value)

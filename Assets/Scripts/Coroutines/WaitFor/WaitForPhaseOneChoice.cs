@@ -14,6 +14,11 @@
             get; private set;
         }
 
+        public Drop Drop
+        {
+            get; private set;
+        }
+
         public int CardIndex
         {
             get; private set;
@@ -43,10 +48,11 @@
             this.player = player;
         }
 
-        public override void MakeDecision(Decision phaseOneOption, int player, int card)
+        public override void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {
             PhaseOneOption = phaseOneOption;
             Player = player;
+            Drop = dropEnum;
             CardIndex = card;
         }
     }

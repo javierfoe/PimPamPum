@@ -8,11 +8,10 @@ namespace PimPamPum
     {
 
         [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
-        [SerializeField] private HandView handHidden = null;
-        [SerializeField] private GameObject weaponGO = null, handCardsGO = null, propertyCardsGO = null, turn = null;
+        [SerializeField] private GameObject handHiddenGO = null, weaponGO = null, handCardsGO = null, propertyCardsGO = null, turn = null;
 
-        private int playerIndex;
         private int hiddenCards;
+        private IHandView handHidden;
         private ICardView weaponCard;
         private ICardListView handCards, propertyCards;
         private EndGamePanelView endGamePanel;
@@ -44,11 +43,12 @@ namespace PimPamPum
 
         protected override void Awake()
         {
-            base.Awake();
-            SetTurn(false);
             weaponCard = weaponGO.GetComponent<ICardView>();
             handCards = handCardsGO.GetComponent<ICardListView>();
             propertyCards = propertyCardsGO.GetComponent<ICardListView>();
+            handHidden = handHiddenGO.GetComponent<IHandView>();
+            base.Awake();
+            SetTurn(false);
         }
 
         public void SetLocalPlayer()
@@ -65,6 +65,25 @@ namespace PimPamPum
             takeHitButton.Active = false;
             dieButton.Active = false;
             passButton.Active = false;
+        }
+
+        public override void EnableClick(bool value)
+        {
+            base.EnableClick(value);
+            handHidden.SetActive(!value);
+            if (!value) EnableClickHand(false);
+            SetBackgroundColor(value ? Color.magenta : idle);
+        }
+
+        public void EnableClickHand(bool value)
+        {
+            handHidden.EnableClick(value);
+        }
+
+        public void EnableClickProperties(bool value, bool weapon)
+        {
+            if (weapon || !value) weaponCard.EnableClick(value);
+            propertyCards.SetClickable(value);
         }
 
         public void SetTurn(bool value)
@@ -142,7 +161,7 @@ namespace PimPamPum
             {
                 if (handHidden.gameObject.activeSelf)
                 {
-                    handHidden.SetDroppable(value);
+                    handHidden.Droppable = value;
                 }
                 else
                 {
@@ -200,7 +219,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, DropIndex);
+            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerIndex);
         }
     }
 }

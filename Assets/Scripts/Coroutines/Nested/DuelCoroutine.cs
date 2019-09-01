@@ -37,7 +37,6 @@
             }
             else
             {
-                player.CheckNoCards();
                 target.FinishResponse(pimPamPumsTarget);
                 Current = GameController.Instance.HitPlayer(player.PlayerNumber, next);
                 finished = true;

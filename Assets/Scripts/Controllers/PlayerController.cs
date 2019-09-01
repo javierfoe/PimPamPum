@@ -985,7 +985,6 @@ namespace PimPamPum
 
         public virtual IEnumerator StolenBy(int thief)
         {
-            CheckNoCards();
             yield return null;
         }
 
@@ -1011,7 +1010,9 @@ namespace PimPamPum
             {
                 index = Random.Range(0, Hand.Count - 1);
             }
-            return UnequipHandCard(index);
+            Card res = UnequipHandCard(index);
+            CheckNoCards();
+            return res;
         }
 
         public Card UnequipHandCard(int index)
@@ -1061,6 +1062,21 @@ namespace PimPamPum
         public void EnablePassButton(bool value)
         {
             TargetEnablePassButton(connectionToClient, value);
+        }
+
+        public void EnableClick(NetworkConnection conn, bool value)
+        {
+            TargetClickable(conn, value);
+        }
+
+        public void EnableClickHand(NetworkConnection conn, bool value)
+        {
+            TargetClickableHand(conn, value);
+        }
+
+        public void EnableClickProperties(NetworkConnection conn, bool value)
+        {
+            TargetClickableProperties(conn, value, !HasColt45);
         }
 
         protected void MakeDecision(Decision decision, int index = -1)
@@ -1183,9 +1199,9 @@ namespace PimPamPum
         protected virtual void OnSetLocalPlayer() { }
 
         [Client]
-        public void PhaseOneDecision(Decision option, int index = -1, int property = -1)
+        public void PhaseOneDecision(Decision option, int index = -1, Drop dropEnum = Drop.Nothing, int property = -1)
         {
-            CmdPhaseOneOption(option, index, property);
+            CmdPhaseOneOption(option, index, dropEnum, property);
         }
 
         [Client]
@@ -1254,9 +1270,9 @@ namespace PimPamPum
         }
 
         [Command]
-        private void CmdPhaseOneOption(Decision option, int player, int card)
+        private void CmdPhaseOneOption(Decision option, int player, Drop dropEnum, int card)
         {
-            WaitFor.CurrentWaitFor.MakeDecision(option, player, card);
+            WaitFor.CurrentWaitFor.MakeDecision(option, player, dropEnum, card);
         }
 
         [Command]
@@ -1394,6 +1410,24 @@ namespace PimPamPum
         protected void TargetEnableCard(NetworkConnection conn, int card, bool value)
         {
             PlayerView.EnableCard(card, value);
+        }
+
+        [TargetRpc]
+        private void TargetClickable(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableClick(value);
+        }
+
+        [TargetRpc]
+        private void TargetClickableHand(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableClickHand(value);
+        }
+
+        [TargetRpc]
+        private void TargetClickableProperties(NetworkConnection conn, bool value, bool weapon)
+        {
+            PlayerView.EnableClickProperties(value, weapon);
         }
 
         [TargetRpc]

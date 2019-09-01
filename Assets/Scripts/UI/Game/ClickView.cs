@@ -4,7 +4,7 @@ using System;
 
 namespace PimPamPum
 {
-    public abstract class SelectView : MonoBehaviour, IClickView
+    public abstract class ClickView : MonoBehaviour, IClickView
     {
         private bool clickable;
 

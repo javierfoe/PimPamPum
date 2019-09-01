@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace PimPamPum
 {
-    public class DeckView : SelectView, IDeckView
+    public class DeckView : ClickView, IDeckView
     {
         [SerializeField] Image image = null;
         [SerializeField] Text deck = null;

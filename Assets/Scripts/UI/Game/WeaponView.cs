@@ -7,6 +7,7 @@ namespace PimPamPum
         {
             base.Awake();
             drop = Drop.Weapon;
+            GetIPlayerViewInParent();
         }
     }
 }

@@ -11,7 +11,6 @@ namespace PimPamPum
             {
                 yield return GameController.Instance.PimPamPum(PimPamPumConstants.NoOne, thief);
             }
-            yield return base.StolenBy(thief);
         }
 
     }

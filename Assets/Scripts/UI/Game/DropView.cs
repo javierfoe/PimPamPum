@@ -3,11 +3,11 @@ using UnityEngine.UI;
 
 namespace PimPamPum
 {
-    public abstract class DropView : SelectView, IDropView
+    public abstract class DropView : ClickView, IDropView
     {
         [SerializeField] protected Color highlight = new Color(), target = new Color(), click = new Color();
 
-        private Image background;
+        protected Image background;
 
         protected Drop drop;
         protected Color idle;
@@ -64,6 +64,16 @@ namespace PimPamPum
         protected virtual Color GetColor(bool highlight)
         {
             return highlight ? this.highlight : Droppable || Targetable ? target : idle;
+        }
+
+        protected void GetIPlayerViewInParent()
+        {
+            Transform transform = this.transform;
+            do
+            {
+                IPlayerView = transform.gameObject.GetComponent<IPlayerView>();
+                transform = transform.parent;
+            } while (IPlayerView == null);
         }
 
         public void SetDroppable(bool value)

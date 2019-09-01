@@ -11,6 +11,6 @@
 
         public virtual void MakeDecision(int card) { }
         public virtual void MakeDecision(Decision decision, Card card = null) { }
-        public virtual void MakeDecision(Decision phaseOneOption, int player, int card) { }
+        public virtual void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card) { }
     }
 }

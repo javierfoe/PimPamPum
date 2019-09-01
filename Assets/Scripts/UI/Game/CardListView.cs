@@ -50,5 +50,10 @@ namespace PimPamPum
         {
             list[index].Playable(value);
         }
+
+        public void SetClickable(bool value)
+        {
+            foreach (ICardView cv in list) cv.EnableClick(value);
+        }
     }
 }

@@ -6,6 +6,8 @@
         void SetPlayerName(string name);
         void SetTurn(bool value);
         void SetStealable(bool value, bool hand, bool weapon);
+        void EnableClickHand(bool value);
+        void EnableClickProperties(bool value, bool weapon);
         int PlayerIndex { get; set; }
         void SetLocalPlayer();
         void UpdateHP(int hp);

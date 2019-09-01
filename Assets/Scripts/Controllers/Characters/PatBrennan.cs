@@ -1,0 +1,38 @@
+﻿using System.Collections;
+
+namespace PimPamPum
+{
+    public class PatBrennan : PlayerController
+    {
+        protected override IEnumerator DrawPhase1()
+        {
+            if (GameController.Instance.SetPhaseOnePlayerPropertiesClickable(PlayerNumber))
+            {
+                WaitForPhaseOneChoice waitForPhaseOneChoice = new WaitForPhaseOneChoice(PlayerNumber);
+                yield return waitForPhaseOneChoice;
+                switch (waitForPhaseOneChoice.PhaseOneOption)
+                {
+                    case Decision.Deck:
+                        yield return base.DrawPhase1();
+                        break;
+                    case Decision.Player:
+                        int targetPlayer = waitForPhaseOneChoice.Player;
+                        switch (waitForPhaseOneChoice.Drop)
+                        {
+                            case Drop.Properties:
+                                GameController.Instance.StealProperty(PlayerNumber, targetPlayer, waitForPhaseOneChoice.CardIndex);
+                                break;
+                            case Drop.Weapon:
+                                GameController.Instance.StealWeapon(PlayerNumber, targetPlayer);
+                                break;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                yield return base.DrawPhase1();
+            }
+        }
+    }
+}

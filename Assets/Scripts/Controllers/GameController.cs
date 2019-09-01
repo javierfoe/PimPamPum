@@ -218,9 +218,56 @@ using Mirror;
             boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, true);
         }
 
+        public bool SetPhaseOnePlayerHandsClickable(int player)
+        {
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            PlayerController pc;
+            bool cards = false;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                if (i != player && pc.HasCards)
+                {
+                    cards = true;
+                    pc.EnableClickHand(conn, true);
+                }
+            }
+            if (cards)
+                boardController.EnableClickableDeck(conn, true);
+            return cards;
+        }
+
+        public bool SetPhaseOnePlayerPropertiesClickable(int player)
+        {
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            PlayerController pc;
+            bool cards = false;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                if (i != player && (pc.HasProperties || !pc.HasColt45))
+                {
+                    cards = true;
+                    pc.EnableClickProperties(conn, true);
+                }
+            }
+            if (cards)
+                boardController.EnableClickableDeck(conn, true);
+            return cards;
+        }
+
         public void DisablePhaseOneClickable(int player)
         {
-            boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, false);
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            boardController.EnableClickableDiscard(conn, false);
+            foreach (PlayerController pc in playerControllers)
+            {
+                if (pc.PlayerNumber != player)
+                {
+                    pc.EnableClick(conn, false);
+                    pc.EnableClickProperties(conn, false);
+                }
+            }
         }
 
         public void SetSelectableCards(List<Card> cards, NetworkConnection conn = null)
@@ -379,6 +426,30 @@ using Mirror;
         public IEnumerator StartDuel(int player, int target)
         {
             yield return new DuelCoroutine(playerControllers[player], playerControllers[target]);
+        }
+
+        public void StealProperty(int player, int target, int index)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+            Card c = targetPc.UnequipProperty(index);
+            pc.AddCard(c);
+            targetPc.StolenBy(player);
+        }
+
+        public void StealWeapon(int player, int target)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+            Card c = targetPc.UnequipWeapon();
+            pc.AddCard(c);
+            targetPc.StolenBy(player);
+        }
+
+        public void StealCard(int player, int target)
+        {
+            StealIfHandNotEmpty(player, target);
+            playerControllers[target].StolenBy(player);
         }
 
         public void StealIfHandNotEmpty(int player, int target)
