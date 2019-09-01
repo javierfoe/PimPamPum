@@ -25,6 +25,7 @@ namespace PimPamPum
         private Card draggedCard;
         protected int pimPamPumsUsed;
 
+        public int WeaponRange => weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
         public bool HasProperties => properties.Count > 0;

@@ -10,7 +10,7 @@ namespace PimPamPum
             {
                 WaitForPhaseOneChoice waitForPhaseOneChoice = new WaitForPhaseOneChoice(PlayerNumber);
                 yield return waitForPhaseOneChoice;
-                switch (waitForPhaseOneChoice.PhaseOneOption)
+                switch (waitForPhaseOneChoice.Decision)
                 {
                     case Decision.Deck:
                         yield return base.DrawPhase1();

@@ -11,7 +11,7 @@ namespace PimPamPum
                 GameController.Instance.SetPhaseOneDiscardClickable(PlayerNumber);
                 WaitForPhaseOneChoice phaseOneChoice = new WaitForPhaseOneChoice(PlayerNumber);
                 yield return phaseOneChoice;
-                switch (phaseOneChoice.PhaseOneOption)
+                switch (phaseOneChoice.Decision)
                 {
                     case Decision.Deck:
                         yield return base.DrawPhase1();

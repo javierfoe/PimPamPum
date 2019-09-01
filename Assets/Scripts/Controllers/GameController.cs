@@ -218,6 +218,16 @@ using Mirror;
             boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, true);
         }
 
+        public void SetPhaseOnePlayerClickable(int player, List<int> targets)
+        {
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            foreach(int i in targets)
+            {
+                playerControllers[i].EnableClick(conn, true);
+            }
+            boardController.EnableClickableDeck(conn, true);
+        }
+
         public bool SetPhaseOnePlayerHandsClickable(int player)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
@@ -692,6 +702,11 @@ using Mirror;
             if (CurrentPlayer != PimPamPumConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
             CurrentPlayer = player;
             playerControllers[player].StartTurn();
+        }
+
+        public List<int> PlayersInWeaponRange(int player)
+        {
+            return PlayersInRange(player, playerControllers[player].WeaponRange);
         }
 
         public List<int> PlayersInRange(int player, int range)

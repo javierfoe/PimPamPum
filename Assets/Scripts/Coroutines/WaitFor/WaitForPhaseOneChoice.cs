@@ -4,11 +4,6 @@
     {
         private int player;
 
-        public Decision PhaseOneOption
-        {
-            get; private set;
-        }
-
         public int Player
         {
             get; private set;
@@ -27,15 +22,8 @@
         public override bool MoveNext()
         {
             bool res = base.MoveNext();
-            bool option = PhaseOneOption == Decision.Pending;
-            if (!res && option)
-            {
-                PhaseOneOption = Decision.Deck;
-                Finished();
-                return false;
-            }
-            if (!option) Finished();
-            return option;
+            if (!res) Finished();
+            return res;
         }
 
         public void Finished()
@@ -50,7 +38,7 @@
 
         public override void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {
-            PhaseOneOption = phaseOneOption;
+            base.MakeDecision(phaseOneOption);
             Player = player;
             Drop = dropEnum;
             CardIndex = card;
