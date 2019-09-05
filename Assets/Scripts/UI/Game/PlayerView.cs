@@ -8,11 +8,12 @@ namespace PimPamPum
     {
 
         [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
-        [SerializeField] private GameObject handHiddenGO = null, weaponGO = null, handCardsGO = null, propertyCardsGO = null, turn = null;
+        [SerializeField] private GameObject handHiddenGO = null, weaponGO = null, handCardsGO = null, propertyCardsGO = null, skillGO = null, turn = null;
 
         private int hiddenCards;
         private IHandView handHidden;
         private ICardView weaponCard;
+        private ISkillView skill;
         private ICardListView handCards, propertyCards;
         private EndGamePanelView endGamePanel;
         private TakeHitButton takeHitButton;
@@ -20,6 +21,8 @@ namespace PimPamPum
         private DieButton dieButton;
         private BarrelButton barrelButton;
         private SkipButton passButton;
+        private CancelButton cancelButton;
+        private ConfirmButton confirmButton;
 
         public override int PlayerNumber => PlayerIndex;
 
@@ -47,6 +50,7 @@ namespace PimPamPum
             handCards = handCardsGO.GetComponent<ICardListView>();
             propertyCards = propertyCardsGO.GetComponent<ICardListView>();
             handHidden = handHiddenGO.GetComponent<IHandView>();
+            skill = skillGO.GetComponent<ISkillView>();
             base.Awake();
             SetTurn(false);
         }
@@ -59,7 +63,11 @@ namespace PimPamPum
             endGamePanel = FindObjectOfType<EndGamePanelView>();
             barrelButton = FindObjectOfType<BarrelButton>();
             passButton = FindObjectOfType<SkipButton>();
+            cancelButton = FindObjectOfType<CancelButton>();
+            confirmButton = FindObjectOfType<ConfirmButton>();
             endGamePanel.gameObject.SetActive(false);
+            cancelButton.Active = false;
+            confirmButton.Active = false;
             barrelButton.Active = false;
             endTurnButton.Active = false;
             takeHitButton.Active = false;
@@ -202,11 +210,6 @@ namespace PimPamPum
             playerName.text = name;
         }
 
-        public void SetTextTakeHitButton(string text)
-        {
-            takeHitButton.SetText(text);
-        }
-
         public void EnableBarrelButton(bool value)
         {
             barrelButton.Active = value;
@@ -220,6 +223,26 @@ namespace PimPamPum
         public override void Click()
         {
             PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerIndex);
+        }
+
+        public void EnableCancelButton(bool enable)
+        {
+            cancelButton.Active = enable;
+        }
+
+        public void EnableConfirmButton(bool enable)
+        {
+            confirmButton.Active = enable;
+        }
+
+        public void EnablePlayerSkill(bool value)
+        {
+            skill.SetActive(value);
+        }
+
+        public void SetPlayerSkillStatus(bool value)
+        {
+            skill.SetStatus(value);
         }
     }
 }

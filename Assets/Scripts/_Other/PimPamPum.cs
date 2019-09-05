@@ -154,6 +154,7 @@ namespace PimPamPum
         Heal,
         Skip,
         Cancel,
+        Confirm,
         Deck,
         Discard,
         Player

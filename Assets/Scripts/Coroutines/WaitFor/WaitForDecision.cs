@@ -23,7 +23,7 @@
 
         public WaitForDecision() : this(Decision.Pending) { }
 
-        protected WaitForDecision(Decision timeOutDecision) : base()
+        public WaitForDecision(Decision timeOutDecision) : base()
         {
             this.timeOutDecision = timeOutDecision;
             Decision = startDecision;

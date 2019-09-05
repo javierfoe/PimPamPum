@@ -365,7 +365,6 @@ namespace PimPamPum
             if (!IsDead)
             {
                 EnableCardsPlay();
-                EnableEndTurnButton(true);
             }
             else
             {
@@ -520,12 +519,14 @@ namespace PimPamPum
         {
             State = State.Discard;
             EnableAllCards();
+            EnableSkill(false);
         }
 
         protected virtual void EnableCardsPlay()
         {
             State = State.Play;
             EnableCards();
+            EnableEndTurnButton(true);
         }
 
         private void EnableCardsDying()
@@ -658,7 +659,7 @@ namespace PimPamPum
         private IEnumerator ResponseSub(int index)
         {
             yield return Hand[index].CardUsed(this);
-            MakeDecision(Decision.Avoid, index);
+            MakeDecisionServer(Decision.Avoid, index);
         }
 
         public IEnumerator DiscardCardEndTurn(int index)
@@ -1080,11 +1081,16 @@ namespace PimPamPum
             TargetClickableProperties(conn, value, !HasColt45);
         }
 
-        protected void MakeDecision(Decision decision, int index = -1)
+        protected void MakeDecisionServer(Decision decision, int index = -1)
         {
             DisableCards();
             Card card = index > -1 ? Hand[index] : null;
             WaitFor.CurrentWaitFor.MakeDecision(decision, card);
+        }
+
+        public void MakeDecisionClient(Decision decision)
+        {
+            CmdMakeDecision(decision);
         }
 
         public void Win()
@@ -1149,6 +1155,16 @@ namespace PimPamPum
             return characterName;
         }
 
+        protected virtual void EnableSkill(bool value)
+        {
+            TargetEnableSkill(connectionToClient, value);
+        }
+
+        protected void SetSkillStatus(bool value)
+        {
+            TargetSetSkillStatus(connectionToClient, value);
+        }
+
         public void SetPlayerName()
         {
             RpcSetPlayerName(PlayerName);
@@ -1157,6 +1173,16 @@ namespace PimPamPum
         public void EnableBarrelButton(bool value)
         {
             TargetEnableBarrelButton(connectionToClient, value);
+        }
+
+        protected void EnableConfirmButton(bool value)
+        {
+            TargetEnableConfirmButton(connectionToClient, value);
+        }
+
+        protected void EnableCancelButton(bool value)
+        {
+            TargetEnableCancelButton(connectionToClient, value);
         }
 
         private void PimPamPumResponseButton()
@@ -1198,6 +1224,12 @@ namespace PimPamPum
         }
 
         protected virtual void OnSetLocalPlayer() { }
+
+        [Client]
+        public void UseSkillClient()
+        {
+            CmdUseSkill();
+        }
 
         [Client]
         public void PhaseOneDecision(Decision option, int index = -1, Drop dropEnum = Drop.Nothing, int property = -1)
@@ -1258,6 +1290,12 @@ namespace PimPamPum
             CmdMakeDecision(Decision.Skip);
         }
 
+        [Server]
+        protected virtual void UseSkill()
+        {
+
+        }
+
         [Command]
         private void CmdChooseCard(int choice)
         {
@@ -1267,7 +1305,7 @@ namespace PimPamPum
         [Command]
         private void CmdMakeDecision(Decision decision)
         {
-            MakeDecision(decision);
+            MakeDecisionServer(decision);
         }
 
         [Command]
@@ -1310,6 +1348,12 @@ namespace PimPamPum
         {
             playerName = name;
             GameController.Instance.SetPlayerNames(PlayerNumber);
+        }
+
+        [Command]
+        private void CmdUseSkill()
+        {
+            UseSkill();
         }
 
         [ClientRpc]
@@ -1486,6 +1530,30 @@ namespace PimPamPum
         private void TargetEnableBarrelButton(NetworkConnection conn, bool value)
         {
             PlayerView.EnableBarrelButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableConfirmButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableConfirmButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableCancelButton(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnableCancelButton(value);
+        }
+
+        [TargetRpc]
+        private void TargetEnableSkill(NetworkConnection conn, bool value)
+        {
+            PlayerView.EnablePlayerSkill(value);
+        }
+
+        [TargetRpc]
+        private void TargetSetSkillStatus(NetworkConnection conn, bool value)
+        {
+            PlayerView.SetPlayerSkillStatus(value);
         }
 
         [TargetRpc]
