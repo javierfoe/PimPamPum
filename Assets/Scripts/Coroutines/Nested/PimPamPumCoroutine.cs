@@ -48,6 +48,7 @@ namespace PimPamPum
                 return true;
             }
             TakeHit = dodges < misses || currentDecision == Decision.TakeHit;
+            playerController.DisableCards();
             return false;
         }
 
