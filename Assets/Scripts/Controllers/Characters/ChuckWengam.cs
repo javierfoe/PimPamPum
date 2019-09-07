@@ -38,11 +38,5 @@ namespace PimPamPum
             EnableConfirmButton(false);
             EnableCardsPlay();
         }
-
-        public override void DisableCards()
-        {
-            base.DisableCards();
-            EnableSkill(false);
-        }
     }
 }

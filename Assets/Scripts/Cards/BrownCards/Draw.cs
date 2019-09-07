@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public abstract class Draw : Card
     {
@@ -10,7 +11,7 @@
             this.numberToDraw = numberToDraw;
         }
 
-        protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
             yield return pc.DrawFromCard(numberToDraw);

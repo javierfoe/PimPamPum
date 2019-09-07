@@ -45,13 +45,14 @@ namespace PimPamPum
 
         public virtual IEnumerator PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {
+            pc.DisableCards();
             yield return CardEvent(pc, player, drop, cardIndex);
             yield return CardEffect(pc, player, drop, cardIndex);
             yield return CardUsed(pc);
             pc.FinishCardUsed();
         }
 
-        protected virtual IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public virtual IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             pc.DiscardCardUsed();
             yield return null;
@@ -66,6 +67,7 @@ namespace PimPamPum
 
         public Card ConvertTo<T>() where T : Card, new()
         {
+            if (this is T) return this;
             Card converted = new T();
             return new ConvertedCard(this, converted);
         }

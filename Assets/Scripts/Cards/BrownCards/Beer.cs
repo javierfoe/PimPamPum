@@ -9,7 +9,7 @@
             pc.SelfTargetCard();
         }
 
-        protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
             pc.HealFromBeer();

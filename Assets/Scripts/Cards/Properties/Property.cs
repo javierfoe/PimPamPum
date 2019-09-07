@@ -9,7 +9,7 @@ namespace PimPamPum
 
         public override Color Color => property;
 
-        protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             pc.UnequipDraggedCard();
             pc.EquipPropertyTo(player, this);

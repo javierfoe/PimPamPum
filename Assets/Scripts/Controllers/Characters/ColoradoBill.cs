@@ -5,7 +5,7 @@ namespace PimPamPum
     public class ColoradoBill : PlayerController
     {
 
-        protected override IEnumerator ShotPimPamPumTrigger(int target)
+        protected override IEnumerator ShootPimPamPumTrigger(int target)
         {
             DrawEffectCoroutine drawEffectCoroutine = new DrawEffectCoroutine(this);
             yield return drawEffectCoroutine;
@@ -18,7 +18,7 @@ namespace PimPamPum
             else
             {
                 yield return PimPamPumEvent(this + " has shot an standard PimPamPum! " + drawEffectCard);
-                yield return base.ShotPimPamPumTrigger(target);
+                yield return base.ShootPimPamPumTrigger(target);
             }
         }
 

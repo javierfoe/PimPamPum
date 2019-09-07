@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-namespace PimPamPum
+using System;
+
+namespace PimPamPum
 {
     public class GameController : NetworkBehaviour
     {
@@ -438,6 +440,19 @@ using Mirror;
             yield return new DuelCoroutine(playerControllers[player], playerControllers[target]);
         }
 
+        public void TradeTwoForOne(int player, int cardIndex, int target)
+        {
+            PlayerController pc = playerControllers[player];
+            PlayerController targetPc = playerControllers[target];
+            Card c = pc.UnequipHandCard(cardIndex);
+            for(int i = 0; i < 2 && targetPc.Hand.Count > 0; i++)
+            {
+                Card targetCard = targetPc.GetCardFromHand();
+                pc.AddCard(targetCard);
+            }
+            targetPc.AddCard(c);
+        }
+
         public void StealProperty(int player, int target, int index)
         {
             PlayerController pc = playerControllers[player];
@@ -679,7 +694,7 @@ using Mirror;
             foreach (Role r in roles)
             {
                 range = players.Count;
-                random = Random.Range(0, range);
+                random = UnityEngine.Random.Range(0, range);
                 if (sheriff < 0)
                 {
                     sheriff = random;
@@ -768,6 +783,14 @@ using Mirror;
             NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (PlayerController pc in playerControllers)
                 if (pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c))
+                    pc.SetTargetable(conn, true);
+        }
+
+        public void TargetOthersWithHand(int player, Card c)
+        {
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            foreach (PlayerController pc in playerControllers)
+                if (pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c) && pc.Hand.Count > 0)
                     pc.SetTargetable(conn, true);
         }
 

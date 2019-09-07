@@ -451,6 +451,7 @@ namespace PimPamPum
         public virtual void ForceEndTurn()
         {
             State = State.OutOfTurn;
+            OriginalHand();
             DisableCards();
             GameController.Instance.EndTurn();
         }
@@ -461,6 +462,15 @@ namespace PimPamPum
             for (int i = 0; i < length; i++)
             {
                 Hand[i] = Hand[i].ConvertTo<T>();
+            }
+        }
+
+        protected void ConvertHandTo<T>(Suit suit) where T : Card, new()
+        {
+            int length = Hand.Count;
+            for (int i = 0; i < length; i++)
+            {
+                Hand[i] = Hand[i].Suit == suit ? Hand[i].ConvertTo<T>() : Hand[i];
             }
         }
 
@@ -495,7 +505,6 @@ namespace PimPamPum
 
         public virtual void DisableCards()
         {
-            OriginalHand();
             EnableTakeHitButton(false);
             EnableEndTurnButton(false);
             EnableBarrelButton(false);
@@ -504,6 +513,7 @@ namespace PimPamPum
             {
                 TargetEnableCard(connectionToClient, i, false);
             }
+            EnableSkill(false);
         }
 
         protected void EnableAllCards()
@@ -557,6 +567,8 @@ namespace PimPamPum
             EnableCards();
         }
 
+        public virtual void UsedSkillCard() { }
+
         protected virtual void EnableCards(CardType card = 0)
         {
             switch (State)
@@ -602,7 +614,7 @@ namespace PimPamPum
 
         protected virtual void EnableDyingReaction()
         {
-            EnableReactionCards<Beer>();
+            EnableCards<Beer>();
         }
 
         private void EnableDuelReaction()
@@ -617,15 +629,15 @@ namespace PimPamPum
 
         protected virtual void EnablePimPamPumCardsForReaction()
         {
-            EnableReactionCards<PimPamPum>();
+            EnableCards<PimPamPum>();
         }
 
         protected virtual void EnablePimPamPumReaction()
         {
-            EnableReactionCards<Missed>();
+            EnableCards<Missed>();
         }
 
-        protected void EnableReactionCards<T>() where T : Card, new()
+        protected void EnableCards<T>() where T : Card
         {
             int length = Hand.Count;
             for (int i = 0; i < length; i++)
@@ -636,7 +648,6 @@ namespace PimPamPum
 
         private IEnumerator PlayCard(int player, Drop drop, int cardIndex)
         {
-            DisableCards();
             yield return Hand[DraggedCardIndex].PlayCard(this, player, drop, cardIndex);
             if (!ActivePlayer)
             {
@@ -676,13 +687,22 @@ namespace PimPamPum
             yield return null;
         }
 
-        public IEnumerator ShotPimPamPum(int target)
+        public void PimPamPumUsed()
         {
             pimPamPumsUsed++;
-            yield return ShotPimPamPumTrigger(target);
         }
 
-        protected virtual IEnumerator ShotPimPamPumTrigger(int target)
+        public void TradeTwoForOne(int player)
+        {
+            GameController.Instance.TradeTwoForOne(PlayerNumber, DraggedCardIndex, player);
+        }
+
+        public IEnumerator ShootPimPamPum(int target)
+        {
+            yield return ShootPimPamPumTrigger(target);
+        }
+
+        protected virtual IEnumerator ShootPimPamPumTrigger(int target)
         {
             yield return GameController.Instance.PimPamPum(PlayerNumber, target, MissesToDodge);
         }
@@ -780,6 +800,11 @@ namespace PimPamPum
         public void TargetOthers()
         {
             GameController.Instance.TargetOthers(PlayerNumber, draggedCard);
+        }
+
+        public void TargetOthersWithHand()
+        {
+            GameController.Instance.TargetOthersWithHand(PlayerNumber, draggedCard);
         }
 
         public void SelfTargetCard()
@@ -1008,12 +1033,18 @@ namespace PimPamPum
 
         public Card StealCardFromHand(int index = -1)
         {
+            Card res = GetCardFromHand(index);
+            CheckNoCards();
+            return res;
+        }
+
+        public Card GetCardFromHand(int index = -1)
+        {
             if (index < 0)
             {
                 index = Random.Range(0, Hand.Count - 1);
             }
             Card res = UnequipHandCard(index);
-            CheckNoCards();
             return res;
         }
 
@@ -1023,6 +1054,7 @@ namespace PimPamPum
             Hand.RemoveAt(index);
             TargetRemoveCard(connectionToClient, index);
             RpcRemoveCard();
+            card = card.Original ?? card;
             return card;
         }
 
@@ -1291,10 +1323,7 @@ namespace PimPamPum
         }
 
         [Server]
-        protected virtual void UseSkill()
-        {
-
-        }
+        protected virtual void UseSkill() { }
 
         [Command]
         private void CmdChooseCard(int choice)

@@ -2,28 +2,29 @@
 
 namespace PimPamPum
 {
-    public class Saloon : Card
+    public class TradeTwoForOne : Card
     {
+
         public override void BeginCardDrag(PlayerController pc)
         {
             base.BeginCardDrag(pc);
-            pc.SelfTargetCard();
+            pc.TargetOthersWithHand();
         }
 
         public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            yield return base.CardEffect(pc, player, drop, cardIndex);
-            yield return pc.Saloon();
+            yield return null;
+            pc.TradeTwoForOne(player);
         }
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Saloon>(pc);
+            yield return GameController.Instance.UsedCard<TradeTwoForOne>(pc);
         }
 
         public override string ToString()
         {
-            return "Saloon";
+            return "TradeTwoForOne";
         }
     }
 }

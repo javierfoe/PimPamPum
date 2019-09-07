@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public class CatBalou : Card
     {
@@ -14,7 +15,7 @@
             pc.CatBalouBeginCardDrag();
         }
 
-        protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return StealCard(pc, player, drop, cardIndex);
         }

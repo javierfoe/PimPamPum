@@ -17,15 +17,14 @@ namespace PimPamPum
 
         public void SetActive(bool active)
         {
+            if (!active) SetStatus(false);
             image.enabled = active;
             enabled = active;
-            if (!active) SetStatus(false);
         }
 
         public void SetStatus(bool enabled)
         {
             toggle.isOn = enabled;
-            toggle.interactable = enabled;
         }
 
         public void OnPointerClick(PointerEventData eventData)

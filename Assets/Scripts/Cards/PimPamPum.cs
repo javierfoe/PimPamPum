@@ -9,10 +9,16 @@
             pc.PimPamPumBeginCardDrag();
         }
 
-        protected override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
+        public override IEnumerator CardEffect(PlayerController pc, int player, Drop drop, int cardIndex)
         {
             yield return base.CardEffect(pc, player, drop, cardIndex);
-            yield return pc.ShotPimPamPum(player);
+            yield return Shoot(pc, player);
+        }
+
+        protected virtual IEnumerator Shoot(PlayerController pc, int target)
+        {
+            yield return pc.ShootPimPamPum(target);
+            pc.PimPamPumUsed();
         }
 
         public override IEnumerator CardUsed(PlayerController pc)
