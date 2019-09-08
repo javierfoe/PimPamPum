@@ -19,6 +19,7 @@ namespace PimPamPum
 
         public override void BeginCardDrag(PlayerController pc)
         {
+            base.BeginCardDrag(pc);
             pc.SelfTargetCard();
         }
     }
