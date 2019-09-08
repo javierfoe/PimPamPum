@@ -10,7 +10,7 @@ namespace PimPamPum
 
         public override void BeginCardDrag(Card c)
         {
-            if (cardsDiscarded < 1)
+            if (cardsDiscarded < 1 && State == State.Play)
                 base.BeginCardDrag(c);
             if (skillUsed) return;
             if (Hand.Count > 1 || cardsDiscarded > 0)
@@ -45,8 +45,7 @@ namespace PimPamPum
             yield return waitForDecision;
             if (waitForDecision.Decision == Decision.Cancel)
             {
-                StopDiscarding();
-                EnableCancelButton(false);
+                StopDiscarding(true);
             }
             else if (waitForDecision.Decision == Decision.Confirm)
             {
@@ -54,13 +53,20 @@ namespace PimPamPum
             }
         }
 
-        private void StopDiscarding()
+        private void StopDiscarding(bool cancel = false)
         {
             State = previousState;
-            EnableCards();
-            if(previousState== State.Play)
+            EnableCancelButton(false);
+            EnableConfirmButton(false);
+            if (previousState == State.Play)
             {
                 EnableEndTurnButton(true);
+                EnableCards();
+            }
+            if (cancel && previousState == State.Dying)
+            {
+                EnableDieButton(true);
+                EnableCards();
             }
         }
 
@@ -68,7 +74,7 @@ namespace PimPamPum
         {
             if (!skillUsed)
             {
-                if (State == State.Play)
+                if (ValidState())
                 {
                     EnableAllCards();
                     return;
@@ -105,8 +111,12 @@ namespace PimPamPum
                 if (firstCard < secondCard) secondCard--;
                 DiscardCardFromHand(secondCard);
                 yield return SpecialAction(clickChoice.Player);
+                StopDiscarding();
             }
-            StopDiscarding();
+            else
+            {
+                StopDiscarding(true);
+            }
         }
 
         protected abstract void EnableConfirmOptions(Card one, Card two);

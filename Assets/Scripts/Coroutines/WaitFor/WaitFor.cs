@@ -6,6 +6,12 @@
 
         protected WaitFor()
         {
+            WaitForDying waitForDying = CurrentWaitFor as WaitForDying;
+            if(waitForDying != null)
+            {
+                waitForDying.Current = this;
+                return;
+            }
             CurrentWaitFor = this;
         }
 
