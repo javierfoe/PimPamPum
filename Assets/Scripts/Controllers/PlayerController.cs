@@ -22,7 +22,7 @@ namespace PimPamPum
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
         private string playerName;
-        private Card draggedCard;
+        protected Card draggedCard;
         protected int pimPamPumsUsed;
 
         public int WeaponRange => weapon.Range + Scope;
@@ -471,6 +471,20 @@ namespace PimPamPum
             for (int i = 0; i < length; i++)
             {
                 Hand[i] = Hand[i].Suit == suit ? Hand[i].ConvertTo<T>() : Hand[i];
+            }
+        }
+
+        protected void ConvertHandFrom<T>(Card c) where T : Card
+        {
+            Card auxC;
+            int length = Hand.Count;
+            for(int i = 0; i < length; i++)
+            {
+                auxC = Hand[i];
+                if (auxC.Is<T>())
+                {
+                    Hand[i] = new ConvertedCard(auxC, c);
+                }
             }
         }
 

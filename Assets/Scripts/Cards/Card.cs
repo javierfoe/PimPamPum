@@ -12,6 +12,7 @@ namespace PimPamPum
         public virtual Rank Rank => Struct.rank;
 
         public bool IsRed => Suit == Suit.Hearts || Suit == Suit.Diamonds;
+        public bool IsBrown => !((this is Property) || (this is PimPamPum) || (this is Missed));
 
         public CardStruct Struct
         {
