@@ -9,6 +9,7 @@ namespace PimPamPum
     {
         private readonly string[] Suits = { "", "S", "H", "D", "C" };
         private readonly string[] Ranks = { "", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+        public static CardView CurrentCardView;
         private static RectTransform canvas;
 
         [SerializeField] private Color playable = new Color();
@@ -120,6 +121,7 @@ namespace PimPamPum
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!Draggable) return;
+            CurrentCardView = this;
             PlayerController.LocalPlayer.BeginCardDrag(index);
             PlayableColor(false);
             CreateGhostCard(eventData);
@@ -184,6 +186,11 @@ namespace PimPamPum
         public void OnEndDrag(PointerEventData eventData)
         {
             if (!Draggable) return;
+            OnEndDrag();
+        }
+
+        public void OnEndDrag()
+        {
             int player = -1;
             Drop drop = Drop.Nothing;
             int targetIndex = -1;
@@ -202,6 +209,7 @@ namespace PimPamPum
 
             SetVisibility(true);
             Destroy(ghostCard);
+            CurrentCardView = null;
         }
     }
 }

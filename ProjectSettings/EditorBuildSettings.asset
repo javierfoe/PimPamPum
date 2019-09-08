@@ -5,13 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/MultiplayerLocal.unity
     guid: a49472a21fab0144c81cbade4dfb17f0
   - enabled: 1
-    path: Assets/Scenes/Test.unity
-    guid: bf8edba722c308d42a0f06c535e9f273
-  - enabled: 1
     path: Assets/Scenes/PimPamPum.unity
     guid: e0c068f9a36bc0043ab74911312d2e3b
+  - enabled: 0
+    path: Assets/Scenes/Test.unity
+    guid: bf8edba722c308d42a0f06c535e9f273
+  - enabled: 0
+    path: Assets/Scenes/PimPamPumTest.unity
+    guid: 9e3e795a43a253941a085d229b24ca0e
   m_configObjects: {}

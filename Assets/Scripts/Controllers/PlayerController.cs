@@ -917,6 +917,7 @@ namespace PimPamPum
         protected virtual IEnumerator DieTrigger(int killer)
         {
             yield return PimPamPumEvent(this + " has died.");
+            ResetDraggableCard();
             if (Role != Role.Sheriff) RpcSetRole(Role);
             List<Card> deadCards = new List<Card>();
             for (int i = Hand.Count - 1; i > -1; i--)
@@ -1269,6 +1270,11 @@ namespace PimPamPum
             }
         }
 
+        private void ResetDraggableCard()
+        {
+            TargetResetDraggableCard(connectionToClient);
+        }
+
         protected virtual void OnSetLocalPlayer() { }
 
         [Client]
@@ -1609,6 +1615,12 @@ namespace PimPamPum
         private void TargetLose(NetworkConnection conn)
         {
             PlayerView.Lose();
+        }
+
+        [TargetRpc]
+        private void TargetResetDraggableCard(NetworkConnection conn)
+        {
+            CardView.CurrentCardView?.OnEndDrag();
         }
     }
 }
