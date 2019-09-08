@@ -28,6 +28,11 @@ namespace PimPamPum
             return this is T;
         }
 
+        public virtual bool IsSuit(Suit suit)
+        {
+            return Suit == suit;
+        }
+
         protected void SetSuitRank(Suit suit = Suit.Null, Rank rank = Rank.Null)
         {
             Struct = new CardStruct

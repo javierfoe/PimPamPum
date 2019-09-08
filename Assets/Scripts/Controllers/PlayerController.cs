@@ -669,7 +669,7 @@ namespace PimPamPum
             }
         }
 
-        private IEnumerator Response(int index)
+        protected IEnumerator Response(int index)
         {
             yield return ResponseSub(index);
             UnequipHandCard(index);

@@ -8,7 +8,7 @@ namespace PimPamPum
         {
             if (GameController.Instance.SetPhaseOnePlayerPropertiesClickable(PlayerNumber))
             {
-                WaitForPhaseOneChoice waitForPhaseOneChoice = new WaitForPhaseOneChoice(PlayerNumber);
+                WaitForClickChoice waitForPhaseOneChoice = new WaitForClickChoice(PlayerNumber);
                 yield return waitForPhaseOneChoice;
                 switch (waitForPhaseOneChoice.Decision)
                 {

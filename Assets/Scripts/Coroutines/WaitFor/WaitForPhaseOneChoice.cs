@@ -1,6 +1,6 @@
 ﻿namespace PimPamPum
 {
-    public class WaitForPhaseOneChoice : WaitForDecision
+    public class WaitForClickChoice : WaitForDecision
     {
         private int player;
 
@@ -31,10 +31,12 @@
             GameController.Instance.DisablePhaseOneClickable(player);
         }
 
-        public WaitForPhaseOneChoice(int player) : base(Decision.Deck)
+        public WaitForClickChoice(int player, Decision decision)
         {
             this.player = player;
         }
+
+        public WaitForClickChoice(int player) : this(player, Decision.Deck) { }
 
         public override void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {

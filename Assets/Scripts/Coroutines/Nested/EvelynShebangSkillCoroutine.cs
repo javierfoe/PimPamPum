@@ -10,7 +10,7 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            WaitForPhaseOneChoice waitForPhaseOne = Current as WaitForPhaseOneChoice;
+            WaitForClickChoice waitForPhaseOne = Current as WaitForClickChoice;
             if(waitForPhaseOne != null)
             {
                 cards--;
@@ -29,7 +29,7 @@ namespace PimPamPum
             if(availablePlayers.Count > 0 && cards > 0)
             {
                 GameController.Instance.SetPhaseOnePlayerClickable(playerNumber, availablePlayers);
-                Current = new WaitForPhaseOneChoice(playerNumber);
+                Current = new WaitForClickChoice(playerNumber);
                 return true;
             }
             player.Draw(cards);

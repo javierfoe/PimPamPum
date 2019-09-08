@@ -220,13 +220,19 @@ namespace PimPamPum
             boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, true);
         }
 
-        public void SetPhaseOnePlayerClickable(int player, List<int> targets)
+        public void SetClickablePlayers(int player, List<int> targets)
         {
             NetworkConnection conn = playerControllers[player].connectionToClient;
-            foreach(int i in targets)
+            foreach (int i in targets)
             {
                 playerControllers[i].EnableClick(conn, true);
             }
+        }
+
+        public void SetPhaseOnePlayerClickable(int player, List<int> targets)
+        {
+            NetworkConnection conn = playerControllers[player].connectionToClient;
+            SetClickablePlayers(player, targets);
             boardController.EnableClickableDeck(conn, true);
         }
 
@@ -719,12 +725,12 @@ namespace PimPamPum
             playerControllers[player].StartTurn();
         }
 
-        public List<int> PlayersInWeaponRange(int player)
+        public List<int> PlayersInWeaponRange(int player, Card c = null)
         {
-            return PlayersInRange(player, playerControllers[player].WeaponRange);
+            return PlayersInRange(player, playerControllers[player].WeaponRange, c);
         }
 
-        public List<int> PlayersInRange(int player, int range)
+        public List<int> PlayersInRange(int player, int range, Card c = null)
         {
             List<int> res = new List<int>();
 
@@ -734,7 +740,7 @@ namespace PimPamPum
             return res;
         }
 
-        private void TraversePlayers(List<int> players, int player, int range, bool forward)
+        private void TraversePlayers(List<int> players, int player, int range, bool forward, Card c = null)
         {
             int auxRange = 0;
             int next = player;
@@ -746,7 +752,7 @@ namespace PimPamPum
                 pc = playerControllers[next];
                 dead = pc.IsDead;
                 auxRange += dead ? 0 : 1;
-                if (!dead && next != player && pc.RangeModifier + auxRange < range + 1 && !players.Contains(next)) players.Add(next);
+                if (!players.Contains(next) && !dead && next != player && pc.RangeModifier + auxRange < range + 1 && (c == null || c != null && !pc.Immune(c)) ) players.Add(next);
             } while (next != player);
         }
 

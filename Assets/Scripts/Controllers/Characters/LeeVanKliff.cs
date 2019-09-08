@@ -11,7 +11,7 @@
 
         protected override void UseCardState(int index, int player, Drop drop, int cardIndex)
         {
-            if (draggedCard.IsBrown) lastUsedCard = draggedCard;
+            if (State == State.Play && draggedCard.IsBrown) lastUsedCard = draggedCard;
             base.UseCardState(index, player, drop, cardIndex);
         }
 

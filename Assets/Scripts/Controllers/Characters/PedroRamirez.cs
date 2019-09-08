@@ -9,7 +9,7 @@ namespace PimPamPum
             if (GameController.HasDiscardStackCards)
             {
                 GameController.Instance.SetPhaseOneDiscardClickable(PlayerNumber);
-                WaitForPhaseOneChoice phaseOneChoice = new WaitForPhaseOneChoice(PlayerNumber);
+                WaitForClickChoice phaseOneChoice = new WaitForClickChoice(PlayerNumber);
                 yield return phaseOneChoice;
                 switch (phaseOneChoice.Decision)
                 {

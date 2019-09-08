@@ -6,7 +6,7 @@ namespace PimPamPum
 
         public override bool Immune(Card c)
         {
-            return c.Suit == Suit.Diamonds;
+            return c.IsSuit(Suit.Diamonds);
         }
 
     }
