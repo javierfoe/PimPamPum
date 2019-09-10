@@ -39,6 +39,7 @@ namespace PimPamPum
             base.OnStartServer();
             currentPlayers = 0;
             AvailableCharacter = spawnPrefabs.Count;
+            PlayerAmountSlider.AddListener(SetPlayerAmount);
             players = new PlayerController[maxPlayers];
         }
 

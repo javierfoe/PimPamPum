@@ -14,9 +14,13 @@ namespace PimPamPum
         }
 
         // Use this for initialization
-        protected virtual void Awake()
+        void Awake()
         {
             Input = GetComponent<Input>();
+        }
+
+        protected virtual void Start()
+        {
             if (PlayerPrefs.HasKey(key))
             {
                 Input.text = PlayerPrefs.GetString(key);

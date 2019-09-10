@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace PimPamPum
@@ -6,13 +7,17 @@ namespace PimPamPum
     [RequireComponent(typeof(Slider))]
     public class PlayerAmountSlider : MonoBehaviour
     {
+        private static Slider slider;
 
-        private void Start()
+        public static void AddListener(UnityAction<float> unityEvent)
         {
-            Slider slider = GetComponent<Slider>();
-            NetworkManager networkManager = FindObjectOfType<NetworkManager>();
-            slider.onValueChanged.AddListener(networkManager.SetPlayerAmount);
-            slider.onValueChanged.Invoke(slider.value);
+            slider.onValueChanged.AddListener(unityEvent);
+            unityEvent.Invoke(slider.value);
+        }
+
+        private void Awake()
+        {
+            slider = GetComponent<Slider>();
         }
     }
 }

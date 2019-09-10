@@ -5,10 +5,10 @@ namespace PimPamPum
     {
         private const string nameKey = "PlayerName";
 
-        protected override void Awake()
+        protected override void Start()
         {
             key = nameKey;
-            base.Awake();
+            base.Start();
         }
     }
 }

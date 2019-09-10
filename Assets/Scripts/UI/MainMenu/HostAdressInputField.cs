@@ -6,10 +6,10 @@ namespace PimPamPum
 
         private const string hostAddressKey = "HostAddress";
 
-        protected override void Awake()
+        protected override void Start()
         {
             key = hostAddressKey;
-            base.Awake();
+            base.Start();
         }
     }
 }

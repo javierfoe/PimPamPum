@@ -15,7 +15,7 @@ namespace PimPamPum
         }
 
         // Use this for initialization
-        void Start()
+        protected virtual void Start()
         {
             GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => Click());
         }
