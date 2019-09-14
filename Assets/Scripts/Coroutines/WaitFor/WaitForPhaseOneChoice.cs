@@ -31,7 +31,7 @@
             GameController.Instance.DisablePhaseOneClickable(player);
         }
 
-        public WaitForClickChoice(int player, Decision decision)
+        public WaitForClickChoice(int player, Decision decision) : base(decision)
         {
             this.player = player;
         }
