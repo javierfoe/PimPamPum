@@ -55,7 +55,10 @@ sysinfo.txt
 *.apk
 *.unitypackage
 *.7z
+PimPamPum/
+
+#Plugins
+/Plugins/
 
 # Crashlytics generated file
 crashlytics-build.properties
-PimPamPum/
