@@ -3,5 +3,7 @@ An online and local multiplayer version of Bang! by Emiliano Sciarra. Play games
 (Bluetooth connectivity is planned for Android devices)
 
 Dependencies:
+
 Mirror v3.20 - https://github.com/vis2k/Mirror/releases/tag/v3.20.0
+
 FizzySteamyMirror v1.2.0 - https://github.com/Raystorms/FizzySteamyMirror/releases/tag/1.2.0
