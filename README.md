@@ -1,4 +1,9 @@
 # PimPamPum
-An online and local multiplayer version of Bang! by Emiliano Sciarra.
+An online and local multiplayer version of Bang! by Emiliano Sciarra. Play games through LAN on PC and Android and through Steam on PC.
+(Bluetooth connectivity is planned for Android devices)
 
-Mirror required: https://github.com/vis2k/Mirror
+Dependencies:
+
+Mirror v3.20 - https://github.com/vis2k/Mirror/releases/tag/v3.20.0
+
+FizzySteamyMirror v1.2.0 - https://github.com/Raystorms/FizzySteamyMirror/releases/tag/1.2.0
