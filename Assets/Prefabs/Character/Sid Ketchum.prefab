@@ -44,9 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fc4162c7a6a40d48be80646c4fc773c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
   characterName: Sid Ketchum
-  characterHP: 2
+  characterHP: 4
 --- !u!114 &2599033479935168032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,4 +63,4 @@ MonoBehaviour:
   serverOnly: 0
   localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1517100967
+  m_SceneId: 1147093267
