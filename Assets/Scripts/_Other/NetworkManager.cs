@@ -43,7 +43,7 @@ namespace PimPamPum
             players = new PlayerController[maxPlayers];
         }
 
-        public override void OnServerAddPlayer(NetworkConnection conn, AddPlayerMessage extraMessage)
+        public override void OnServerAddPlayer(NetworkConnection conn)
         {
             if (currentPlayers == maxPlayers)
             {
