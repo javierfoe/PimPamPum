@@ -15,44 +15,45 @@ namespace PimPamPum
         public WaitForDying(PlayerController pc) : base()
         {
             dying = () => base.MoveNext() && pc.IsDying;
+            dyingCorutine = this;
         }
 
-        public override void MakeDecision(Decision decision, Card card = null)
+        public override void MakeDecisionCard(Decision decision, Card card = null)
         {
             WaitFor waitFor;
             if ((waitFor = Current as WaitFor) != null)
             {
-                waitFor.MakeDecision(decision, card);
+                waitFor.MakeDecisionCard(decision, card);
             }
             if (decision == Decision.Die)
             {
-                base.MakeDecision(decision, card);
+                base.MakeDecisionCard(decision, card);
             }
         }
 
-        public override void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card)
+        public override void MakeDecisionPhaseOne(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {
             WaitFor waitFor;
             if ((waitFor = Current as WaitFor) != null)
             {
-                waitFor.MakeDecision(phaseOneOption, player, dropEnum, card);
+                waitFor.MakeDecisionPhaseOne(phaseOneOption, player, dropEnum, card);
             }
             else
             {
-                base.MakeDecision(phaseOneOption, player, dropEnum, card);
+                base.MakeDecisionPhaseOne(phaseOneOption, player, dropEnum, card);
             }
         }
 
-        public override void MakeDecision(int card)
+        public override void MakeDecisionCardIndex(int card)
         {
             WaitFor waitFor;
             if ((waitFor = Current as WaitFor) != null)
             {
-                waitFor.MakeDecision(card);
+                waitFor.MakeDecisionCardIndex(card);
             }
             else
             {
-                base.MakeDecision(card);
+                base.MakeDecisionCardIndex(card);
             }
         }
 

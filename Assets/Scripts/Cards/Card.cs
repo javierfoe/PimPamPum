@@ -44,10 +44,7 @@ namespace PimPamPum
             };
         }
 
-        public virtual void BeginCardDrag(PlayerController pc)
-        {
-            pc.BeginCardDrag(this);
-        }
+        public virtual void BeginCardDrag(PlayerController pc) { }
 
         public virtual IEnumerator PlayCard(PlayerController pc, int player, Drop drop, int cardIndex)
         {

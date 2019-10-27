@@ -20,7 +20,7 @@ namespace PimPamPum
             if (!res && Choice < 0)
             {
                 int random = UnityEngine.Random.Range(0, cardAmount);
-                MakeDecision(random);
+                MakeDecisionCardIndex(random);
             }
             if (!res)
             {
@@ -42,7 +42,7 @@ namespace PimPamPum
             GameController.Instance.EnableGeneralStoreCards(conn, true);
         }
 
-        public override void MakeDecision(int card)
+        public override void MakeDecisionCardIndex(int card)
         {
             Choice = card;
             NotChosenCards = new List<Card>(Cards);

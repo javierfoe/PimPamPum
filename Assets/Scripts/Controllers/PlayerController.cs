@@ -789,6 +789,7 @@ namespace PimPamPum
         public virtual void BeginCardDrag(Card c)
         {
             draggedCard = c;
+            c.BeginCardDrag(this);
         }
 
         public void PimPamPumBeginCardDrag()
@@ -1132,7 +1133,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? Hand[index] : null;
-            WaitFor.CurrentWaitFor.MakeDecision(decision, card);
+            WaitFor.MakeDecision(decision, card);
         }
 
         public void MakeDecisionClient(Decision decision)
@@ -1348,7 +1349,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            WaitFor.CurrentWaitFor.MakeDecision(choice);
+            WaitFor.MakeDecision(choice);
         }
 
         [Command]
@@ -1360,7 +1361,7 @@ namespace PimPamPum
         [Command]
         private void CmdPhaseOneOption(Decision option, int player, Drop dropEnum, int card)
         {
-            WaitFor.CurrentWaitFor.MakeDecision(option, player, dropEnum, card);
+            WaitFor.MakeDecision(option, player, dropEnum, card);
         }
 
         [Command]
@@ -1371,7 +1372,7 @@ namespace PimPamPum
             {
                 case State.Play:
                 case State.Dying:
-                    Hand[DraggedCardIndex].BeginCardDrag(this);
+                    BeginCardDrag(Hand[DraggedCardIndex]);
                     break;
                 default:
                     GameController.Instance.HighlightTrash(PlayerNumber, true);

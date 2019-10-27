@@ -38,9 +38,9 @@
 
         public WaitForClickChoice(int player) : this(player, Decision.Deck) { }
 
-        public override void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card)
+        public override void MakeDecisionPhaseOne(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {
-            base.MakeDecision(phaseOneOption);
+            base.MakeDecisionCard(phaseOneOption);
             Player = player;
             Drop = dropEnum;
             CardIndex = card;

@@ -2,21 +2,27 @@
 {
     public abstract class WaitFor : Enumerator
     {
-        public static WaitFor CurrentWaitFor;
+        protected static WaitFor mainCorutine, dyingCorutine;
 
-        protected WaitFor()
+        public static void MakeDecision(int card)
         {
-            WaitForDying waitForDying = CurrentWaitFor as WaitForDying;
-            if(waitForDying != null)
-            {
-                waitForDying.Current = this;
-                return;
-            }
-            CurrentWaitFor = this;
+            mainCorutine.MakeDecisionCardIndex(card);
         }
 
-        public virtual void MakeDecision(int card) { }
-        public virtual void MakeDecision(Decision decision, Card card = null) { }
-        public virtual void MakeDecision(Decision phaseOneOption, int player, Drop dropEnum, int card) { }
+        public static void MakeDecision(Decision decision, Card card = null)
+        {
+            WaitFor waitFor = mainCorutine;
+            if (decision == Decision.Die) waitFor = dyingCorutine;
+            waitFor.MakeDecisionCard(decision, card);
+        }
+
+        public static void MakeDecision(Decision phaseOne, int player, Drop dropEnum, int card)
+        {
+            mainCorutine.MakeDecisionPhaseOne(phaseOne, player, dropEnum, card);
+        }
+
+        public virtual void MakeDecisionCardIndex(int card) { }
+        public virtual void MakeDecisionCard(Decision decision, Card card) { }
+        public virtual void MakeDecisionPhaseOne(Decision phaseOneOption, int player, Drop dropEnum, int card) { }
     }
 }

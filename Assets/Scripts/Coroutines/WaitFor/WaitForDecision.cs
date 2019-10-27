@@ -16,7 +16,7 @@
             bool res = base.MoveNext() && !decisionMade;
             if (!res && !decisionMade)
             {
-                MakeDecision(timeOutDecision);
+                MakeDecisionCard(timeOutDecision);
             }
             return res;
         }
@@ -29,7 +29,7 @@
             Decision = startDecision;
         }
 
-        public override void MakeDecision(Decision decision, Card card = null)
+        public override void MakeDecisionCard(Decision decision, Card card = null)
         {
             Decision = decision;
             decisionMade = decision != startDecision;

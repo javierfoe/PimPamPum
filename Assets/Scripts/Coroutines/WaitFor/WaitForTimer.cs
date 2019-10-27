@@ -21,6 +21,7 @@ namespace PimPamPum
 
         protected WaitForTimer()
         {
+            mainCorutine = this;
             time = 0;
         }
     }

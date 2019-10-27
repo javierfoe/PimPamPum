@@ -6,9 +6,9 @@
 
         public WaitForResponse() : base(Decision.TakeHit) { }
 
-        public override void MakeDecision(Decision decision, Card card)
+        public override void MakeDecisionCard(Decision decision, Card card)
         {
-            base.MakeDecision(decision, card);
+            base.MakeDecisionCard(decision, card);
             ResponseCard = card;
         }
     }
