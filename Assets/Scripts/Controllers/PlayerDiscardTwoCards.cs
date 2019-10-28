@@ -41,9 +41,13 @@ namespace PimPamPum
 
         private IEnumerator StartDiscarding()
         {
-            WaitForDecision waitForDecision = new WaitForDecision();
+            WaitForDecision waitForDecision = new WaitForDecision(Decision.Cancel);
             yield return waitForDecision;
-            if (waitForDecision.Decision == Decision.Cancel)
+            if (waitForDecision.TimeUp)
+            {
+                StopDiscarding();
+            }
+            else if (waitForDecision.Decision == Decision.Cancel)
             {
                 StopDiscarding(true);
             }
@@ -115,7 +119,7 @@ namespace PimPamPum
             }
             else
             {
-                StopDiscarding(true);
+                StopDiscarding(!clickChoice.TimeUp);
             }
         }
 

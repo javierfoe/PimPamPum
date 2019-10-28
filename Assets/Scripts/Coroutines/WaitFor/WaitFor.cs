@@ -21,6 +21,7 @@
             mainCorutine.MakeDecisionPhaseOne(phaseOne, player, dropEnum, card);
         }
 
+        public virtual void StopCorutine() { }
         public virtual void MakeDecisionCardIndex(int card) { }
         public virtual void MakeDecisionCard(Decision decision, Card card) { }
         public virtual void MakeDecisionPhaseOne(Decision phaseOneOption, int player, Drop dropEnum, int card) { }

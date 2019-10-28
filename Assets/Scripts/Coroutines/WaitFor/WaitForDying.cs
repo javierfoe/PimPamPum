@@ -8,7 +8,9 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            return dying();
+            bool res = dying();
+            if (!res && mainCorutine != null && mainCorutine != this) mainCorutine.StopCorutine();
+            return res;
         }
 
         public WaitForDying(PlayerController pc) : base()

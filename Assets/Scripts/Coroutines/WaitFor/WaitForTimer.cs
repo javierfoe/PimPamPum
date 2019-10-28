@@ -24,5 +24,10 @@ namespace PimPamPum
             mainCorutine = this;
             time = 0;
         }
+
+        public override void StopCorutine()
+        {
+            time = GameController.MaxTime;
+        }
     }
 }
