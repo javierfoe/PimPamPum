@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PimPamPum
 {
-    public class WaitForGeneralStoreSelection : WaitForTimer
+    public class WaitForGeneralStoreSelection : WaitFor
     {
 
         private int cardAmount;

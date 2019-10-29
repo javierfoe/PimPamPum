@@ -9,7 +9,7 @@
 
         public override abstract bool MoveNext();
 
-        protected void SetCardResponse(int player, WaitForResponse timer)
+        protected void SetCardResponse(int player, WaitForCardResponse timer)
         {
             Current = GameController.Instance.CardResponse(player, timer.ResponseCard);
         }

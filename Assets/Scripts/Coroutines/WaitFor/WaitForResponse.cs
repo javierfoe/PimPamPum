@@ -1,10 +1,10 @@
 ﻿namespace PimPamPum
 {
-    public class WaitForResponse : WaitForDecision
+    public class WaitForCardResponse : WaitForDecision
     {
         public Card ResponseCard { get; private set; }
 
-        public WaitForResponse() : base(Decision.TakeHit) { }
+        public WaitForCardResponse() : base(Decision.TakeHit) { }
 
         public override void MakeDecisionCard(Decision decision, Card card)
         {

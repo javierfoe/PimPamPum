@@ -14,7 +14,7 @@ namespace PimPamPum
                 first = false;
                 return true;
             }
-            WaitForResponse responseTimer = Current as WaitForResponse;
+            WaitForCardResponse responseTimer = Current as WaitForCardResponse;
             if (responseTimer != null)
             {
                 currentDecision = responseTimer.Decision;
@@ -35,7 +35,7 @@ namespace PimPamPum
             base.SetPlayerController(playerController);
             this.playerController = playerController;
             playerController.EnablePimPamPumsResponse();
-            Current = new WaitForResponse();
+            Current = new WaitForCardResponse();
         }
 
     }

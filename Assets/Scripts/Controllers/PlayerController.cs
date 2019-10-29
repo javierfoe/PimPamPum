@@ -448,6 +448,15 @@ namespace PimPamPum
             return res;
         }
 
+        private IEnumerator TurnTimeUp()
+        {
+            for(;Hand.Count > CardLimit();)
+            {
+                yield return DiscardRandomCardEndTurn();
+            }
+            ForceEndTurn();
+        }
+
         public virtual void ForceEndTurn()
         {
             State = State.OutOfTurn;
@@ -687,12 +696,23 @@ namespace PimPamPum
             MakeDecisionServer(Decision.Avoid, index);
         }
 
+        public IEnumerator DiscardRandomCardEndTurn()
+        {
+            int index = Random.Range(0, Hand.Count);
+            yield return DiscardCard(index);
+        }
+
         public IEnumerator DiscardCardEndTurn(int index)
+        {
+            yield return DiscardCard(index);
+            EndTurn();
+        }
+
+        private IEnumerator DiscardCard(int index)
         {
             DisableCards();
             Card c = UnequipHandCard(index);
             yield return GameController.Instance.DiscardEffect(PlayerNumber, c);
-            EndTurn();
         }
 
         public IEnumerator Saloon()
@@ -841,6 +861,16 @@ namespace PimPamPum
         public virtual bool Immune(Card c)
         {
             return false;
+        }
+
+        public IEnumerator TurnTimer()
+        {
+            WaitFor turnTimer = WaitFor.StartTurnCorutine();
+            yield return turnTimer;
+            if (turnTimer.TimeUp)
+            {
+                yield return TurnTimeUp();
+            }
         }
 
         protected virtual IEnumerator OnStartTurn()

@@ -1,6 +1,6 @@
 ﻿namespace PimPamPum
 {
-    public class WaitForDecision : WaitForTimer
+    public class WaitForDecision : WaitFor
     {
         private const Decision startDecision = Decision.Pending;
         private Decision timeOutDecision;

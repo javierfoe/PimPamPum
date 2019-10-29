@@ -9,7 +9,7 @@
         public override bool MoveNext()
         {
             if (finished) return false;
-            WaitForResponse responseCoroutine = Current as WaitForResponse;
+            WaitForCardResponse responseCoroutine = Current as WaitForCardResponse;
             if (responseCoroutine != null)
             {
                 decision = responseCoroutine.Decision;
@@ -32,7 +32,7 @@
             {
                 next = next == player ? target : player;
                 next.EnablePimPamPumsDuelResponse();
-                Current = new WaitForResponse();
+                Current = new WaitForCardResponse();
                 return true;
             }
             else

@@ -13,12 +13,18 @@ namespace PimPamPum
             get; private set;
         }
 
-        public static float MaxTime => Instance.decisionTime;
+        public static float TurnTime => Instance.turnTime;
+        public static float ReactionTime => Instance.reactionTime;
         public static bool HasDiscardStackCards => Instance.boardController.DiscardStackSize > 0;
         public static bool FinalDuel => Instance.PlayersAlive < 3;
 
+        private static Coroutine turnTimerCorutine;
+
+        [Header("Player Views")]
         [SerializeField] private Transform players = null;
-        [SerializeField] private float decisionTime = 0, pimPamPumEventTime = 0;
+        [Header("Times")]
+        [SerializeField] private float reactionTime = 0;
+        [SerializeField] private float pimPamPumEventTime = 0, turnTime = 0;
         [Header("Card prefabs")]
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
@@ -451,7 +457,7 @@ namespace PimPamPum
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
             Card c = pc.UnequipHandCard(cardIndex);
-            for(int i = 0; i < 2 && targetPc.Hand.Count > 0; i++)
+            for (int i = 0; i < 2 && targetPc.Hand.Count > 0; i++)
             {
                 Card targetCard = targetPc.GetCardFromHand();
                 pc.AddCard(targetCard);
@@ -721,8 +727,11 @@ namespace PimPamPum
         private void StartTurn(int player)
         {
             if (CurrentPlayer != PimPamPumConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
+            if (turnTimerCorutine != null) StopCoroutine(turnTimerCorutine);
             CurrentPlayer = player;
-            playerControllers[player].StartTurn();
+            PlayerController current = playerControllers[player];
+            turnTimerCorutine = StartCoroutine(current.TurnTimer());
+            current.StartTurn();
         }
 
         public List<int> PlayersInWeaponRange(int player, Card c = null)
@@ -752,7 +761,7 @@ namespace PimPamPum
                 pc = playerControllers[next];
                 dead = pc.IsDead;
                 auxRange += dead ? 0 : 1;
-                if (!players.Contains(next) && !dead && next != player && pc.RangeModifier + auxRange < range + 1 && (c == null || c != null && !pc.Immune(c)) ) players.Add(next);
+                if (!players.Contains(next) && !dead && next != player && pc.RangeModifier + auxRange < range + 1 && (c == null || c != null && !pc.Immune(c))) players.Add(next);
             } while (next != player);
         }
 
