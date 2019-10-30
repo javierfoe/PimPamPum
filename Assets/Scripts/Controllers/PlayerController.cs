@@ -462,7 +462,7 @@ namespace PimPamPum
             State = State.OutOfTurn;
             OriginalHand();
             DisableCards();
-            GameController.Instance.EndTurn();
+            GameController.Instance.EndTurn(PlayerNumber);
         }
 
         protected void ConvertHandTo<T>() where T : Card, new()

@@ -718,8 +718,9 @@ namespace PimPamPum
             StartTurn(sheriff);
         }
 
-        public void EndTurn()
+        public void EndTurn(int player)
         {
+            if (CurrentPlayer != player) return;
             int nextPlayer = CurrentPlayer < MaxPlayers - 1 ? CurrentPlayer + 1 : 0;
             StartTurn(nextPlayer);
         }
