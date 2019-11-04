@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f52a554f039208b4582489fef32ffcb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 6
   characterName: Black Flower
   characterHP: 4
 --- !u!114 &5507896126635673076
@@ -60,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2293282043
+  m_SceneId: 0

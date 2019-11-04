@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53a57d4a89b5e894a9055da04269457b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 34
   characterName: Paul Regret
   characterHP: 3
 --- !u!114 &3675450601055402637
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 8f7ee45e56a32184eac9fd54a8656327
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dce38edefc6b50e4ea4e2807a9b83556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 8
   characterName: Calamity Janet
   characterHP: 4
 --- !u!114 &8634295115733770962
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 188fe9884948aef4087343eaf64760ee
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

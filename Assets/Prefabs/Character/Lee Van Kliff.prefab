@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee41c294fb4042c468c867e5a7b08e9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 28
   characterName: Lee Van Kliff
   characterHP: 4
 --- !u!114 &5076930578289095228
@@ -60,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1247822437
+  m_SceneId: 0

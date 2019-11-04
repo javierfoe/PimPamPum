@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d18c32a6df4b404898f2e97555fe649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 40
   characterName: Slab the Killer
   characterHP: 4
 --- !u!114 &5352465795942709404
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 15fcbb5972e1c134abe62061bb7ecf7d
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

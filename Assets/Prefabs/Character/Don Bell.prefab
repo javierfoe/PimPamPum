@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b678e25fe0c7ed42baa47bdf0a4dcdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 13
   characterName: Don Bell
   characterHP: 3
 --- !u!114 &2341132741423087057
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 6b0764d4a14c4bd4b9dfffc89179dbe7
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

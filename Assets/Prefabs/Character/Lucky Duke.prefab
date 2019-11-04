@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  character: 30
   characterName: Lucky Duke
   characterHP: 4
 --- !u!114 &7833244474940123919
@@ -61,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2865439807
+  m_SceneId: 0

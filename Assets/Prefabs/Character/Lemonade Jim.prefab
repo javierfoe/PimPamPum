@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  character: 29
   characterName: Lemonade Jim
   characterHP: 4
 --- !u!114 &5389608874815740605
@@ -61,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 740403312
+  m_SceneId: 0

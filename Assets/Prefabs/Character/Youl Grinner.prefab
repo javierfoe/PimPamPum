@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b43c305465893724db604706c78200a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 47
   characterName: Youl Grinner
   characterHP: 4
 --- !u!114 &2462047725291590458
@@ -60,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 3454347547
+  m_SceneId: 0

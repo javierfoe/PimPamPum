@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  character: 32
   characterName: Molly Stark
   characterHP: 4
 --- !u!114 &3279534552043588206
@@ -61,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 2288768565
+  m_SceneId: 0

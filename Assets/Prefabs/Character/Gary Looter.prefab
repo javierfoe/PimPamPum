@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 316ab10053fa05d48b9936f861920ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 18
   characterName: Gary Looter
   characterHP: 5
 --- !u!114 &2544762569133913266
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: f39d8df9c2ae6b949bf8c8bd799c9f58
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

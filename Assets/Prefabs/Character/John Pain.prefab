@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fad3e7b5af114784988168e176fea34f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 24
   characterName: John Pain
   characterHP: 4
 --- !u!114 &7385396963238610153
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: e4a27e0db3f718b43b4ed9e8ef890cb2
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

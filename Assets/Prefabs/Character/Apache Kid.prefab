@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f6c5ad24b381e4b8f3c18759d2f36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 1
   characterName: Apache Kid
   characterHP: 3
 --- !u!114 &3088169425397109740
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 75e184355984c7b40aa9de59b16998f1
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

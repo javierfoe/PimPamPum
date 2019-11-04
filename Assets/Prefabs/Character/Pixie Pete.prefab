@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3817c4eb5068c6458647c6ad691c005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 36
   characterName: Pixie Pete
   characterHP: 3
 --- !u!114 &4621161861753466022
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 12ffdffec55f7f34b81a519f738f0def
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9341efcbffc386f4bbfc8fb39ad7aaee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 35
   characterName: Pedro Ramirez
   characterHP: 4
 --- !u!114 &6509941558439891438
@@ -60,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
   m_AssetId: 
-  m_SceneId: 1663179444
+  m_SceneId: 0

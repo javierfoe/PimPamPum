@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 029abe14e6ba35f43adf98dfd560320c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 5
   characterName: Bill Noface
   characterHP: 4
 --- !u!114 &1147693573631137651
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 14a9a7bb8fc79274392eca6b3462e3ce
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

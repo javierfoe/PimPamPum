@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68d2de344a2ebd949821b61c8b6ea6bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 10
   characterName: Colorado Bill
   characterHP: 4
 --- !u!114 &4844360896789681329
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: ea934cae4fedbac46af3a9830f739e4c
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

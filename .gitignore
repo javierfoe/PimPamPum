@@ -58,7 +58,7 @@ sysinfo.txt
 PimPamPum/
 
 #Plugins
-Assets/Plugins*
+Assets/Mirror*
 
 # Crashlytics generated file
 crashlytics-build.properties

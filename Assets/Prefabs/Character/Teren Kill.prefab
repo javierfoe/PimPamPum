@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91bf8dcc591ed994085e3d8c69a908ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 43
   characterName: Teren Kill
   characterHP: 3
 --- !u!114 &1536065469631531798
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 6b0df87956b5ddf46b9191060a42e6c9
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

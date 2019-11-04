@@ -13,6 +13,7 @@ namespace PimPamPum
 
         [SyncVar] private int playerNum;
 
+        [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
 
@@ -46,6 +47,11 @@ namespace PimPamPum
         public int DraggedCardIndex
         {
             get; set;
+        }
+
+        public Character Character
+        {
+            get { return character; }
         }
 
         public IPlayerView PlayerView
@@ -134,7 +140,7 @@ namespace PimPamPum
 
         public Role Role
         {
-            get; private set;
+            get; set;
         }
 
         public Weapon Weapon
@@ -166,20 +172,19 @@ namespace PimPamPum
                 (team == Team.Outlaw && Role == Role.Outlaw);
         }
 
-        public virtual void SetRole(Role role)
+        public virtual void Setup()
         {
-            Role = role;
-            if (role == Role.Sheriff)
+            if (Role == Role.Sheriff)
             {
                 MaxHP++;
                 RpcSheriff();
             }
             else
             {
-                TargetSetRole(connectionToClient, role);
+                TargetSetRole(connectionToClient, Role);
             }
             HP = MaxHP;
-            RpcSetCharacter(Character());
+            RpcSetCharacter(CharacterName());
             Weapon = colt45;
             DrawInitialCards();
         }
@@ -1228,7 +1233,7 @@ namespace PimPamPum
             return PlayerName;
         }
 
-        private string Character()
+        private string CharacterName()
         {
             return characterName;
         }
@@ -1513,9 +1518,7 @@ namespace PimPamPum
             GameController.Instance.SetPlayerViews();
             PlayerView = GameController.Instance.GetPlayerView(0);
             PlayerView.SetLocalPlayer();
-            PlayerName = NetworkManagerButton.PlayerName;
-            PlayerName = ToString();
-            PlayerView.SetPlayerName(PlayerName);
+            PlayerView.SetPlayerName(NetworkManagerButton.PlayerName);
             OnSetLocalPlayer();
         }
 

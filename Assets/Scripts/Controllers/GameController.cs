@@ -575,12 +575,18 @@ namespace PimPamPum
 
         public void SetMatch(PlayerController[] players)
         {
+            boardController.ConstructorBoard();
             playerControllers = players;
             MaxPlayers = players.Length;
 
             foreach (PlayerController pc in playerControllers)
+            {
                 foreach (PlayerController pc2 in playerControllers)
+                {
                     pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
+                }
+                pc.Setup();
+            }
 
             StartGame();
         }
@@ -694,26 +700,10 @@ namespace PimPamPum
 
         public void StartGame()
         {
-            boardController.ConstructorBoard();
-            CurrentPlayer = -1;
-            Role[] roles = Roles.GetRoles(MaxPlayers);
-            List<PlayerController> players = new List<PlayerController>();
-            foreach (PlayerController pc in playerControllers)
-                players.Add(pc);
-
-            int range, random;
             int sheriff = -1;
-            foreach (Role r in roles)
+            for (int i = 0; sheriff < 0 && i < playerControllers.Length; i++)
             {
-                range = players.Count;
-                random = UnityEngine.Random.Range(0, range);
-                if (sheriff < 0)
-                {
-                    sheriff = random;
-                    CurrentPlayer = random;
-                }
-                players[random].SetRole(r);
-                players.RemoveAt(random);
+                sheriff = playerControllers[i].Role == Role.Sheriff ? i : -1;
             }
             StartTurn(sheriff);
         }
@@ -856,7 +846,6 @@ namespace PimPamPum
 
         public void SetPlayerNames(int playerNum)
         {
-            if (playerNum < MaxPlayers - 1) return;
             foreach (PlayerController pc in playerControllers)
                 pc.SetPlayerName();
         }

@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 791b69fecf3914144a922b81b81cef0a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 20
   characterName: Henry Block
   characterHP: 4
 --- !u!114 &2918652587799293957
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 4b4c0459f71d3634c9554716bc4fedff
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

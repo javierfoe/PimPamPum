@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4246351811266544822}
   - component: {fileID: 4246351811266544817}
   - component: {fileID: 1634052572778899587}
-  - component: {fileID: 6288286187928152403}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -51,14 +50,13 @@ MonoBehaviour:
   serverTickRate: 30
   showDebugMessages: 0
   offlineScene: MultiplayerLocal
-  onlineScene: PimPamPum
+  onlineScene: PimPamPumMatch
   transport: {fileID: 1634052572778899587}
   networkAddress: localhost
   maxConnections: 8
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 7786184694639066170, guid: 0244a00bf70549348be80903237b2ae6,
-    type: 3}
-  autoCreatePlayer: 1
+  playerPrefab: {fileID: 0}
+  autoCreatePlayer: 0
   playerSpawnMethod: 0
   spawnPrefabs:
   - {fileID: 5970768751845326186, guid: 4483357b82b65ac43b1f77bbd983f38e, type: 3}
@@ -149,41 +147,3 @@ MonoBehaviour:
   NoDelay: 1
   serverMaxMessageSize: 16384
   clientMaxMessageSize: 16384
---- !u!114 &6288286187928152403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4246351811266544816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnClientConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  messageUpdateRate: 0.03333
-  channels: 0200000000000000

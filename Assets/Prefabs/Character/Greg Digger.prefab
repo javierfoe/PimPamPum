@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea9563d2cb7249498054b84ccc04096, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 19
   characterName: Greg Digger
   characterHP: 4
 --- !u!114 &8558894336915842258
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: a52b2c762cd5f344f8a295b904bf0d1b
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

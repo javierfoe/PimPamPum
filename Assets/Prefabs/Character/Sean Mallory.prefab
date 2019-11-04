@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 340b960782b5e9b4c8a7c13283d65524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 38
   characterName: Sean Mallory
   characterHP: 3
 --- !u!114 &6657546492239225236
@@ -59,7 +61,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 0
-  m_AssetId: 07316ca6645fce44784d1da965e49b24
+  serverOnly: 0
+  m_AssetId: 
   m_SceneId: 0

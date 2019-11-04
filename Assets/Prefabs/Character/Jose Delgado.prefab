@@ -44,7 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f37253140773b4148bf3983f442a400f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
   syncInterval: 0.1
+  character: 25
   characterName: Jose Delgado
   characterHP: 4
 --- !u!114 &490826125789148607
@@ -60,6 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 0a862e7a025801c45ad8ce3e4b4d0989
+  m_AssetId: 
   m_SceneId: 0
