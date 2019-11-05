@@ -9,6 +9,7 @@ namespace PimPamPum
     {
         public class CreateCharacterMessage : MessageBase
         {
+            public string playerName;
             public int character, role;
         }
 
@@ -55,12 +56,18 @@ namespace PimPamPum
             availableSpots = new List<int>();
             PlayerAmountSlider.AddListener(SetPlayerAmount);
             players = new Dictionary<NetworkConnection, PlayerController>();
+            NetworkServer.RegisterHandler<CreateCharacterMessage>(OnCreateCharacter);
         }
 
         public override void OnClientConnect(NetworkConnection conn)
         {
-            ClientScene.Ready(conn);
-            ClientScene.AddPlayer();
+            CreateCharacterMessage message = new CreateCharacterMessage
+            {
+                playerName = NetworkManagerButton.PlayerName,
+                character = -1,
+                role = -1
+            };
+            conn.Send(message);
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
@@ -79,7 +86,7 @@ namespace PimPamPum
             currentPlayers--;
         }
 
-        public override void OnServerAddPlayer(NetworkConnection conn)
+        private void OnCreateCharacter(NetworkConnection conn, CreateCharacterMessage message)
         {
             if (currentPlayers == maxPlayers)
             {
@@ -87,15 +94,20 @@ namespace PimPamPum
                 return;
             }
 
-            int character = AvailableCharacter;
-            int random = Random.Range(0, availableRoles.Count);
-            Role role = roles[availableRoles[random]];
-            availableRoles.RemoveAt(random);
+            int character = message.character;
+            if(character < 0)
+                character = AvailableCharacter;
+            int roleInt = message.role;
+            if(roleInt < 0)
+                roleInt = Random.Range(0, availableRoles.Count);
+            Role role = roles[availableRoles[roleInt]];
+            availableRoles.RemoveAt(roleInt);
 
             GameObject player = Instantiate(spawnPrefabs[character]);
             PlayerController playerController = player.GetComponent<PlayerController>();
             playerController.Role = role;
             playerController.PlayerNumber = availableSpots[0];
+            playerController.PlayerName = message.playerName;
             availableSpots.RemoveAt(0);
             NetworkServer.AddPlayerForConnection(conn, playerController.gameObject);
             players.Add(conn, playerController);

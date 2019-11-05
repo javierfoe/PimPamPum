@@ -22,7 +22,6 @@ namespace PimPamPum
         private List<Card> properties;
         private IPlayerView playerView;
         private bool endTurn, jail, dynamite;
-        private string playerName;
         protected Card draggedCard;
         protected int pimPamPumsUsed;
 
@@ -67,15 +66,7 @@ namespace PimPamPum
             }
         }
 
-        private string PlayerName
-        {
-            get { return playerName; }
-            set
-            {
-                playerName = value;
-                CmdSetPlayerName(value);
-            }
-        }
+        public string PlayerName { get; set; }
 
         protected int HP
         {
@@ -184,7 +175,7 @@ namespace PimPamPum
                 TargetSetRole(connectionToClient, Role);
             }
             HP = MaxHP;
-            RpcSetCharacter(CharacterName());
+            RpcSetCharacter(CharacterName(), PlayerName);
             Weapon = colt45;
             DrawInitialCards();
         }
@@ -455,7 +446,7 @@ namespace PimPamPum
 
         private IEnumerator TurnTimeUp()
         {
-            for(;Hand.Count > CardLimit();)
+            for (; Hand.Count > CardLimit();)
             {
                 yield return DiscardRandomCardEndTurn();
             }
@@ -492,7 +483,7 @@ namespace PimPamPum
         {
             Card auxC;
             int length = Hand.Count;
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 auxC = Hand[i];
                 if (auxC.Is<T>())
@@ -1429,13 +1420,6 @@ namespace PimPamPum
         }
 
         [Command]
-        private void CmdSetPlayerName(string name)
-        {
-            playerName = name;
-            GameController.Instance.SetPlayerNames(PlayerNumber);
-        }
-
-        [Command]
         private void CmdUseSkill()
         {
             UseSkill();
@@ -1492,8 +1476,9 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcSetCharacter(string character)
+        private void RpcSetCharacter(string character, string playerName)
         {
+            PlayerView.SetPlayerName(playerName);
             PlayerView.SetCharacter(character);
         }
 
@@ -1506,7 +1491,6 @@ namespace PimPamPum
         [ClientRpc]
         public void RpcSetPlayerName(string name)
         {
-            playerName = name;
             PlayerView.SetPlayerName(name);
         }
 

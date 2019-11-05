@@ -843,11 +843,5 @@ namespace PimPamPum
         {
             boardController.SetTargetable(playerControllers[player].connectionToClient, value);
         }
-
-        public void SetPlayerNames(int playerNum)
-        {
-            foreach (PlayerController pc in playerControllers)
-                pc.SetPlayerName();
-        }
     }
 }
