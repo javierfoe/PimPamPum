@@ -55,9 +55,11 @@ sysinfo.txt
 *.apk
 *.unitypackage
 *.7z
-PimPamPum/
 
-#Plugins
+# Don't ignore main project folder
+!/Assets/PimPamPum/
+
+# Plugins
 Assets/Mirror*
 
 # Crashlytics generated file
