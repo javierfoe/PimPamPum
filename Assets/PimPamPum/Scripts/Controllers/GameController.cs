@@ -648,9 +648,8 @@ namespace PimPamPum
         public IEnumerator ChooseCardToPutOnDeckTop(int player)
         {
             PlayerController pc = playerControllers[player];
-            NetworkConnection conn = pc.connectionToClient;
 
-            WaitForCardSelection chooseCardTimer = new WaitForCardSelection(conn, 3);
+            WaitForCardSelection chooseCardTimer = new WaitForCardSelection(pc, 3);
             yield return chooseCardTimer;
 
             pc.AddCards(chooseCardTimer.NotChosenCards);

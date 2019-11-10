@@ -18,7 +18,7 @@ namespace PimPamPum
             PlayerController currentPc = playerControllers[currentPlayer];
             if(startingPlayer != currentPlayer && currentPc.Hand.Count > minimumCards)
             {
-                Current = new WaitForCardSelection(currentPc.connectionToClient, currentPc.Hand);
+                Current = new WaitForCardSelection(currentPc, currentPc.Hand);
                 return true;
             }
             return false;

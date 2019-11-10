@@ -41,7 +41,7 @@ namespace PimPamPum
 
         private IEnumerator StartDiscarding()
         {
-            WaitForDecision waitForDecision = new WaitForDecision(Decision.Cancel);
+            WaitForDecision waitForDecision = new WaitForDecision(this, Decision.Cancel);
             yield return waitForDecision;
             if (waitForDecision.TimeUp)
             {
@@ -105,7 +105,7 @@ namespace PimPamPum
             Card one = Hand[firstCard];
             Card two = Hand[secondCard];
             EnableConfirmOptions(one, two);
-            WaitForClickChoice clickChoice = new WaitForClickChoice(PlayerNumber, Decision.Cancel);
+            WaitForClickChoice clickChoice = new WaitForClickChoice(this, Decision.Cancel);
             yield return clickChoice;
             EnableCancelButton(false);
             GameController.Instance.DisablePhaseOneClickable(PlayerNumber);

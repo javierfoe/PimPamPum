@@ -27,7 +27,7 @@ namespace PimPamPum
             DisableCards();
             EnableConfirmButton(true);
             EnableCancelButton(true);
-            WaitForDecision decision = new WaitForDecision(Decision.Cancel);
+            WaitForDecision decision = new WaitForDecision(this, Decision.Cancel);
             yield return decision;
             if (decision.Decision == Decision.Confirm)
             {

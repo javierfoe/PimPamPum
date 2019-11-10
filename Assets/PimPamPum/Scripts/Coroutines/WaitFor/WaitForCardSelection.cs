@@ -5,11 +5,11 @@ namespace PimPamPum
 {
     public class WaitForCardSelection : WaitForGeneralStoreSelection
     {
-        public WaitForCardSelection(NetworkConnection conn, int cards) :
-            this(conn, GameController.Instance.DrawCards(cards))
+        public WaitForCardSelection(PlayerController player, int cards) :
+            this(player, GameController.Instance.DrawCards(cards))
         { }
 
-        public WaitForCardSelection(NetworkConnection conn, List<Card> cards) : base(conn, cards.Count)
+        public WaitForCardSelection(PlayerController player, List<Card> cards) : base(player, cards.Count)
         {
             GameController.Instance.SetSelectableCards(cards, conn);
             Cards = cards;

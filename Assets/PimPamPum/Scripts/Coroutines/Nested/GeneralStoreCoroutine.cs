@@ -25,7 +25,7 @@ namespace PimPamPum
             bool res = pendingPlayers > 1;
             if (res)
             {
-                Current = new WaitForGeneralStoreSelection(players[nextPlayer].connectionToClient, CardChoices);
+                Current = new WaitForGeneralStoreSelection(players[nextPlayer], CardChoices);
                 return true;
             }
             if (!res && !lastCard)

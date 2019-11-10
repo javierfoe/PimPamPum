@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 namespace PimPamPum
 {
-    public class CountdownView : MonoBehaviour, ICountdown
+    public class CountdownView : MonoBehaviour, ICountdownView
     {
 
         [System.Serializable]
@@ -12,9 +12,9 @@ namespace PimPamPum
             public float value;
         }
 
-        [SerializeField]
-        private ColorThreshold[] colorThresholds;
-        private Image image;
+        [SerializeField] private ColorThreshold[] colorThresholds = null;
+        [SerializeField] private Image image;
+
         private float maxTime;
         private int currentThreshold;
 
@@ -34,7 +34,7 @@ namespace PimPamPum
 
         private void SetCurrentColor(float fillAmount)
         {
-            if(fillAmount <= 0)
+            if (fillAmount <= 0)
             {
                 gameObject.SetActive(false);
                 return;
@@ -44,12 +44,6 @@ namespace PimPamPum
                 currentThreshold++;
             }
             Color = colorThresholds[currentThreshold].color;
-        }
-
-        // Start is called before the first frame update
-        void Awake()
-        {
-            image = GetComponent<Image>();
         }
 
         public void SetCountdown(float time)

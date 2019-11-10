@@ -21,9 +21,9 @@
             return res;
         }
 
-        public WaitForDecision() : this(Decision.Pending) { }
+        public WaitForDecision(PlayerController player) : this(player, Decision.Pending) { }
 
-        public WaitForDecision(Decision timeOutDecision) : base()
+        public WaitForDecision(PlayerController player, Decision timeOutDecision) : base(player)
         {
             this.timeOutDecision = timeOutDecision;
             Decision = startDecision;

@@ -4,34 +4,18 @@ namespace PimPamPum
 {
     public class WaitFor : Enumerator
     {
-        protected static WaitFor turnCorutine, mainCorutine, dyingCorutine;
-
         private float time, maxTime;
+        private bool response;
 
+        public PlayerController PlayerController { get; private set; }
+        public bool Response { get { return response; } set { response = value; SetCountdown(); } }
         public bool TimeUp { get; private set; }
 
-        public static WaitFor StartTurnCorutine()
+        public static WaitFor StartTurnCorutine(PlayerController player)
         {
-            WaitFor turn = new WaitFor(GameController.TurnTime);
-            turnCorutine = turn;
+            WaitFor turn = new WaitFor(player, GameController.TurnTime, true);
+            WaitForController.TurnCorutine = turn;
             return turn;
-        }
-
-        public static void MakeDecision(int card)
-        {
-            mainCorutine.MakeDecisionCardIndex(card);
-        }
-
-        public static void MakeDecision(Decision decision, Card card = null)
-        {
-            WaitFor waitFor = mainCorutine;
-            if (decision == Decision.Die) waitFor = dyingCorutine;
-            waitFor.MakeDecisionCard(decision, card);
-        }
-
-        public static void MakeDecision(Decision phaseOne, int player, Drop dropEnum, int card)
-        {
-            mainCorutine.MakeDecisionPhaseOne(phaseOne, player, dropEnum, card);
         }
 
         public override bool MoveNext()
@@ -39,25 +23,47 @@ namespace PimPamPum
             time += Time.deltaTime;
             bool timer = time < maxTime;
             TimeUp = !timer;
+            SetTimeSpent();
             return timer;
         }
 
-        protected WaitFor() : this(GameController.ReactionTime) { }
+        protected WaitFor(PlayerController player) : this(player, GameController.ReactionTime) { }
 
-        protected WaitFor(float maxTime)
+        protected WaitFor(PlayerController player, float maxTime, bool turn = false)
         {
-            if (turnCorutine != null && !(turnCorutine.Current is WaitForDying))
-            {
-                turnCorutine.Current = this;
-            }
+            PlayerController = player;
             this.maxTime = maxTime;
-            mainCorutine = this;
+            if (!turn) WaitForController.MainCorutine = this;
             time = 0;
         }
 
         public void StopCorutine()
         {
             time = maxTime;
+        }
+
+        public void SetCountdown()
+        {
+            if (Response)
+            {
+                PlayerController.SetResponseCountdown(maxTime);
+            }
+            else
+            {
+                PlayerController.SetTurnCountdown(maxTime);
+            }
+        }
+
+        public void SetTimeSpent()
+        {
+            if (Response)
+            {
+                PlayerController.ResponseTime = time;
+            }
+            else
+            {
+                PlayerController.TurnTime = time;
+            }
         }
 
         public virtual void MakeDecisionCardIndex(int card) { }

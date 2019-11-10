@@ -44,7 +44,7 @@ namespace PimPamPum
                 {
                     playerController.EnableBarrelButton(true);
                 }
-                Current = new WaitForCardResponse();
+                Current = new WaitForCardResponse(playerController);
                 return true;
             }
             TakeHit = dodges < misses || currentDecision == Decision.TakeHit;

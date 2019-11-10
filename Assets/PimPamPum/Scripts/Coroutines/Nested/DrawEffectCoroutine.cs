@@ -46,7 +46,7 @@ namespace PimPamPum
             }
             else
             {
-                Current = new WaitForCardSelection(pc.connectionToClient, pc.DrawEffectCards);
+                Current = new WaitForCardSelection(pc, pc.DrawEffectCards);
             }
         }
     }

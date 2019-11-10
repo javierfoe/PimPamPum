@@ -93,3 +93,4 @@ MonoBehaviour:
     value: 0.25
   - color: {r: 1, g: 0.18431373, b: 0.12156863, a: 1}
     value: 0
+  image: {fileID: 2301321197456951289}

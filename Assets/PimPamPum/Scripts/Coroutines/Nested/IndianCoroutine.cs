@@ -35,7 +35,7 @@ namespace PimPamPum
             base.SetPlayerController(playerController);
             this.playerController = playerController;
             playerController.EnablePimPamPumsResponse();
-            Current = new WaitForCardResponse();
+            Current = new WaitForCardResponse(playerController);
         }
 
     }

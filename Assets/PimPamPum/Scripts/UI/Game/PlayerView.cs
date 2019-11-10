@@ -8,13 +8,23 @@ namespace PimPamPum
     {
 
         [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
-        [SerializeField] private GameObject handHiddenGO = null, weaponGO = null, handCardsGO = null, propertyCardsGO = null, skillGO = null, turn = null;
+        [SerializeField]
+        private GameObject
+            handHiddenGO = null,
+            weaponGO = null,
+            handCardsGO = null,
+            propertyCardsGO = null,
+            skillGO = null,
+            turnCountdownGO = null,
+            responseCountdownGO = null,
+            turn = null;
 
         private int hiddenCards;
         private IHandView handHidden;
         private ICardView weaponCard;
         private ISkillView skill;
         private ICardListView handCards, propertyCards;
+        private ICountdownView turnCountdown, responseCountdown;
         private EndGamePanelView endGamePanel;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
@@ -51,6 +61,10 @@ namespace PimPamPum
             propertyCards = propertyCardsGO.GetComponent<ICardListView>();
             handHidden = handHiddenGO.GetComponent<IHandView>();
             skill = skillGO.GetComponent<ISkillView>();
+            turnCountdown = turnCountdownGO.GetComponent<ICountdownView>();
+            responseCountdown = responseCountdownGO.GetComponent<ICountdownView>();
+            turnCountdownGO.SetActive(false);
+            responseCountdownGO.SetActive(false);
             base.Awake();
             SetTurn(false);
         }
@@ -243,6 +257,26 @@ namespace PimPamPum
         public void SetPlayerSkillStatus(bool value)
         {
             skill.SetStatus(value);
+        }
+
+        public void SetTurnCountdown(float time)
+        {
+            turnCountdown.SetCountdown(time);
+        }
+
+        public void SetTurnTimeSpent(float time)
+        {
+            turnCountdown.SetTimeSpent(time);
+        }
+
+        public void SetResponseCountdown(float time)
+        {
+            responseCountdown.SetCountdown(time);
+        }
+
+        public void SetResponseTimeSpent(float time)
+        {
+            responseCountdown.SetTimeSpent(time);
         }
     }
 }

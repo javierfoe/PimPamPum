@@ -29,14 +29,14 @@ namespace PimPamPum
             return res;
         }
 
-        protected WaitForGeneralStoreSelection(NetworkConnection conn, int cards) : base()
+        protected WaitForGeneralStoreSelection(PlayerController player, int cards) : base(player)
         {
-            this.conn = conn;
+            conn = player.connectionToClient;
             Choice = -1;
             cardAmount = cards;
         }
 
-        public WaitForGeneralStoreSelection(NetworkConnection conn, List<Card> cards) : this(conn, cards.Count)
+        public WaitForGeneralStoreSelection(PlayerController player, List<Card> cards) : this(player, cards.Count)
         {
             Cards = cards;
             GameController.Instance.EnableGeneralStoreCards(conn, true);

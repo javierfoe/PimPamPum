@@ -32,7 +32,7 @@
             {
                 next = next == player ? target : player;
                 next.EnablePimPamPumsDuelResponse();
-                Current = new WaitForCardResponse();
+                Current = new WaitForCardResponse(next);
                 return true;
             }
             else

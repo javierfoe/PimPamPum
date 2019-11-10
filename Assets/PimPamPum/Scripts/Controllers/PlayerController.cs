@@ -12,6 +12,8 @@ namespace PimPamPum
         private static Colt45 colt45 = new Colt45();
 
         [SyncVar] private int playerNum;
+        [SyncVar(hook = "UpdateTurnTimeSpent")] private float turnTimeSpent;
+        [SyncVar(hook = "UpdateResponseTimeSpent")] private float responseTimeSpent;
 
         [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
@@ -32,6 +34,16 @@ namespace PimPamPum
         public bool HasColt45 => Weapon == colt45;
         public bool IsDying => HP < 1;
         protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
+
+        public float TurnTime
+        {
+            set { turnTimeSpent = value; }
+        }
+
+        public float ResponseTime
+        {
+            set { responseTimeSpent = value; }
+        }
 
         public List<Card> Hand
         {
@@ -861,7 +873,7 @@ namespace PimPamPum
 
         public IEnumerator TurnTimer()
         {
-            WaitFor turnTimer = WaitFor.StartTurnCorutine();
+            WaitFor turnTimer = WaitFor.StartTurnCorutine(this);
             yield return turnTimer;
             if (turnTimer.TimeUp)
             {
@@ -1159,7 +1171,7 @@ namespace PimPamPum
         {
             DisableCards();
             Card card = index > -1 ? Hand[index] : null;
-            WaitFor.MakeDecision(decision, card);
+            WaitForController.MakeDecision(decision, card);
         }
 
         public void MakeDecisionClient(Decision decision)
@@ -1304,6 +1316,26 @@ namespace PimPamPum
 
         protected virtual void OnSetLocalPlayer() { }
 
+        public void UpdateTurnTimeSpent(float time)
+        {
+            PlayerView?.SetTurnTimeSpent(time);
+        }
+
+        public void UpdateResponseTimeSpent(float time)
+        {
+            PlayerView?.SetResponseTimeSpent(time);
+        }
+
+        public void SetTurnCountdown(float time)
+        {
+            RpcSetTurnCountdown(time);
+        }
+
+        public void SetResponseCountdown(float time)
+        {
+            RpcSetResponseCountdown(time);
+        }
+
         [Client]
         public void UseSkillClient()
         {
@@ -1375,7 +1407,7 @@ namespace PimPamPum
         [Command]
         private void CmdChooseCard(int choice)
         {
-            WaitFor.MakeDecision(choice);
+            WaitForController.MakeDecision(choice);
         }
 
         [Command]
@@ -1387,7 +1419,7 @@ namespace PimPamPum
         [Command]
         private void CmdPhaseOneOption(Decision option, int player, Drop dropEnum, int card)
         {
-            WaitFor.MakeDecision(option, player, dropEnum, card);
+            WaitForController.MakeDecision(option, player, dropEnum, card);
         }
 
         [Command]
@@ -1494,8 +1526,20 @@ namespace PimPamPum
             PlayerView.SetPlayerName(name);
         }
 
+        [ClientRpc]
+        private void RpcSetTurnCountdown(float time)
+        {
+            PlayerView.SetTurnCountdown(time);
+        }
+
+        [ClientRpc]
+        private void RpcSetResponseCountdown(float time)
+        {
+            PlayerView.SetResponseCountdown(time);
+        }
+
         [TargetRpc]
-        public virtual void TargetSetLocalPlayer(NetworkConnection conn, int maxPlayers)
+        public void TargetSetLocalPlayer(NetworkConnection conn, int maxPlayers)
         {
             LocalPlayer = this;
             GameController.Instance.MaxPlayers = maxPlayers;

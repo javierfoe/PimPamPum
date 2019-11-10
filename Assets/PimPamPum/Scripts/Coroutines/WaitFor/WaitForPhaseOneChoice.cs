@@ -31,12 +31,12 @@
             GameController.Instance.DisablePhaseOneClickable(player);
         }
 
-        public WaitForClickChoice(int player, Decision decision) : base(decision)
+        public WaitForClickChoice(PlayerController player, Decision decision) : base(player, decision)
         {
-            this.player = player;
+            this.player = player.PlayerNumber;
         }
 
-        public WaitForClickChoice(int player) : this(player, Decision.Deck) { }
+        public WaitForClickChoice(PlayerController player) : this(player, Decision.Deck) { }
 
         public override void MakeDecisionPhaseOne(Decision phaseOneOption, int player, Drop dropEnum, int card)
         {

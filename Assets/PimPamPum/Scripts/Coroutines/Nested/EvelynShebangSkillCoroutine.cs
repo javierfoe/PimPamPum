@@ -29,7 +29,7 @@ namespace PimPamPum
             if(availablePlayers.Count > 0 && cards > 0)
             {
                 GameController.Instance.SetPhaseOnePlayerClickable(playerNumber, availablePlayers);
-                Current = new WaitForClickChoice(playerNumber);
+                Current = new WaitForClickChoice(player);
                 return true;
             }
             player.Draw(cards);

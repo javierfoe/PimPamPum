@@ -9,14 +9,14 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             bool res = dying();
-            if (!res && mainCorutine != null && mainCorutine != this) mainCorutine.StopCorutine();
+            if (!res) WaitForController.StopMainCorutine();
             return res;
         }
 
-        public WaitForDying(PlayerController pc) : base()
+        public WaitForDying(PlayerController pc) : base(pc)
         {
             dying = () => base.MoveNext() && pc.IsDying;
-            dyingCorutine = this;
+            WaitForController.DyingCorutine = this;
         }
     }
 }

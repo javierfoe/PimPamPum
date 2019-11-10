@@ -12,7 +12,7 @@ namespace PimPamPum
                 State = State.SpecialEvent;
                 EnablePassButton(true);
                 EnableAllCards();
-                WaitForDecision timer = new WaitForDecision();
+                WaitForDecision timer = new WaitForDecision(this);
                 yield return timer;
                 if (timer.Decision == Decision.Heal)
                 {
