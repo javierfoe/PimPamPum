@@ -203,11 +203,6 @@ PrefabInstance:
       propertyPath: m_SceneId
       value: 535707026
       objectReference: {fileID: 0}
-    - target: {fileID: 4673147212543824803, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
-        type: 3}
-      propertyPath: turnTime
-      value: 10
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
 --- !u!1 &927327809
