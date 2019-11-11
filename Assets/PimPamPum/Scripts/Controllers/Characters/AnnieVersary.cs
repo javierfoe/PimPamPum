@@ -4,7 +4,7 @@
     {
         protected override bool CanUseSkill()
         {
-            return HasOtherThanHand<PimPamPum>() && Weapon.PimPamPum(this);
+            return HasOtherThanHand<PimPamPum>() && CanShoot;
         }
 
         private bool HasOtherThanHand<T>() where T : Card, new()

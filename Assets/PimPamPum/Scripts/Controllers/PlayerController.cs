@@ -34,6 +34,7 @@ namespace PimPamPum
         public bool HasColt45 => Weapon == colt45;
         public bool IsDying => HP < 1;
         protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
+        protected bool CanShoot => Weapon.PimPamPum(this);
 
         public float TurnTime
         {
@@ -629,7 +630,7 @@ namespace PimPamPum
 
         protected virtual void EnablePhase2Cards()
         {
-            bool pimPamPums = Weapon.PimPamPum(this);
+            bool pimPamPums = CanShoot;
             int length = Hand.Count;
             Card c;
             bool isMissed;
@@ -817,6 +818,7 @@ namespace PimPamPum
         public virtual void BeginCardDrag(Card c)
         {
             draggedCard = c;
+            if (c is PimPamPum && !CanShoot) return;
             c.BeginCardDrag(this);
         }
 
