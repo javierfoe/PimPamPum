@@ -40,6 +40,11 @@ namespace PimPamPum
             MainCorutine.MakeDecisionPhaseOne(phaseOne, player, dropEnum, card);
         }
 
+        public static void StopTurnCorutine()
+        {
+            TurnCorutine.StopCorutine();
+        }
+
         public static void StopMainCorutine()
         {
             if (MainCorutine != null && MainCorutine != DyingCorutine) MainCorutine.StopCorutine();

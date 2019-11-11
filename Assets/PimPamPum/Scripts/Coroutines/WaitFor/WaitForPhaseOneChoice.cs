@@ -23,6 +23,7 @@
         {
             bool res = base.MoveNext();
             if (!res) Finished();
+            Finished(res);
             return res;
         }
 

@@ -26,6 +26,7 @@ namespace PimPamPum
             {
                 FinishedCoroutine();
             }
+            Finished(res);
             return res;
         }
 

@@ -13,7 +13,7 @@ namespace PimPamPum
         }
 
         [SerializeField] private ColorThreshold[] colorThresholds = null;
-        [SerializeField] private Image image;
+        [SerializeField] private Image image = null;
 
         private float maxTime;
         private int currentThreshold;

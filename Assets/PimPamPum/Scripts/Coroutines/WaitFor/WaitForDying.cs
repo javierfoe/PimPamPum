@@ -10,6 +10,7 @@ namespace PimPamPum
         {
             bool res = dying();
             if (!res) WaitForController.StopMainCorutine();
+            Finished(res);
             return res;
         }
 

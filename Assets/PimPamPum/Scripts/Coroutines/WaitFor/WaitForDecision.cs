@@ -18,6 +18,7 @@
             {
                 MakeDecisionCard(timeOutDecision);
             }
+            Finished(res);
             return res;
         }
 

@@ -29,7 +29,15 @@ namespace PimPamPum
             bool timer = time < maxTime;
             TimeUp = !timer;
             SetTimeSpent();
+            Finished(timer);
             return timer;
+        }
+
+        protected void Finished(bool value)
+        {
+            if (finished || value) return;
+            MaxTimeSpent();
+            finished = true;
         }
 
         protected WaitFor(PlayerController player) : this(player, GameController.ReactionTime) { }
@@ -46,6 +54,7 @@ namespace PimPamPum
         public void StopCorutine()
         {
             time = maxTime;
+            Finished(false);
         }
 
         public void SetCountdown()
@@ -58,6 +67,12 @@ namespace PimPamPum
             {
                 PlayerController.SetTurnCountdown(maxTime);
             }
+        }
+
+        private void MaxTimeSpent()
+        {
+            time = maxTime;
+            SetTimeSpent();
         }
 
         public void SetTimeSpent()
