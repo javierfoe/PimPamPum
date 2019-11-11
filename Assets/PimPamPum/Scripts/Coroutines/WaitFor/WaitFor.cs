@@ -6,6 +6,7 @@ namespace PimPamPum
     {
         private float time, maxTime;
         private bool response;
+        private int frame;
 
         public PlayerController PlayerController { get; private set; }
         public bool Response { get { return response; } set { response = value; SetCountdown(); } }
@@ -20,7 +21,11 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            time += Time.deltaTime;
+            int currentFrame = Time.frameCount;
+            if(frame != currentFrame){
+                frame = currentFrame;
+                time += Time.deltaTime;
+            }
             bool timer = time < maxTime;
             TimeUp = !timer;
             SetTimeSpent();
@@ -32,6 +37,7 @@ namespace PimPamPum
         protected WaitFor(PlayerController player, float maxTime, bool turn = false)
         {
             PlayerController = player;
+            frame = -1;
             this.maxTime = maxTime;
             if (!turn) WaitForController.MainCorutine = this;
             time = 0;
