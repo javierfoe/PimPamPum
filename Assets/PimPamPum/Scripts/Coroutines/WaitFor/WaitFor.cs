@@ -22,7 +22,8 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             int currentFrame = Time.frameCount;
-            if(frame != currentFrame){
+            if (frame != currentFrame)
+            {
                 frame = currentFrame;
                 time += Time.deltaTime;
             }
@@ -36,9 +37,12 @@ namespace PimPamPum
         protected void Finished(bool value)
         {
             if (finished || value) return;
+            Finished();
             MaxTimeSpent();
             finished = true;
         }
+
+        protected virtual void Finished() { }
 
         protected WaitFor(PlayerController player) : this(player, GameController.ReactionTime) { }
 

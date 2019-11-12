@@ -22,10 +22,6 @@ namespace PimPamPum
                 int random = UnityEngine.Random.Range(0, cardAmount);
                 MakeDecisionCardIndex(random);
             }
-            if (!res)
-            {
-                FinishedCoroutine();
-            }
             Finished(res);
             return res;
         }
@@ -51,7 +47,7 @@ namespace PimPamPum
             NotChosenCards.RemoveAt(card);
         }
 
-        protected virtual void FinishedCoroutine()
+        protected override void Finished()
         {
             GameController.Instance.EnableGeneralStoreCards(conn, false);
         }

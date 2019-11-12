@@ -22,12 +22,11 @@
         public override bool MoveNext()
         {
             bool res = base.MoveNext();
-            if (!res) Finished();
             Finished(res);
             return res;
         }
 
-        public void Finished()
+        protected override void Finished()
         {
             GameController.Instance.DisablePhaseOneClickable(player);
         }

@@ -15,7 +15,7 @@ namespace PimPamPum
             Cards = cards;
         }
 
-        protected override void FinishedCoroutine()
+        protected override void Finished()
         {
             GameController.Instance.RemoveSelectableCardsAndDisable(conn);
         }

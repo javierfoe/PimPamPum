@@ -5,7 +5,7 @@
     {
         public Volcanic() : base(1) { }
 
-        public override bool PimPamPum(PlayerController pc) { return true; }
+        public override bool PimPamPum() { return true; }
 
         protected override IEnumerator EquipTrigger(PlayerController pc)
         {

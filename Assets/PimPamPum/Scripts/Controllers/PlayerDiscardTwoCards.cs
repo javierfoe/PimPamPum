@@ -10,7 +10,7 @@ namespace PimPamPum
 
         public override void BeginCardDrag(Card c)
         {
-            if (cardsDiscarded < 1 && State == State.Play)
+            if (cardsDiscarded < 1 && State == State.Play && (!(c is PimPamPum) || CanShoot))
                 base.BeginCardDrag(c);
             if (skillUsed) return;
             if (Hand.Count > 1 || cardsDiscarded > 0)

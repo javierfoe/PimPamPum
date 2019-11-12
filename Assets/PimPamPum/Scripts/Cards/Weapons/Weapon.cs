@@ -24,9 +24,9 @@
             pc.EquipWeapon(this);
         }
 
-        public virtual bool PimPamPum(PlayerController pc)
+        public virtual bool PimPamPum()
         {
-            return pc.PimPamPum();
+            return false;
         }
 
         public override IEnumerator CardUsed(PlayerController pc)

@@ -34,7 +34,7 @@ namespace PimPamPum
         public bool HasColt45 => Weapon == colt45;
         public bool IsDying => HP < 1;
         protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
-        protected bool CanShoot => Weapon.PimPamPum(this);
+        protected bool CanShoot => PimPamPum();
 
         public float TurnTime
         {
@@ -774,9 +774,7 @@ namespace PimPamPum
 
         public virtual bool PimPamPum()
         {
-            bool res = true;
-            if (pimPamPumsUsed > 0) res = false;
-            return res;
+            return Weapon.PimPamPum() || pimPamPumsUsed < 1;
         }
 
         public void EquipWeapon(Weapon weapon)
@@ -818,7 +816,6 @@ namespace PimPamPum
         public virtual void BeginCardDrag(Card c)
         {
             draggedCard = c;
-            if (c is PimPamPum && !CanShoot) return;
             c.BeginCardDrag(this);
         }
 
