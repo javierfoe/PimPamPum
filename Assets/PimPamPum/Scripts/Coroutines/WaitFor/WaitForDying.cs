@@ -9,9 +9,13 @@ namespace PimPamPum
         public override bool MoveNext()
         {
             bool res = dying();
-            if (!res) WaitForController.StopMainCorutine();
             Finished(res);
             return res;
+        }
+
+        protected override void Finished()
+        {
+            WaitForController.StopMainCorutine();
         }
 
         public WaitForDying(PlayerController pc) : base(pc)

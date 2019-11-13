@@ -711,7 +711,7 @@ namespace PimPamPum
         {
             if (CurrentPlayer != player) return;
             WaitForController.StopTurnCorutine();
-            int nextPlayer = CurrentPlayer < MaxPlayers - 1 ? CurrentPlayer + 1 : 0;
+            int nextPlayer = NextPlayerAlive(player);
             StartTurn(nextPlayer);
         }
 
