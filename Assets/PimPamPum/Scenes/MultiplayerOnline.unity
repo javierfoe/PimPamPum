@@ -96,6 +96,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
+    m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -191,17 +192,71 @@ PrefabInstance:
         type: 3}
       propertyPath: transport
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 432828729}
     - target: {fileID: 1634052572778899587, guid: 84b54359b18228348a0be780ef326441,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8669433544237558020, guid: 84b54359b18228348a0be780ef326441,
+        type: 3}
+      propertyPath: transports.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8669433544237558020, guid: 84b54359b18228348a0be780ef326441,
+        type: 3}
+      propertyPath: transports.Array.data[0]
+      value: 
+      objectReference: {fileID: 432828729}
     m_RemovedComponents:
     - {fileID: 4246351811266544823, guid: 84b54359b18228348a0be780ef326441, type: 3}
     - {fileID: -6421047455593414382, guid: 84b54359b18228348a0be780ef326441, type: 3}
     - {fileID: 1634052572778899587, guid: 84b54359b18228348a0be780ef326441, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 84b54359b18228348a0be780ef326441, type: 3}
+--- !u!1 &432828728 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4246351811266544816, guid: 84b54359b18228348a0be780ef326441,
+    type: 3}
+  m_PrefabInstance: {fileID: 432828727}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &432828729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432828728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnClientConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnClientDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerConnected:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerError:
+    m_PersistentCalls:
+      m_Calls: []
+  OnServerDisconnected:
+    m_PersistentCalls:
+      m_Calls: []
+  messageUpdateRate: 0.03333
+  channels: 0200000000000000
 --- !u!1 &756477643 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6830889074322774398, guid: 98cffe0e9aac4a7478531f815c32512c,

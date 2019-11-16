@@ -47,6 +47,8 @@ namespace PimPamPum
             }
         }
 
+        public override void OnValidate() { }
+
         public override void OnStartServer()
         {
             base.OnStartServer();
@@ -75,7 +77,7 @@ namespace PimPamPum
             base.OnServerDisconnect(conn);
             PlayerController player = players[conn];
             int role = -1;
-            for(int i = 0; i < roles.Length && role < 0; i++)
+            for (int i = 0; i < roles.Length && role < 0; i++)
             {
                 role = roles[i] == player.Role ? i : -1;
             }
@@ -95,10 +97,10 @@ namespace PimPamPum
             }
 
             int character = message.character;
-            if(character < 0)
+            if (character < 0)
                 character = AvailableCharacter;
             int roleInt = message.role;
-            if(roleInt < 0)
+            if (roleInt < 0)
                 roleInt = Random.Range(0, availableRoles.Count);
             Role role = roles[availableRoles[roleInt]];
             availableRoles.RemoveAt(roleInt);

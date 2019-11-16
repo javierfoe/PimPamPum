@@ -18,7 +18,7 @@ namespace PimPamPum
         public static bool HasDiscardStackCards => Instance.boardController.DiscardStackSize > 0;
         public static bool FinalDuel => Instance.PlayersAlive < 3;
 
-        private static Coroutine turnTimerCorutine;
+        private static WaitFor turnTimerCorutine;
 
         [Header("Player Views")]
         [SerializeField] private Transform players = null;
@@ -718,10 +718,11 @@ namespace PimPamPum
         private void StartTurn(int player)
         {
             if (CurrentPlayer != PimPamPumConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
-            if (turnTimerCorutine != null) StopCoroutine(turnTimerCorutine);
+            if (turnTimerCorutine != null) turnTimerCorutine.StopCorutine();
             CurrentPlayer = player;
             PlayerController current = playerControllers[player];
-            turnTimerCorutine = StartCoroutine(current.TurnTimer());
+            turnTimerCorutine = WaitFor.StartTurnCorutine(current);
+            StartCoroutine(current.TurnTimer(turnTimerCorutine));
             current.StartTurn();
         }
 

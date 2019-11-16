@@ -457,9 +457,10 @@ namespace PimPamPum
             return res;
         }
 
-        private IEnumerator TurnTimeUp()
+        public IEnumerator TurnTimeUp()
         {
-            for (; Hand.Count > CardLimit();)
+            int cardLimit = CardLimit();
+            while (Hand.Count < cardLimit)
             {
                 yield return DiscardRandomCardEndTurn();
             }
@@ -870,9 +871,8 @@ namespace PimPamPum
             return false;
         }
 
-        public IEnumerator TurnTimer()
+        public IEnumerator TurnTimer(WaitFor turnTimer)
         {
-            WaitFor turnTimer = WaitFor.StartTurnCorutine(this);
             yield return turnTimer;
             if (turnTimer.TimeUp)
             {
