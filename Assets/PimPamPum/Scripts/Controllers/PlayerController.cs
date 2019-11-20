@@ -1606,10 +1606,7 @@ namespace PimPamPum
         [TargetRpc]
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
-            if (!isLocalPlayer)
-            {
-                PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
-            }
+            PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
         }
 
         [TargetRpc]
