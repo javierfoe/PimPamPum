@@ -12,8 +12,9 @@ namespace PimPamPum
         private static Colt45 colt45 = new Colt45();
 
         [SyncVar] private int playerNum;
-        [SyncVar(hook = "UpdateTurnTimeSpent")] private float turnTimeSpent;
-        [SyncVar(hook = "UpdateResponseTimeSpent")] private float responseTimeSpent;
+        [SyncVar(hook = nameof(UpdateTurnTimeSpent))] private float turnTimeSpent;
+        [SyncVar(hook = nameof(UpdateResponseTimeSpent))] private float responseTimeSpent;
+        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
 
         [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
@@ -66,9 +67,9 @@ namespace PimPamPum
             get { return character; }
         }
 
-        public IPlayerView PlayerView
+        protected IPlayerView PlayerView
         {
-            protected get
+            get
             {
                 return playerView;
             }
@@ -157,6 +158,11 @@ namespace PimPamPum
             }
         }
 
+        protected ActionsController Actions
+        {
+            get; private set;
+        }
+
         public override void OnStartServer()
         {
             State = State.OutOfTurn;
@@ -167,6 +173,7 @@ namespace PimPamPum
             MaxHP = characterHP;
             Hand = new List<Card>();
             properties = new List<Card>();
+            Actions = GetComponent<ActionsController>();
         }
 
         public bool BelongsToTeam(Team team)
@@ -228,8 +235,13 @@ namespace PimPamPum
         public void AddCard(Card c)
         {
             Hand.Add(c);
-            TargetAddCard(connectionToClient, Hand.Count - 1, c.Struct);
-            RpcAddCard();
+            Actions.AddCard(c.Struct);
+            cardAmount++;
+        }
+
+        public void AddHandCard(int index, CardStruct card)
+        {
+            PlayerView.AddHandCard(index, card);
         }
 
         public void AddCards(List<Card> cards)
@@ -262,8 +274,18 @@ namespace PimPamPum
         private void RemoveCardFromHand(int index)
         {
             Hand.RemoveAt(index);
-            TargetRemoveCard(connectionToClient, index);
-            RpcRemoveCard();
+            Actions.RemoveCard(index);
+            cardAmount--;
+        }
+
+        public void RemoveHandCard(int index)
+        {
+            PlayerView.RemoveHandCard(index);
+        }
+
+        public void EnableCard(int index, bool enable)
+        {
+            PlayerView.EnableCard(index, enable);
         }
 
         public void EquipPropertyTo(int target, Property p)
@@ -460,7 +482,7 @@ namespace PimPamPum
         public IEnumerator TurnTimeUp()
         {
             int cardLimit = CardLimit();
-            while (Hand.Count < cardLimit)
+            while (Hand.Count > cardLimit)
             {
                 yield return DiscardRandomCardEndTurn();
             }
@@ -544,7 +566,7 @@ namespace PimPamPum
             int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableCard(connectionToClient, i, false);
+                Actions.SetCard(i, false);
             }
             EnableSkill(false);
         }
@@ -554,7 +576,7 @@ namespace PimPamPum
             int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableCard(connectionToClient, i, true);
+                Actions.SetCard(i, true);
             }
         }
 
@@ -641,7 +663,7 @@ namespace PimPamPum
                 c = Hand[i];
                 isMissed = c.Is<Missed>();
                 isPimPamPum = c.Is<PimPamPum>();
-                TargetEnableCard(connectionToClient, i, !isPimPamPum && !isMissed || !isMissed && pimPamPums);
+                Actions.SetCard(i, !isPimPamPum && !isMissed || !isMissed && pimPamPums);
             }
         }
 
@@ -675,7 +697,7 @@ namespace PimPamPum
             int length = Hand.Count;
             for (int i = 0; i < length; i++)
             {
-                TargetEnableCard(connectionToClient, i, Hand[i].Is<T>());
+                Actions.SetCard(i, Hand[i].Is<T>());
             }
         }
 
@@ -1105,8 +1127,7 @@ namespace PimPamPum
         {
             Card card = Hand[index];
             Hand.RemoveAt(index);
-            TargetRemoveCard(connectionToClient, index);
-            RpcRemoveCard();
+            Actions.RemoveCard(index);
             card = card.Original ?? card;
             return card;
         }
@@ -1133,22 +1154,22 @@ namespace PimPamPum
 
         public void EnableTakeHitButton(bool value)
         {
-            TargetEnableTakeHitButton(connectionToClient, value);
+            Actions.TakeHit = value;
         }
 
         public void EnableEndTurnButton(bool value)
         {
-            TargetEnableEndTurnButton(connectionToClient, value);
+            Actions.EndTurn = value;
         }
 
         public void EnableDieButton(bool value)
         {
-            TargetEnableDieButton(connectionToClient, value);
+            Actions.Die = value;
         }
 
         public void EnablePassButton(bool value)
         {
-            TargetEnablePassButton(connectionToClient, value);
+            Actions.Pass = value;
         }
 
         public void EnableClick(NetworkConnection conn, bool value)
@@ -1240,14 +1261,14 @@ namespace PimPamPum
             return characterName;
         }
 
-        protected virtual void EnableSkill(bool value)
+        public virtual void EnableSkill(bool value)
         {
-            TargetEnableSkill(connectionToClient, value);
+            Actions.PlayerSkillEnable = value;
         }
 
-        protected void SetSkillStatus(bool value)
+        public void SetSkill(bool value)
         {
-            TargetSetSkillStatus(connectionToClient, value);
+            Actions.PlayerSkill = value;
         }
 
         public void SetPlayerName()
@@ -1257,17 +1278,17 @@ namespace PimPamPum
 
         public void EnableBarrelButton(bool value)
         {
-            TargetEnableBarrelButton(connectionToClient, value);
+            Actions.Barrel = value;
         }
 
-        protected void EnableConfirmButton(bool value)
+        public void EnableConfirmButton(bool value)
         {
-            TargetEnableConfirmButton(connectionToClient, value);
+            Actions.Confirm = value;
         }
 
-        protected void EnableCancelButton(bool value)
+        public void EnableCancelButton(bool value)
         {
-            TargetEnableCancelButton(connectionToClient, value);
+            Actions.Cancel = value;
         }
 
         private void PimPamPumResponseButton()
@@ -1323,6 +1344,12 @@ namespace PimPamPum
         public void UpdateResponseTimeSpent(float time)
         {
             PlayerView?.SetResponseTimeSpent(time);
+        }
+
+        public void UpdateCards(int cards)
+        {
+            if (isLocalPlayer) return;
+            PlayerView?.UpdateCards(cards);
         }
 
         public void SetTurnCountdown(float time)
@@ -1475,20 +1502,6 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcAddCard()
-        {
-            if (isLocalPlayer) return;
-            PlayerView.AddHandCard();
-        }
-
-        [ClientRpc]
-        private void RpcRemoveCard()
-        {
-            if (isLocalPlayer) return;
-            PlayerView.RemoveHandCard();
-        }
-
-        [ClientRpc]
         private void RpcRemoveProperty(int index)
         {
             PlayerView.RemoveProperty(index);
@@ -1562,12 +1575,6 @@ namespace PimPamPum
         }
 
         [TargetRpc]
-        protected void TargetEnableCard(NetworkConnection conn, int card, bool value)
-        {
-            PlayerView.EnableCard(card, value);
-        }
-
-        [TargetRpc]
         private void TargetClickable(NetworkConnection conn, bool value)
         {
             PlayerView.EnableClick(value);
@@ -1586,18 +1593,6 @@ namespace PimPamPum
         }
 
         [TargetRpc]
-        private void TargetAddCard(NetworkConnection conn, int index, CardStruct cs)
-        {
-            PlayerView.AddHandCard(index, cs);
-        }
-
-        [TargetRpc]
-        private void TargetRemoveCard(NetworkConnection conn, int index)
-        {
-            PlayerView.RemoveHandCard(index);
-        }
-
-        [TargetRpc]
         private void TargetSetRole(NetworkConnection conn, Role role)
         {
             PlayerView.SetRole(role);
@@ -1607,60 +1602,6 @@ namespace PimPamPum
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
-        }
-
-        [TargetRpc]
-        private void TargetEnableTakeHitButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableTakeHitButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableEndTurnButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableEndTurnButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableDieButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableDieButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnablePassButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnablePassButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableBarrelButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableBarrelButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableConfirmButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableConfirmButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableCancelButton(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableCancelButton(value);
-        }
-
-        [TargetRpc]
-        private void TargetEnableSkill(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnablePlayerSkill(value);
-        }
-
-        [TargetRpc]
-        private void TargetSetSkillStatus(NetworkConnection conn, bool value)
-        {
-            PlayerView.SetPlayerSkillStatus(value);
         }
 
         [TargetRpc]

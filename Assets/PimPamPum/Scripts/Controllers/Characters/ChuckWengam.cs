@@ -14,7 +14,7 @@ namespace PimPamPum
         {
             bool value = HP > 1;
             EnableSkill(value);
-            SetSkillStatus(value);
+            SetSkill(value);
         }
 
         protected override void UseSkill()

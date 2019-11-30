@@ -87,7 +87,7 @@ namespace PimPamPum
                 {
                     for (int i = 0; i < Hand.Count; i++)
                     {
-                        TargetEnableCard(connectionToClient, i, i != firstCard);
+                        Actions.SetCard(i, i != firstCard);
                     }
                     return;
                 }

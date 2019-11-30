@@ -21,11 +21,10 @@
         void EnableCancelButton(bool enable);
         void EnableConfirmButton(bool enable);
         void EnableCard(int index, bool enable);
-        void AddHandCard();
         void AddHandCard(int index, CardStruct cs);
         void EquipProperty(int index, CardStruct cs);
         void RemoveProperty(int index);
-        void RemoveHandCard();
+        void UpdateCards(int cards);
         void RemoveHandCard(int index);
         void EquipWeapon(CardStruct cs);
         void EnablePlayerSkill(bool value);

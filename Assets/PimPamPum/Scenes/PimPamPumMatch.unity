@@ -128,11 +128,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1833351235529255765, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
-        type: 3}
-      propertyPath: m_Name
-      value: PimPamPum
-      objectReference: {fileID: 0}
     - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -188,20 +183,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1833351235529255765, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
+        type: 3}
+      propertyPath: m_Name
+      value: PimPamPum
+      objectReference: {fileID: 0}
     - target: {fileID: 1833351235699569789, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
       propertyPath: m_SceneId
       value: 4255367010
       objectReference: {fileID: 0}
-    - target: {fileID: 5830613294722646006, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
-        type: 3}
-      propertyPath: m_SceneId
-      value: 2107879281
-      objectReference: {fileID: 0}
     - target: {fileID: 4673147212543824800, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
       propertyPath: m_SceneId
       value: 535707026
+      objectReference: {fileID: 0}
+    - target: {fileID: 5830613294722646006, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
+        type: 3}
+      propertyPath: m_SceneId
+      value: 2107879281
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}

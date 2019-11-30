@@ -56,10 +56,10 @@ namespace PimPamPum
 
         protected override void Awake()
         {
+            handHidden = handHiddenGO.GetComponent<IHandView>();
             weaponCard = weaponGO.GetComponent<ICardView>();
             handCards = handCardsGO.GetComponent<ICardListView>();
             propertyCards = propertyCardsGO.GetComponent<ICardListView>();
-            handHidden = handHiddenGO.GetComponent<IHandView>();
             skill = skillGO.GetComponent<ISkillView>();
             turnCountdown = turnCountdownGO.GetComponent<ICountdownView>();
             responseCountdown = responseCountdownGO.GetComponent<ICountdownView>();
@@ -136,14 +136,9 @@ namespace PimPamPum
             this.hp.text = hp.ToString();
         }
 
-        public void AddHandCard()
+        public void UpdateCards(int cards)
         {
-            HiddenCards += 1;
-        }
-
-        public void RemoveHandCard()
-        {
-            HiddenCards -= 1;
+            HiddenCards = cards;
         }
 
         public void AddHandCard(int index, CardStruct cs)

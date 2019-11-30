@@ -16,12 +16,12 @@ namespace PimPamPum
             activeSkill = false;
             bool skill = CanUseSkill();
             EnableSkill(skill);
-            SetSkillStatus(skill);
+            SetSkill(skill);
         }
 
         protected override void UseSkill()
         {
-            SetSkillStatus(activeSkill);
+            SetSkill(activeSkill);
             if (activeSkill)
             {
                 EnablePhase2Cards();
@@ -36,7 +36,7 @@ namespace PimPamPum
         protected virtual void EnableSkillCards()
         {
             EnableCards<ConvertedCard>();
-            SetSkillStatus(false);
+            SetSkill(false);
         }
 
         protected override IEnumerator OnStartTurn()

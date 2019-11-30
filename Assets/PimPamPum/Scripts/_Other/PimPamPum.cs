@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Mirror;
+using UnityEngine;
 
 namespace PimPamPum
 {
@@ -95,12 +96,15 @@ namespace PimPamPum
         }
     }
 
+    public class SyncListCard : SyncList<CardStruct> { }
+
     public struct CardStruct
     {
         public string name;
         public Suit suit;
         public Rank rank;
         public Color color;
+        public bool enabled;
     }
 
     public enum State
