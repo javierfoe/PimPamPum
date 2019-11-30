@@ -271,11 +271,13 @@ namespace PimPamPum
             return c;
         }
 
-        private void RemoveCardFromHand(int index)
+        private Card RemoveCardFromHand(int index)
         {
+            Card card = Hand[index];
             Hand.RemoveAt(index);
             Actions.RemoveCard(index);
             cardAmount--;
+            return card;
         }
 
         public void RemoveHandCard(int index)
@@ -1125,9 +1127,7 @@ namespace PimPamPum
 
         public Card UnequipHandCard(int index)
         {
-            Card card = Hand[index];
-            Hand.RemoveAt(index);
-            Actions.RemoveCard(index);
+            Card card = RemoveCardFromHand(index);
             card = card.Original ?? card;
             return card;
         }
@@ -1346,9 +1346,13 @@ namespace PimPamPum
             PlayerView?.SetResponseTimeSpent(time);
         }
 
-        public void UpdateCards(int cards)
+        public void UpdateCardsHost()
         {
-            if (isLocalPlayer) return;
+            PlayerView.UpdateCards(Hand.Count);
+        }
+
+        private void UpdateCards(int cards)
+        {
             PlayerView?.UpdateCards(cards);
         }
 
@@ -1602,6 +1606,8 @@ namespace PimPamPum
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
+            if (isServer)
+                PlayerView.UpdateCards(Hand.Count);
         }
 
         [TargetRpc]

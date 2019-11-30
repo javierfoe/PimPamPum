@@ -1,4 +1,4 @@
-﻿using Mirror;
+using Mirror;
 
 namespace PimPamPum
 {
@@ -16,8 +16,6 @@ namespace PimPamPum
         [SyncVar(hook = nameof(SetSkill))] private bool playerSkill;
         [SyncVar(hook = nameof(EnableSkill))] private bool playerSkillEnable;
 
-        private PlayerController playerController;
-
         public bool TakeHit { set { takeHit = value; } }
         public bool Confirm { set { confirm = value; } }
         public bool Cancel { set { cancel = value; } }
@@ -28,14 +26,8 @@ namespace PimPamPum
         public bool PlayerSkill { set { playerSkill = value; } }
         public bool PlayerSkillEnable { set { playerSkillEnable = value; } }
 
-        public override void OnStartServer()
-        {
-            playerController = GetComponent<PlayerController>();
-        }
-
         public override void OnStartLocalPlayer()
         {
-            playerController = GetComponent<PlayerController>();
             cards.Callback += OnCardsUpdated;
         }
 
@@ -61,60 +53,69 @@ namespace PimPamPum
             switch (op)
             {
                 case SyncListCard.Operation.OP_ADD:
-                    playerController.AddHandCard(index, card);
+                    PlayerView.LocalPlayer.AddHandCard(index, card);
                     break;
                 case SyncListCard.Operation.OP_REMOVEAT:
-                    playerController.RemoveHandCard(index);
+                    PlayerView.LocalPlayer.RemoveHandCard(index);
                     break;
                 case SyncListCard.Operation.OP_SET:
-                    playerController.EnableCard(index, card.enabled);
+                    PlayerView.LocalPlayer.EnableCard(index, card.enabled);
                     break;
             }
         }
 
         private void SetTakeHit(bool value)
         {
-            playerController.EnableTakeHitButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableTakeHitButton(value);
         }
 
         private void SetConfirm(bool value)
         {
-            playerController.EnableConfirmButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableConfirmButton(value);
         }
 
         private void SetCancel(bool value)
         {
-            playerController.EnableCancelButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableCancelButton(value);
         }
 
         private void SetBarrel(bool value)
         {
-            playerController.EnableBarrelButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableBarrelButton(value);
         }
 
         private void SetDie(bool value)
         {
-            playerController.EnableDieButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableDieButton(value);
         }
 
         private void SetPass(bool value)
         {
-            playerController.EnablePassButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnablePassButton(value);
         }
 
         private void SetEndTurn(bool value)
         {
-            playerController.EnableEndTurnButton(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnableEndTurnButton(value);
         }
 
         private void SetSkill(bool value)
         {
-            playerController.SetSkill(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.SetPlayerSkillStatus(value);
         }
 
         private void EnableSkill(bool value)
         {
-            playerController.EnableSkill(value);
+            if (!isLocalPlayer) return;
+            PlayerView.LocalPlayer.EnablePlayerSkill(value);
         }
     }
 }

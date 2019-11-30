@@ -7,6 +7,8 @@ namespace PimPamPum
     public class PlayerView : DropView, IPlayerView
     {
 
+        public static IPlayerView LocalPlayer;
+
         [SerializeField] private Text hp = null, playerName = null, info = null, character = null;
         [SerializeField]
         private GameObject
@@ -71,6 +73,7 @@ namespace PimPamPum
 
         public void SetLocalPlayer()
         {
+            LocalPlayer = this;
             endTurnButton = FindObjectOfType<EndTurnButton>();
             takeHitButton = FindObjectOfType<TakeHitButton>();
             dieButton = FindObjectOfType<DieButton>();
