@@ -81,5 +81,11 @@ namespace PimPamPum
             res.SetSuitRank(suit, rank);
             return res;
         }
+
+        public static bool CheckCondition<T>(Card card) where T : ICondition, new()
+        {
+            ICondition checkCondition = new T();
+            return checkCondition.CheckCondition(card);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -36,12 +36,6 @@ namespace PimPamPum
         private PlayerController[] playerControllers;
         public GameObject CardPrefab => cardPrefab.gameObject;
         public GameObject PropertyPrefab => propertyPrefab.gameObject;
-
-        public static bool CheckCondition<T>(Card card) where T : ICondition, new()
-        {
-            ICondition checkCondition = new T();
-            return checkCondition.CheckCondition(card);
-        }
 
         public int MaxPlayers
         {
