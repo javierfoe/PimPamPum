@@ -105,6 +105,8 @@ namespace PimPamPum
         public Rank rank;
         public Color color;
         public bool enabled;
+
+        public static readonly CardStruct Null = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
     }
 
     public enum State

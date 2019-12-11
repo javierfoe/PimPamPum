@@ -5,6 +5,9 @@ using Mirror;
 {
     public class BoardController : NetworkBehaviour
     {
+        [SyncVar(hook = nameof(UpdateDeckSize))] private int deckSize;
+        [SyncVar(hook = nameof(UpdateDiscardTopCard))] private CardStruct discardTopCard;
+
         [SerializeField] private GameObject boardViewGO = null, deckViewGO = null, discardViewGO = null;
         [SerializeField] private CardDefinition[] deckCards = null;
 
@@ -22,7 +25,6 @@ using Mirror;
         private List<Card> deck;
         private List<Card> discardStack;
 
-        public int DeckSize => deck.Count;
         public int DiscardStackSize => discardStack.Count;
         private Card DiscardStackTop => discardStack[discardStack.Count - 1];
 
@@ -58,14 +60,14 @@ using Mirror;
             int index = deck.Count - 1;
             Card c = deck[index];
             deck.RemoveAt(index);
-            SetDeckSize();
+            deckSize--;
             return c;
         }
 
         public void AddCardToDeck(Card c)
         {
             deck.Add(c);
-            SetDeckSize();
+            deckSize++;
         }
 
         public List<Card> DrawCards(int cards)
@@ -79,14 +81,14 @@ using Mirror;
         public void DiscardCard(Card card)
         {
             discardStack.Add(card);
-            RpcSetDiscardTop(card.Struct);
+            discardTopCard = card.Struct;
         }
 
         public Card GetDiscardTopCard()
         {
             Card res = DiscardStackTop;
             discardStack.RemoveAt(discardStack.Count - 1);
-            RpcSetDiscardTop(DiscardStackTop.Struct);
+            discardTopCard = DiscardStackTop.Struct;
             return res;
         }
 
@@ -101,12 +103,7 @@ using Mirror;
                 temp.RemoveAt(random);
                 deck.Add(c);
             }
-            RpcEmptyDiscardStack();
-        }
-
-        private void SetDeckSize()
-        {
-            RpcSetDeckSize(deck.Count);
+            discardTopCard = CardStruct.Null;
         }
 
         public void SetTargetable(NetworkConnection conn, bool value)
@@ -124,6 +121,7 @@ using Mirror;
             }
 
             ShuffleCards(temp);
+            deckSize = deckCards.Length;
         }
 
         private void GenerateCard(CardDefinition card, List<Card> list)
@@ -203,6 +201,16 @@ using Mirror;
             if (c != null) list.Add(c);
         }
 
+        private void UpdateDeckSize(int deckSize)
+        {
+            deckView.SetDeckSize(deckSize);
+        }
+
+        private void UpdateDiscardTopCard(CardStruct discardCard)
+        {
+            discardView.SetDiscardTop(discardCard);
+        }
+
         [Client]
         private void EnableClickableDeck(bool value)
         {
@@ -232,24 +240,6 @@ using Mirror;
         private void TargetEnableClickableDiscard(NetworkConnection conn, bool value)
         {
             EnableClickableDiscard(value);
-        }
-
-        [ClientRpc]
-        private void RpcSetDeckSize(int cards)
-        {
-            deckView.SetDeckSize(cards);
-        }
-
-        [ClientRpc]
-        private void RpcSetDiscardTop(CardStruct cs)
-        {
-            discardView.SetDiscardTop(cs);
-        }
-
-        [ClientRpc]
-        private void RpcEmptyDiscardStack()
-        {
-            discardView.EmptyDiscardStack();
         }
     }
 }

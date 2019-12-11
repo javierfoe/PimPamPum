@@ -11,14 +11,11 @@ namespace PimPamPum
 
         private static Colt45 colt45 = new Colt45();
 
-        [SyncVar] private int playerNum;
-        [SyncVar(hook = nameof(UpdateTurnTimeSpent))] private float turnTimeSpent;
-        [SyncVar(hook = nameof(UpdateResponseTimeSpent))] private float responseTimeSpent;
-        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
-
         [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
+
+        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
 
         private int hp;
         private Weapon weapon;
@@ -28,6 +25,10 @@ namespace PimPamPum
         protected Card draggedCard;
         protected int pimPamPumsUsed;
 
+        [field: SyncVar] public int PlayerNumber { get; set; }
+        [field: SyncVar(hook = nameof(UpdateTurnTimeSpent))] public float TurnTime { get; set; }
+        [field: SyncVar(hook = nameof(UpdateResponseTimeSpent))] public float ResponseTime { get; set; }
+
         public int WeaponRange => weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
@@ -36,16 +37,6 @@ namespace PimPamPum
         public bool IsDying => HP < 1;
         protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
         protected bool CanShoot => PimPamPum();
-
-        public float TurnTime
-        {
-            set { turnTimeSpent = value; }
-        }
-
-        public float ResponseTime
-        {
-            set { responseTimeSpent = value; }
-        }
 
         public List<Card> Hand
         {
@@ -115,12 +106,6 @@ namespace PimPamPum
         public int DrawEffectCards
         {
             get; protected set;
-        }
-
-        public int PlayerNumber
-        {
-            get { return playerNum; }
-            set { playerNum = value; }
         }
 
         public int MissesToDodge
