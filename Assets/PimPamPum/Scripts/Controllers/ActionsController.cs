@@ -4,62 +4,52 @@ namespace PimPamPum
 {
     public class ActionsController : NetworkBehaviour
     {
-        private readonly SyncListCard cards = new SyncListCard();
+        private readonly SyncListCard _cards = new SyncListCard();
 
-        [SyncVar(hook = nameof(SetTakeHit))] private bool takeHit;
-        [SyncVar(hook = nameof(SetConfirm))] private bool confirm;
-        [SyncVar(hook = nameof(SetCancel))] private bool cancel;
-        [SyncVar(hook = nameof(SetBarrel))] private bool barrel;
-        [SyncVar(hook = nameof(SetDie))] private bool die;
-        [SyncVar(hook = nameof(SetPass))] private bool pass;
-        [SyncVar(hook = nameof(SetEndTurn))] private bool endTurn;
-        [SyncVar(hook = nameof(SetSkill))] private bool playerSkill;
-        [SyncVar(hook = nameof(EnableSkill))] private bool playerSkillEnable;
-
-        public bool TakeHit { set { takeHit = value; } }
-        public bool Confirm { set { confirm = value; } }
-        public bool Cancel { set { cancel = value; } }
-        public bool Barrel { set { barrel = value; } }
-        public bool Die { set { die = value; } }
-        public bool Pass { set { pass = value; } }
-        public bool EndTurn { set { endTurn = value; } }
-        public bool PlayerSkill { set { playerSkill = value; } }
-        public bool PlayerSkillEnable { set { playerSkillEnable = value; } }
-
+        [field: SyncVar(hook = nameof(SetTakeHit))] public bool TakeHit { get; set; }
+        [field: SyncVar(hook = nameof(SetConfirm))] public bool Confirm { get; set; }
+        [field: SyncVar(hook = nameof(SetCancel))] public bool Cancel { get; set; }
+        [field: SyncVar(hook = nameof(SetBarrel))] public bool Barrel { get; set; }
+        [field: SyncVar(hook = nameof(SetDie))] public bool Die { get; set; }
+        [field: SyncVar(hook = nameof(SetPass))] public bool Pass { get; set; }
+        [field: SyncVar(hook = nameof(SetEndTurn))] public bool EndTurn { get; set; }
+        [field: SyncVar(hook = nameof(SetSkill))] public bool PlayerSkill { get; set; }
+        [field: SyncVar(hook = nameof(EnableSkill))] public bool PlayerSkillEnable { get; set; }
+        
         public override void OnStartLocalPlayer()
         {
-            cards.Callback += OnCardsUpdated;
+            _cards.Callback += OnCardsUpdated;
         }
 
         public void AddCard(CardStruct card)
         {
-            cards.Add(card);
+            _cards.Add(card);
         }
 
         public void SetCard(int index, bool value)
         {
-            CardStruct card = cards[index];
+            CardStruct card = _cards[index];
             card.enabled = value;
-            cards[index] = card;
+            _cards[index] = card;
         }
 
         public void RemoveCard(int index)
         {
-            cards.RemoveAt(index);
+            _cards.RemoveAt(index);
         }
 
-        private void OnCardsUpdated(SyncListCard.Operation op, int index, CardStruct card)
+        private void OnCardsUpdated(SyncListCard.Operation op, int index, CardStruct oldValue, CardStruct newValue)
         {
             switch (op)
             {
                 case SyncListCard.Operation.OP_ADD:
-                    PlayerView.LocalPlayer.AddHandCard(index, card);
+                    PlayerView.LocalPlayer.AddHandCard(index, newValue);
                     break;
                 case SyncListCard.Operation.OP_REMOVEAT:
                     PlayerView.LocalPlayer.RemoveHandCard(index);
                     break;
                 case SyncListCard.Operation.OP_SET:
-                    PlayerView.LocalPlayer.EnableCard(index, card.enabled);
+                    PlayerView.LocalPlayer.EnableCard(index, newValue.enabled);
                     break;
             }
         }

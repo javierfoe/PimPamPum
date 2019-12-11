@@ -4,6 +4,6 @@ An online and local multiplayer version of Bang! by Emiliano Sciarra. Play games
 
 Dependencies:
 
-Mirror - https://github.com/vis2k/Mirror/releases/tag/v5.1.0
+Mirror - https://github.com/vis2k/Mirror/releases/tag/v6.3.0
 
 FizzySteamyMirror - https://github.com/Raystorms/FizzySteamyMirror/releases/tag/1.4.0rc1
