@@ -711,7 +711,6 @@ namespace PimPamPum
 
         private void StartTurn(int player)
         {
-            if (CurrentPlayer != PimPamPumConstants.NoOne) playerControllers[CurrentPlayer].SetTurn(false);
             if (turnTimerCorutine != null) turnTimerCorutine.StopCorutine();
             CurrentPlayer = player;
             PlayerController current = playerControllers[player];

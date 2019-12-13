@@ -16,6 +16,9 @@ namespace PimPamPum
         [SerializeField] private int characterHP = 4;
 
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
+#pragma warning disable CS0414
+        [SyncVar(hook = nameof(SetTurn))] private bool turn;
+#pragma warning restore
 
         private int hp;
         private Weapon weapon;
@@ -368,13 +371,8 @@ namespace PimPamPum
         public void StartTurn()
         {
             endTurn = false;
-            SetTurn(true);
+            turn = true;
             StartCoroutine(OnStartTurn());
-        }
-
-        public void SetTurn(bool value)
-        {
-            RpcSetTurn(value);
         }
 
         protected void Phase2()
@@ -481,6 +479,7 @@ namespace PimPamPum
             State = State.OutOfTurn;
             OriginalHand();
             DisableCards();
+            turn = false;
             GameController.Instance.EndTurn(PlayerNumber);
         }
 
@@ -1351,6 +1350,11 @@ namespace PimPamPum
             RpcSetResponseCountdown(time);
         }
 
+        private void SetTurn(bool value)
+        {
+            PlayerView?.SetTurn(value);
+        }
+
         [Client]
         public void UseSkillClient()
         {
@@ -1513,12 +1517,6 @@ namespace PimPamPum
         {
             PlayerView.SetPlayerName(playerName);
             PlayerView.SetCharacter(character);
-        }
-
-        [ClientRpc]
-        private void RpcSetTurn(bool value)
-        {
-            PlayerView.SetTurn(value);
         }
 
         [ClientRpc]
