@@ -25,6 +25,8 @@ namespace PimPamPum
         [SyncVar(hook = nameof(UpdateHP))] protected int hp;
 #pragma warning restore
 
+        private readonly SyncListCard propertyCards = new SyncListCard();
+
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
@@ -163,6 +165,11 @@ namespace PimPamPum
             Hand = new List<Card>();
             properties = new List<Card>();
             Actions = GetComponent<ActionsController>();
+        }
+
+        public override void OnStartClient()
+        {
+            propertyCards.Callback += OnPropertiesUpdated;
         }
 
         public bool BelongsToTeam(Team team)
@@ -317,7 +324,7 @@ namespace PimPamPum
         public void EquipProperty(Property c)
         {
             properties.Add(c);
-            RpcEquipProperty(properties.Count - 1, c.Struct);
+            propertyCards.Add(c.Struct);
         }
 
         public void EquipBarrel()
@@ -1122,8 +1129,8 @@ namespace PimPamPum
         {
             Property card = (Property)properties[index];
             properties.RemoveAt(index);
+            propertyCards.RemoveAt(index);
             card.RemovePropertyEffect(this);
-            RpcRemoveProperty(index);
             return card;
         }
 
@@ -1382,6 +1389,19 @@ namespace PimPamPum
             PlayerView?.SetPlayerName(playerName);
         }
 
+        private void OnPropertiesUpdated(SyncListCard.Operation op, int index, CardStruct oldValue, CardStruct newValue)
+        {
+            switch (op)
+            {
+                case SyncListCard.Operation.OP_ADD:
+                    PlayerView.EquipProperty(index, newValue);
+                    break;
+                case SyncListCard.Operation.OP_REMOVEAT:
+                    PlayerView.RemoveProperty(index);
+                    break;
+            }
+        }
+
         [Client]
         public void UseSkillClient()
         {
@@ -1501,18 +1521,6 @@ namespace PimPamPum
         private void CmdUseSkill()
         {
             UseSkill();
-        }
-
-        [ClientRpc]
-        private void RpcEquipProperty(int index, CardStruct cs)
-        {
-            PlayerView.EquipProperty(index, cs);
-        }
-
-        [ClientRpc]
-        private void RpcRemoveProperty(int index)
-        {
-            PlayerView.RemoveProperty(index);
         }
 
         [TargetRpc]
