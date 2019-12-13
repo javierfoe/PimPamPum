@@ -20,6 +20,7 @@ namespace PimPamPum
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
         [SyncVar(hook = nameof(EquipWeaponCard))] private CardStruct weaponCard;
         [SyncVar(hook = nameof(UpdateHP))] protected int hp;
+        [SyncVar(hook = nameof(SetRole))] private Role showRole;
 #pragma warning restore
 
         private Weapon weapon;
@@ -167,7 +168,7 @@ namespace PimPamPum
             if (Role == Role.Sheriff)
             {
                 MaxHP++;
-                RpcSheriff();
+                showRole = Role;
             }
             else
             {
@@ -955,7 +956,7 @@ namespace PimPamPum
         {
             yield return PimPamPumEvent(this + " has died.");
             ResetDraggableCard();
-            if (Role != Role.Sheriff) RpcSetRole(Role);
+            if (Role != Role.Sheriff) showRole = Role;
             List<Card> deadCards = new List<Card>();
             for (int i = Hand.Count - 1; i > -1; i--)
             {
@@ -1246,11 +1247,6 @@ namespace PimPamPum
             Actions.PlayerSkill = value;
         }
 
-        public void SetPlayerName()
-        {
-            RpcSetPlayerName(PlayerName);
-        }
-
         public void EnableBarrelButton(bool value)
         {
             Actions.Barrel = value;
@@ -1354,6 +1350,11 @@ namespace PimPamPum
         private void UpdateHP(int hp)
         {
             PlayerView?.UpdateHP(hp);
+        }
+
+        private void SetRole(Role role)
+        {
+            PlayerView?.SetRole(role);
         }
 
         [Client]
@@ -1490,28 +1491,10 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcSheriff()
-        {
-            PlayerView.SetSheriff();
-        }
-
-        [ClientRpc]
-        private void RpcSetRole(Role role)
-        {
-            PlayerView.SetRole(role);
-        }
-
-        [ClientRpc]
         private void RpcSetCharacter(string character, string playerName)
         {
             PlayerView.SetPlayerName(playerName);
             PlayerView.SetCharacter(character);
-        }
-
-        [ClientRpc]
-        public void RpcSetPlayerName(string name)
-        {
-            PlayerView.SetPlayerName(name);
         }
 
         [ClientRpc]
@@ -1584,6 +1567,7 @@ namespace PimPamPum
                 UpdateCards(Hand.Count);
                 EquipWeaponCard(weaponCard);
                 UpdateHP(hp);
+                SetRole(showRole);
             }
         }
 

@@ -168,6 +168,7 @@ namespace PimPamPum
 
     public enum Role
     {
+        Null,
         Sheriff,
         Deputy,
         Outlaw,
