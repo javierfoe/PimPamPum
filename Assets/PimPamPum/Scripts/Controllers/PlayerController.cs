@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -19,8 +19,10 @@ namespace PimPamPum
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
         [SyncVar(hook = nameof(EquipWeaponCard))] private CardStruct weaponCard;
-        [SyncVar(hook = nameof(UpdateHP))] protected int hp;
         [SyncVar(hook = nameof(SetRole))] private Role showRole;
+        [SyncVar(hook = nameof(SetPlayerName))] private string showPlayerName;
+        [SyncVar(hook = nameof(SetCharacter))] private string showCharacterName;
+        [SyncVar(hook = nameof(UpdateHP))] protected int hp;
 #pragma warning restore
 
         private Weapon weapon;
@@ -53,6 +55,11 @@ namespace PimPamPum
             get; protected set;
         }
 
+        public string PlayerName
+        {
+            get; set;
+        }
+
         public int DraggedCardIndex
         {
             get; set;
@@ -75,8 +82,6 @@ namespace PimPamPum
                 playerView.PlayerIndex = PlayerNumber;
             }
         }
-
-        public string PlayerName { get; set; }
 
         public bool IsDead
         {
@@ -175,7 +180,8 @@ namespace PimPamPum
                 TargetSetRole(connectionToClient, Role);
             }
             hp = MaxHP;
-            RpcSetCharacter(CharacterName(), PlayerName);
+            showCharacterName = characterName;
+            showPlayerName = PlayerName;
             Weapon = colt45;
             DrawInitialCards();
         }
@@ -1232,11 +1238,6 @@ namespace PimPamPum
             return PlayerName;
         }
 
-        private string CharacterName()
-        {
-            return characterName;
-        }
-
         public virtual void EnableSkill(bool value)
         {
             Actions.PlayerSkillEnable = value;
@@ -1355,6 +1356,16 @@ namespace PimPamPum
         private void SetRole(Role role)
         {
             PlayerView?.SetRole(role);
+        }
+
+        private void SetCharacter(string character)
+        {
+            PlayerView?.SetCharacter(character);
+        }
+
+        private void SetPlayerName(string playerName)
+        {
+            PlayerView?.SetPlayerName(playerName);
         }
 
         [Client]
@@ -1491,13 +1502,6 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcSetCharacter(string character, string playerName)
-        {
-            PlayerView.SetPlayerName(playerName);
-            PlayerView.SetCharacter(character);
-        }
-
-        [ClientRpc]
         private void RpcSetTurnCountdown(float time)
         {
             PlayerView.SetTurnCountdown(time);
@@ -1564,6 +1568,8 @@ namespace PimPamPum
             //TODO Remove when issue #1278 is fixed on Mirror
             if (isServer)
             {
+                SetPlayerName(PlayerName);
+                SetCharacter(showCharacterName);
                 UpdateCards(Hand.Count);
                 EquipWeaponCard(weaponCard);
                 UpdateHP(hp);
