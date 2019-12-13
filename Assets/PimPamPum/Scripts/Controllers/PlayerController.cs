@@ -19,9 +19,9 @@ namespace PimPamPum
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
         [SyncVar(hook = nameof(EquipWeaponCard))] private CardStruct weaponCard;
+        [SyncVar(hook = nameof(UpdateHP))] protected int hp;
 #pragma warning restore
 
-        private int hp;
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
@@ -38,7 +38,7 @@ namespace PimPamPum
         public bool HasCards => Hand.Count > 0;
         public bool HasProperties => properties.Count > 0;
         public bool HasColt45 => Weapon == colt45;
-        public bool IsDying => HP < 1;
+        public bool IsDying => hp < 1;
         protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
         protected bool CanShoot => PimPamPum();
 
@@ -76,16 +76,6 @@ namespace PimPamPum
         }
 
         public string PlayerName { get; set; }
-
-        protected int HP
-        {
-            get { return hp; }
-            set
-            {
-                hp = value;
-                RpcUpdateHP(hp);
-            }
-        }
 
         public bool IsDead
         {
@@ -183,7 +173,7 @@ namespace PimPamPum
             {
                 TargetSetRole(connectionToClient, Role);
             }
-            HP = MaxHP;
+            hp = MaxHP;
             RpcSetCharacter(CharacterName(), PlayerName);
             Weapon = colt45;
             DrawInitialCards();
@@ -928,7 +918,7 @@ namespace PimPamPum
             {
                 yield return PimPamPumEvent(this + " loses " + amount + " hit points.");
             }
-            HP -= amount;
+            hp -= amount;
             EnableTakeHitButton(false);
         }
 
@@ -1024,8 +1014,8 @@ namespace PimPamPum
 
         public void Heal(int amount = 1)
         {
-            if (HP + amount < MaxHP) HP += amount;
-            else HP = MaxHP;
+            if (hp + amount < MaxHP) hp += amount;
+            else hp = MaxHP;
         }
 
         public void DiscardCardUsed()
@@ -1201,7 +1191,7 @@ namespace PimPamPum
 
         protected virtual int CardLimit()
         {
-            return HP;
+            return hp;
         }
 
         private void EndTurn()
@@ -1361,6 +1351,11 @@ namespace PimPamPum
             PlayerView?.EquipWeapon(cs);
         }
 
+        private void UpdateHP(int hp)
+        {
+            PlayerView?.UpdateHP(hp);
+        }
+
         [Client]
         public void UseSkillClient()
         {
@@ -1489,12 +1484,6 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcUpdateHP(int hp)
-        {
-            PlayerView.UpdateHP(hp);
-        }
-
-        [ClientRpc]
         private void RpcRemoveProperty(int index)
         {
             PlayerView.RemoveProperty(index);
@@ -1594,6 +1583,7 @@ namespace PimPamPum
             {
                 UpdateCards(Hand.Count);
                 EquipWeaponCard(weaponCard);
+                UpdateHP(hp);
             }
         }
 

@@ -12,7 +12,7 @@ namespace PimPamPum
 
         private void EnableSkill()
         {
-            bool value = HP > 1;
+            bool value = hp > 1;
             EnableSkill(value);
             SetSkill(value);
         }
@@ -31,7 +31,7 @@ namespace PimPamPum
             yield return decision;
             if (decision.Decision == Decision.Confirm)
             {
-                HP--;
+                hp--;
                 Draw(2);
             }
             EnableCancelButton(false);
