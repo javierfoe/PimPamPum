@@ -31,6 +31,8 @@
         void SetPlayerSkillStatus(bool value);
         void Win();
         void Lose();
+        void EnableTurn(bool value);
+        void EnableResponse(bool value);
         void SetTurnCountdown(float time);
         void SetTurnTimeSpent(float time);
         void SetResponseCountdown(float time);

@@ -267,6 +267,11 @@ namespace PimPamPum
             turnCountdown.SetTimeSpent(time);
         }
 
+        public void EnableTurn(bool value)
+        {
+            turnCountdown.Enable(value);
+        }
+
         public void SetResponseCountdown(float time)
         {
             responseCountdown.SetCountdown(time);
@@ -275,6 +280,11 @@ namespace PimPamPum
         public void SetResponseTimeSpent(float time)
         {
             responseCountdown.SetTimeSpent(time);
+        }
+
+        public void EnableResponse(bool value)
+        {
+            responseCountdown.Enable(value);
         }
     }
 }

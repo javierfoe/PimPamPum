@@ -65,11 +65,13 @@ namespace PimPamPum
         {
             if (Response)
             {
-                PlayerController.SetResponseCountdown(maxTime);
+                PlayerController.ResponseEnable = true;
+                PlayerController.ResponseMaxTime = maxTime;
             }
             else
             {
-                PlayerController.SetTurnCountdown(maxTime);
+                PlayerController.TurnEnable = true;
+                PlayerController.TurnMaxTime = maxTime;
             }
         }
 
@@ -77,6 +79,14 @@ namespace PimPamPum
         {
             time = maxTime;
             SetTimeSpent();
+            if (Response)
+            {
+                PlayerController.ResponseEnable = false;
+            }
+            else
+            {
+                PlayerController.TurnEnable = false;
+            }
         }
 
         public void SetTimeSpent()

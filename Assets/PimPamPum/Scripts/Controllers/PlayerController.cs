@@ -35,6 +35,10 @@ namespace PimPamPum
         [field: SyncVar] public int PlayerNumber { get; set; }
         [field: SyncVar(hook = nameof(UpdateTurnTimeSpent))] public float TurnTime { get; set; }
         [field: SyncVar(hook = nameof(UpdateResponseTimeSpent))] public float ResponseTime { get; set; }
+        [field: SyncVar(hook = nameof(UpdateTurnMaxTime))] public float TurnMaxTime { get; set; }
+        [field: SyncVar(hook = nameof(UpdateResponseMaxTime))] public float ResponseMaxTime { get; set; }
+        [field: SyncVar(hook = nameof(EnableTurn))] public bool TurnEnable { get; set; }
+        [field: SyncVar(hook = nameof(EnableResponse))] public bool ResponseEnable { get; set; }
 
         public int WeaponRange => Weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
@@ -1308,14 +1312,34 @@ namespace PimPamPum
 
         protected virtual void OnSetLocalPlayer() { }
 
+        public void EnableTurn(bool value)
+        {
+            PlayerView?.EnableTurn(value);
+        }
+
         public void UpdateTurnTimeSpent(float time)
         {
             PlayerView?.SetTurnTimeSpent(time);
         }
 
+        public void UpdateTurnMaxTime(float time)
+        {
+            PlayerView?.SetTurnCountdown(time);
+        }
+
+        public void EnableResponse(bool value)
+        {
+            PlayerView?.EnableResponse(value);
+        }
+
         public void UpdateResponseTimeSpent(float time)
         {
             PlayerView?.SetResponseTimeSpent(time);
+        }
+
+        public void UpdateResponseMaxTime(float time)
+        {
+            PlayerView?.SetResponseCountdown(time);
         }
 
         public void UpdateCardsHost()
@@ -1326,16 +1350,6 @@ namespace PimPamPum
         private void UpdateCards(int cards)
         {
             PlayerView?.UpdateCards(cards);
-        }
-
-        public void SetTurnCountdown(float time)
-        {
-            RpcSetTurnCountdown(time);
-        }
-
-        public void SetResponseCountdown(float time)
-        {
-            RpcSetResponseCountdown(time);
         }
 
         private void SetTurn(bool value)
@@ -1501,18 +1515,6 @@ namespace PimPamPum
             PlayerView.RemoveProperty(index);
         }
 
-        [ClientRpc]
-        private void RpcSetTurnCountdown(float time)
-        {
-            PlayerView.SetTurnCountdown(time);
-        }
-
-        [ClientRpc]
-        private void RpcSetResponseCountdown(float time)
-        {
-            PlayerView.SetResponseCountdown(time);
-        }
-
         [TargetRpc]
         public void TargetSetLocalPlayer(NetworkConnection conn, int maxPlayers)
         {
@@ -1574,6 +1576,12 @@ namespace PimPamPum
                 EquipWeaponCard(weaponCard);
                 UpdateHP(hp);
                 SetRole(showRole);
+                UpdateResponseMaxTime(ResponseMaxTime);
+                EnableResponse(ResponseEnable);
+                UpdateResponseTimeSpent(ResponseTime);
+                UpdateTurnMaxTime(TurnMaxTime);
+                EnableTurn(TurnEnable);
+                UpdateTurnTimeSpent(TurnTime);
             }
         }
 

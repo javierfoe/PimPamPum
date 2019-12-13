@@ -28,30 +28,29 @@ namespace PimPamPum
             set
             {
                 image.fillAmount = value;
-                SetCurrentColor(value);
+                if (value <= 0)
+                {
+                    Enable(false);
+                    return;
+                }
+                if (value <= colorThresholds[currentThreshold].value)
+                {
+                    currentThreshold++;
+                }
+                Color = colorThresholds[currentThreshold].color;
             }
         }
 
-        private void SetCurrentColor(float fillAmount)
+        public void Enable(bool value)
         {
-            if (fillAmount <= 0)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-            if (fillAmount <= colorThresholds[currentThreshold].value)
-            {
-                currentThreshold++;
-            }
-            Color = colorThresholds[currentThreshold].color;
+            gameObject.SetActive(value);
+            currentThreshold = 0;
+            if (value) FillAmount = 1;
         }
 
         public void SetCountdown(float time)
         {
             maxTime = time;
-            currentThreshold = 0;
-            FillAmount = 1;
-            gameObject.SetActive(true);
         }
 
         public void SetTimeSpent(float time)
