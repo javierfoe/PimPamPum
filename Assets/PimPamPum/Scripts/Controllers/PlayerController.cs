@@ -15,9 +15,10 @@ namespace PimPamPum
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
 
-        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
 #pragma warning disable CS0414
+        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
+        [SyncVar(hook = nameof(EquipWeaponCard))] private CardStruct weaponCard;
 #pragma warning restore
 
         private int hp;
@@ -32,7 +33,7 @@ namespace PimPamPum
         [field: SyncVar(hook = nameof(UpdateTurnTimeSpent))] public float TurnTime { get; set; }
         [field: SyncVar(hook = nameof(UpdateResponseTimeSpent))] public float ResponseTime { get; set; }
 
-        public int WeaponRange => weapon.Range + Scope;
+        public int WeaponRange => Weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
         public bool HasProperties => properties.Count > 0;
@@ -142,7 +143,7 @@ namespace PimPamPum
             set
             {
                 weapon = value;
-                RpcEquipWeapon(weapon.Struct);
+                weaponCard = weapon.Struct;
             }
         }
 
@@ -830,7 +831,7 @@ namespace PimPamPum
 
         public void PimPamPumBeginCardDrag()
         {
-            GameController.Instance.TargetPlayersRange(PlayerNumber, weapon.Range + Scope, draggedCard);
+            GameController.Instance.TargetPlayersRange(PlayerNumber, Weapon.Range + Scope, draggedCard);
         }
 
         public void JailBeginCardDrag()
@@ -1355,6 +1356,11 @@ namespace PimPamPum
             PlayerView?.SetTurn(value);
         }
 
+        private void EquipWeaponCard(CardStruct cs)
+        {
+            PlayerView?.EquipWeapon(cs);
+        }
+
         [Client]
         public void UseSkillClient()
         {
@@ -1477,12 +1483,6 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcEquipWeapon(CardStruct cs)
-        {
-            PlayerView.EquipWeapon(cs);
-        }
-
-        [ClientRpc]
         private void RpcEquipProperty(int index, CardStruct cs)
         {
             PlayerView.EquipProperty(index, cs);
@@ -1589,8 +1589,12 @@ namespace PimPamPum
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
+            //TODO Remove when issue #1278 is fixed on Mirror
             if (isServer)
-                PlayerView.UpdateCards(Hand.Count);
+            {
+                UpdateCards(Hand.Count);
+                EquipWeaponCard(weaponCard);
+            }
         }
 
         [TargetRpc]
