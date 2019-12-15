@@ -26,6 +26,7 @@ namespace PimPamPum
         public void Enable(bool value)
         {
             gameObject.SetActive(value);
+            if (!value) RemoveAllCards();
         }
 
     }

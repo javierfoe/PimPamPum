@@ -305,7 +305,7 @@ namespace PimPamPum
 
         public void RemoveSelectableCardsAndDisable(NetworkConnection conn)
         {
-            selectCardController.RemoveCardsAndDisable(conn);
+            selectCardController.Disable(conn);
         }
 
         public IEnumerator DiscardEffect(int player, Card c)
