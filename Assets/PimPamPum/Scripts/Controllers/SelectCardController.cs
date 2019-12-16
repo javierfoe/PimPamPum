@@ -23,7 +23,7 @@ namespace PimPamPum
         public void SetCards(List<Card> cards, NetworkConnection conn = null)
         {
             int length = cards.Count;
-            CardStruct[] cardStructs = new CardStruct[length];
+            CardValues[] cardStructs = new CardValues[length];
             for (int i = 0; i < length; i++)
             {
                 cardStructs[i] = cards[i].Struct;
@@ -37,7 +37,7 @@ namespace PimPamPum
             }
         }
 
-        private void AddCards(CardStruct[] cards, NetworkConnection conn)
+        private void AddCards(CardValues[] cards, NetworkConnection conn)
         {
             if(conn == null)
             {
@@ -66,7 +66,7 @@ namespace PimPamPum
             RpcRemoveCard(index);
         }
 
-        private void AddCards(CardStruct[] cards)
+        private void AddCards(CardValues[] cards)
         {
             for(int i = 0; i < cards.Length; i++)
             {
@@ -82,7 +82,7 @@ namespace PimPamPum
         }
 
         [TargetRpc]
-        private void TargetAddCards(NetworkConnection conn, CardStruct[] cards)
+        private void TargetAddCards(NetworkConnection conn, CardValues[] cards)
         {
             AddCards(cards);
         }
@@ -100,7 +100,7 @@ namespace PimPamPum
         }
 
         [ClientRpc]
-        private void RpcAddCards(CardStruct[] cards)
+        private void RpcAddCards(CardValues[] cards)
         {
             AddCards(cards);
         }

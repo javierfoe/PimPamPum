@@ -18,7 +18,7 @@ namespace PimPamPum
 #pragma warning disable CS0414
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
-        [SyncVar(hook = nameof(EquipWeaponCard))] private CardStruct weaponCard;
+        [SyncVar(hook = nameof(EquipWeaponCard))] private CardValues weaponCard;
         [SyncVar(hook = nameof(SetRole))] private Role showRole;
         [SyncVar(hook = nameof(SetPlayerName))] private string showPlayerName;
         [SyncVar(hook = nameof(SetCharacter))] private string showCharacterName;
@@ -76,13 +76,13 @@ namespace PimPamPum
             get { return character; }
         }
 
-        protected IPlayerView PlayerView
+        public IPlayerView PlayerView
         {
             get
             {
                 return playerView;
             }
-            set
+            protected set
             {
                 playerView = value;
                 playerView.PlayerIndex = PlayerNumber;
@@ -149,7 +149,7 @@ namespace PimPamPum
             }
         }
 
-        protected ActionsController Actions
+        public LocalPlayerController Actions
         {
             get; private set;
         }
@@ -164,7 +164,7 @@ namespace PimPamPum
             MaxHP = characterHP;
             Hand = new List<Card>();
             properties = new List<Card>();
-            Actions = GetComponent<ActionsController>();
+            Actions = GetComponent<LocalPlayerController>();
         }
 
         public override void OnStartClient()
@@ -236,7 +236,7 @@ namespace PimPamPum
             cardAmount++;
         }
 
-        public void AddHandCard(int index, CardStruct card)
+        public void AddHandCard(int index, CardValues card)
         {
             PlayerView.AddHandCard(index, card);
         }
@@ -1364,7 +1364,7 @@ namespace PimPamPum
             PlayerView?.SetTurn(value);
         }
 
-        private void EquipWeaponCard(CardStruct cs)
+        private void EquipWeaponCard(CardValues cs)
         {
             PlayerView?.EquipWeapon(cs);
         }
@@ -1389,7 +1389,7 @@ namespace PimPamPum
             PlayerView?.SetPlayerName(playerName);
         }
 
-        private void OnPropertiesUpdated(SyncListCard.Operation op, int index, CardStruct oldValue, CardStruct newValue)
+        private void OnPropertiesUpdated(SyncListCard.Operation op, int index, CardValues oldValue, CardValues newValue)
         {
             switch (op)
             {
@@ -1499,7 +1499,7 @@ namespace PimPamPum
                     BeginCardDrag(Hand[DraggedCardIndex]);
                     break;
                 default:
-                    GameController.Instance.HighlightTrash(PlayerNumber, true);
+                    Actions.Thrash = true;
                     break;
             }
         }

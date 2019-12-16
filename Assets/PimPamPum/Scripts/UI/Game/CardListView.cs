@@ -15,7 +15,7 @@ namespace PimPamPum
 
         protected abstract GameObject GetPrefab();
 
-        public void AddCard(int index, CardStruct cs, IPlayerView iPlayerView = null)
+        public void AddCard(int index, CardValues cs, IPlayerView iPlayerView = null)
         {
             GameObject prefab = GetPrefab();
             ICardView cv = Instantiate(prefab, transform).GetComponent<ICardView>();

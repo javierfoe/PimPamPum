@@ -573,6 +573,14 @@ namespace PimPamPum
             playerControllers = players;
             MaxPlayers = players.Length;
 
+            int length = players.Length;
+            GameObject[] gameObjects = new GameObject[length];
+            for(int i = 0; i < length; i++)
+            {
+                gameObjects[i] = players[i].gameObject;
+            }
+            RpcPlayerControllers(gameObjects);
+
             foreach (PlayerController pc in playerControllers)
             {
                 foreach (PlayerController pc2 in playerControllers)
@@ -580,6 +588,7 @@ namespace PimPamPum
                     pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
                 }
                 pc.Setup();
+                pc.Actions.SetPlayerStatusArray(MaxPlayers);
             }
 
             StartGame();
@@ -602,6 +611,11 @@ namespace PimPamPum
                 }
                 i++;
             }
+        }
+
+        public void SetPlayerView(int index, PlayerViewStatus playerView)
+        {
+            playerControllers[index].PlayerView.SetStatus(playerView);
         }
 
         private bool ValidPlayer(int player)
@@ -721,20 +735,20 @@ namespace PimPamPum
 
         public List<int> PlayersInWeaponRange(int player, Card c = null)
         {
-            return PlayersInRange(player, playerControllers[player].WeaponRange, c);
+            return PlayersInRange(player, playerControllers[player].WeaponRange, false, c);
         }
 
-        public List<int> PlayersInRange(int player, int range, Card c = null)
+        public List<int> PlayersInRange(int player, int range, bool includeItself, Card c = null)
         {
             List<int> res = new List<int>();
 
-            TraversePlayers(res, player, range, true);
-            TraversePlayers(res, player, range, false);
+            TraversePlayers(res, player, range, true, includeItself);
+            TraversePlayers(res, player, range, false, includeItself);
 
             return res;
         }
 
-        private void TraversePlayers(List<int> players, int player, int range, bool forward, Card c = null)
+        private void TraversePlayers(List<int> players, int player, int range, bool forward, bool includeItself, Card c = null)
         {
             int auxRange = 0;
             int next = player;
@@ -746,96 +760,163 @@ namespace PimPamPum
                 pc = playerControllers[next];
                 dead = pc.IsDead;
                 auxRange += dead ? 0 : 1;
-                if (!players.Contains(next) && !dead && next != player && pc.RangeModifier + auxRange < range + 1 && (c == null || c != null && !pc.Immune(c))) players.Add(next);
+                if (!players.Contains(next) && !dead && (includeItself || next != player) && pc.RangeModifier + auxRange < range + 1 && (c == null || c != null && !pc.Immune(c))) players.Add(next);
             } while (next != player);
         }
 
         public void TargetPrison(int player, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            foreach (PlayerController pc in playerControllers)
-                if (pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead && !pc.Immune(c))
-                    pc.SetTargetable(conn, true);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            PlayerController pc;
+            bool droppable;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                droppable = pc.PlayerNumber != player && pc.Role != Role.Sheriff && !pc.HasProperty<Jail>() && !pc.IsDead && !pc.Immune(c);
+                PlayerViewStatus status = new PlayerViewStatus()
+                {
+                    droppable = droppable
+                };
+                players[i] = status;
+            }
+            SetPlayersStatus(player, players);
         }
 
         public void TargetAllCards(int player, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            foreach (PlayerController pc in playerControllers)
-                if (!pc.IsDead && !pc.Immune(c))
-                    pc.SetStealable(conn, true);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            PlayerController pc;
+            bool hand, weapon;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                hand = pc.HasCards;
+                weapon = !pc.HasColt45;
+                PlayerViewStatus status = new PlayerViewStatus()
+                {
+                    targetable = !pc.IsDead && !pc.Immune(c) && (hand || pc.HasProperties || weapon),
+                    weapon = weapon,
+                    hand = hand
+                };
+                players[i] = status;
+            }
+            SetPlayersStatus(player, players);
         }
 
         public void TargetSelf(int player)
         {
-            PlayerController pc = playerControllers[player];
-            pc.SetTargetable(pc.connectionToClient, true);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            players[player].droppable = true;
+            SetPlayersStatus(player, players);
         }
 
         public void TargetSelfProperty<T>(int player) where T : Property, new()
         {
             PlayerController pc = playerControllers[player];
-            pc.SetTargetable(pc.connectionToClient, !pc.HasProperty<T>());
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            players[player].droppable = !pc.HasProperty<T>();
+            SetPlayersStatus(player, players);
         }
 
         public void TargetOthers(int player, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c))
-                    pc.SetTargetable(conn, true);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            PlayerController pc;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                PlayerViewStatus status = new PlayerViewStatus()
+                {
+                    droppable = pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c)
+                };
+                players[i] = status;
+            }
+            SetPlayersStatus(player, players);
         }
 
         public void TargetOthersWithHand(int player, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            foreach (PlayerController pc in playerControllers)
-                if (pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c) && pc.Hand.Count > 0)
-                    pc.SetTargetable(conn, true);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            PlayerController pc;
+            bool droppable;
+            for (int i = 0; i < playerControllers.Length; i++)
+            {
+                pc = playerControllers[i];
+                droppable = pc.PlayerNumber != player && !pc.IsDead && !pc.Immune(c) && pc.Hand.Count > 0;
+                PlayerViewStatus status = new PlayerViewStatus()
+                {
+                    droppable = droppable
+                };
+                players[i] = status;
+            }
+            SetPlayersStatus(player, players);
         }
 
         public void TargetAllRangeCards(int player, int range, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            List<int> playersInRange = PlayersInRange(player, range);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            List<int> playersInRange = PlayersInRange(player, range, true);
             PlayerController pc;
+            bool hand, weapon;
             foreach (int i in playersInRange)
             {
                 pc = playerControllers[i];
-                if (!pc.Immune(c))
+                hand = pc.HasCards;
+                weapon = !pc.HasColt45;
+                PlayerViewStatus status = new PlayerViewStatus()
                 {
-                    pc.SetStealable(conn, true);
-                }
+                    targetable = !pc.IsDead && !pc.Immune(c) && (hand || pc.HasProperties || weapon),
+                    weapon = weapon,
+                    hand = hand
+                };
+                players[i] = status;
             }
-            playerControllers[player].SetStealable(conn, true);
+            SetPlayersStatus(player, players);
         }
 
         public void TargetPlayersRange(int player, int range, Card c)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            List<int> playersInRange = PlayersInRange(player, range);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            List<int> playersInRange = PlayersInRange(player, range, false);
             PlayerController pc;
             foreach (int i in playersInRange)
             {
                 pc = playerControllers[i];
-                if (!pc.Immune(c))
+                PlayerViewStatus status = new PlayerViewStatus()
                 {
-                    pc.SetTargetable(conn, true);
-                }
+                    droppable = !pc.IsDead && !pc.Immune(c)
+                };
+                players[i] = status;
             }
+            SetPlayersStatus(player, players);
         }
 
-        public void StopTargeting(int playerNum)
+        public void StopTargeting(int player)
         {
-            NetworkConnection conn = playerControllers[playerNum].connectionToClient;
-            foreach (PlayerController pc in playerControllers)
-                pc.StopTargeting(conn);
-            boardController.SetTargetable(conn, false);
+            PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
+            SetPlayersStatus(player, players);
+            playerControllers[player].Actions.Thrash = false;
         }
 
-        public void HighlightTrash(int player, bool value)
+        private void SetPlayersStatus(int player, PlayerViewStatus[] status)
         {
-            boardController.SetTargetable(playerControllers[player].connectionToClient, value);
+            playerControllers[player].Actions.SetPlayersStatus(status);
+        }
+
+        public void SetTargetableThrash(bool value)
+        {
+            boardController.SetTargetable(value);
+        }
+
+        [ClientRpc]
+        private void RpcPlayerControllers(GameObject[] gameObjects)
+        {
+            int length = gameObjects.Length;
+            playerControllers = new PlayerController[length];
+            for(int i = 0; i < length; i++)
+            {
+                playerControllers[i] = gameObjects[i].GetComponent<PlayerController>();
+            }
         }
     }
 }

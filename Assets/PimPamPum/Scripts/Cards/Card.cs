@@ -14,7 +14,7 @@ namespace PimPamPum
         public bool IsRed => Suit == Suit.Hearts || Suit == Suit.Diamonds;
         public bool IsBrown => !((this is Property) || (this is PimPamPum) || (this is Missed));
 
-        public CardStruct Struct
+        public CardValues Struct
         {
             get; protected set;
         }
@@ -35,7 +35,7 @@ namespace PimPamPum
 
         protected void SetSuitRank(Suit suit = Suit.Null, Rank rank = Rank.Null)
         {
-            Struct = new CardStruct
+            Struct = new CardValues
             {
                 suit = suit,
                 rank = rank,

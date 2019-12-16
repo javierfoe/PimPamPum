@@ -14,7 +14,7 @@ namespace PimPamPum
                 base.BeginCardDrag(c);
             if (skillUsed) return;
             if (Hand.Count > 1 || cardsDiscarded > 0)
-                GameController.Instance.HighlightTrash(PlayerNumber, true);
+                Actions.Thrash = true;
         }
 
         protected override void UseCardState(int index, int player, Drop drop, int cardIndex)

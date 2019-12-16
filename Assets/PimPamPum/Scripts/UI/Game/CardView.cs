@@ -75,7 +75,7 @@ namespace PimPamPum
             this.index = index;
         }
 
-        public void SetCard(CardStruct cs)
+        public void SetCard(CardValues cs)
         {
             SetName(cs.name, cs.color);
             SetRank(cs.rank);

@@ -96,9 +96,11 @@ namespace PimPamPum
         }
     }
 
-    public class SyncListCard : SyncList<CardStruct> { }
+    public class SyncListPlayer : SyncList<PlayerViewStatus> { }
 
-    public struct CardStruct
+    public class SyncListCard : SyncList<CardValues> { }
+
+    public struct CardValues
     {
         public string name;
         public Suit suit;
@@ -106,7 +108,12 @@ namespace PimPamPum
         public Color color;
         public bool enabled;
 
-        public static readonly CardStruct Null = new CardStruct { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
+        public static readonly CardValues Null = new CardValues { name = "", color = Color.black, suit = Suit.Null, rank = Rank.Null };
+    }
+
+    public struct PlayerViewStatus
+    {
+        public bool targetable, droppable, weapon, hand;
     }
 
     public enum State

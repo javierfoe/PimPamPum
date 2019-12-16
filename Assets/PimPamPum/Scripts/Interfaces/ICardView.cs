@@ -5,7 +5,7 @@
         void Playable(bool value);
         void Selectable(bool value);
         void SetIndex(int index);
-        void SetCard(CardStruct cs);
+        void SetCard(CardValues cs);
         void Empty();
     }
 }

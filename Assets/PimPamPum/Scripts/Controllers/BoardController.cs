@@ -6,7 +6,7 @@ using Mirror;
     public class BoardController : NetworkBehaviour
     {
         [SyncVar(hook = nameof(UpdateDeckSize))] private int deckSize;
-        [SyncVar(hook = nameof(UpdateDiscardTopCard))] private CardStruct discardTopCard;
+        [SyncVar(hook = nameof(UpdateDiscardTopCard))] private CardValues discardTopCard;
 
         [SerializeField] private GameObject boardViewGO = null, deckViewGO = null, discardViewGO = null;
         [SerializeField] private CardDefinition[] deckCards = null;
@@ -103,12 +103,12 @@ using Mirror;
                 temp.RemoveAt(random);
                 deck.Add(c);
             }
-            discardTopCard = CardStruct.Null;
+            discardTopCard = CardValues.Null;
         }
 
-        public void SetTargetable(NetworkConnection conn, bool value)
+        public void SetTargetable(bool value)
         {
-            TargetTargetableTrash(conn, value);
+            boardView.SetTargetable(value);
         }
 
         private void GenerateDeck()
@@ -206,7 +206,7 @@ using Mirror;
             deckView.SetDeckSize(deckSize);
         }
 
-        private void UpdateDiscardTopCard(CardStruct discardCard)
+        private void UpdateDiscardTopCard(CardValues discardCard)
         {
             discardView.SetDiscardTop(discardCard);
         }
@@ -222,12 +222,6 @@ using Mirror;
         {
             discardView.EnableClick(value);
             EnableClickableDeck(value);
-        }
-
-        [TargetRpc]
-        private void TargetTargetableTrash(NetworkConnection conn, bool value)
-        {
-            boardView.SetTargetable(value);
         }
 
         [TargetRpc]

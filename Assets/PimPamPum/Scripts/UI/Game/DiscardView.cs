@@ -20,7 +20,7 @@ namespace PimPamPum
             discardTopCard.EnableClick(value);
         }
 
-        public void SetDiscardTop(CardStruct cs)
+        public void SetDiscardTop(CardValues cs)
         {
             discardTopCard.SetCard(cs);
         }

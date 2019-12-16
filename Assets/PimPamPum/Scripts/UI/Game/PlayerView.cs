@@ -21,7 +21,6 @@ namespace PimPamPum
             responseCountdownGO = null,
             turn = null;
 
-        private int hiddenCards;
         private IHandView handHidden;
         private ICardView weaponCard;
         private ISkillView skill;
@@ -40,14 +39,9 @@ namespace PimPamPum
 
         private int HiddenCards
         {
-            get
-            {
-                return hiddenCards;
-            }
             set
             {
-                hiddenCards = value;
-                handHidden.Text = hiddenCards.ToString();
+                handHidden.Text = value.ToString();
             }
         }
 
@@ -144,12 +138,12 @@ namespace PimPamPum
             HiddenCards = cards;
         }
 
-        public void AddHandCard(int index, CardStruct cs)
+        public void AddHandCard(int index, CardValues cs)
         {
             handCards.AddCard(index, cs, this);
         }
 
-        public void EquipProperty(int index, CardStruct cs)
+        public void EquipProperty(int index, CardValues cs)
         {
             propertyCards.AddCard(index, cs, this);
         }
@@ -164,7 +158,7 @@ namespace PimPamPum
             propertyCards.RemoveCard(index);
         }
 
-        public void EquipWeapon(CardStruct cs)
+        public void EquipWeapon(CardValues cs)
         {
             weaponCard.SetCard(cs);
         }
@@ -285,6 +279,13 @@ namespace PimPamPum
         public void EnableResponse(bool value)
         {
             responseCountdown.Enable(value);
+        }
+
+        public void SetStatus(PlayerViewStatus status)
+        {
+            SetStealable(status.targetable, status.hand, status.weapon);
+            SetDroppable(status.droppable);
+            SetTargetable(status.droppable || status.targetable);
         }
     }
 }

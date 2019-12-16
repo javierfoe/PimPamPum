@@ -19,7 +19,7 @@ namespace PimPamPum
             base.BeginCardDrag(c);
             if (c.Is<Property>() && propertiesDiscarded < maximumPropertiesDiscarded)
             {
-                GameController.Instance.HighlightTrash(PlayerNumber, true);
+                Actions.Thrash = true;
             }
         }
 

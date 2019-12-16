@@ -21,12 +21,12 @@
         void EnableCancelButton(bool enable);
         void EnableConfirmButton(bool enable);
         void EnableCard(int index, bool enable);
-        void AddHandCard(int index, CardStruct cs);
-        void EquipProperty(int index, CardStruct cs);
+        void AddHandCard(int index, CardValues cs);
+        void EquipProperty(int index, CardValues cs);
         void RemoveProperty(int index);
         void UpdateCards(int cards);
         void RemoveHandCard(int index);
-        void EquipWeapon(CardStruct cs);
+        void EquipWeapon(CardValues cs);
         void EnablePlayerSkill(bool value);
         void SetPlayerSkillStatus(bool value);
         void Win();
@@ -37,5 +37,6 @@
         void SetTurnTimeSpent(float time);
         void SetResponseCountdown(float time);
         void SetResponseTimeSpent(float time);
+        void SetStatus(PlayerViewStatus status);
     }
 }
