@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 7677814961289989221}
   - component: {fileID: 7677814961289989220}
   - component: {fileID: 7677814961289989219}
+  - component: {fileID: 5613329436276593476}
+  - component: {fileID: 8919488194916668253}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -61,3 +63,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 1
   syncInterval: 0.1
+--- !u!114 &5613329436276593476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7677814961289989218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61acd4c6c533e994193a70276b59da87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 10
+--- !u!114 &8919488194916668253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7677814961289989218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61acd4c6c533e994193a70276b59da87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 1

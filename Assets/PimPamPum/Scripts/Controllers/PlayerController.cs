@@ -14,7 +14,7 @@ namespace PimPamPum
         [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
-
+        
 #pragma warning disable CS0414
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
@@ -27,6 +27,7 @@ namespace PimPamPum
 
         private readonly SyncListCard propertyCards = new SyncListCard();
 
+        private CountdownController turnController, responseController;
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
@@ -35,13 +36,13 @@ namespace PimPamPum
         protected int pimPamPumsUsed;
 
         [field: SyncVar] public int PlayerNumber { get; set; }
-        [field: SyncVar(hook = nameof(UpdateTurnTimeSpent))] public float TurnTime { get; set; }
-        [field: SyncVar(hook = nameof(UpdateResponseTimeSpent))] public float ResponseTime { get; set; }
-        [field: SyncVar(hook = nameof(UpdateTurnMaxTime))] public float TurnMaxTime { get; set; }
-        [field: SyncVar(hook = nameof(UpdateResponseMaxTime))] public float ResponseMaxTime { get; set; }
-        [field: SyncVar(hook = nameof(EnableTurn))] public bool TurnEnable { get; set; }
-        [field: SyncVar(hook = nameof(EnableResponse))] public bool ResponseEnable { get; set; }
 
+        public float TurnTime { set => turnController.TimeSpent = value; }
+        public float TurnMaxTime { set => turnController.MaxTime = value; }
+        public bool TurnEnable { set => turnController.Enable = value; }
+        public float ResponseTime { set => responseController.TimeSpent = value; }
+        public float ResponseMaxTime { set => responseController.MaxTime = value; }
+        public bool ResponseEnable { set => responseController.Enable = value; }
         public int WeaponRange => Weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
@@ -165,11 +166,20 @@ namespace PimPamPum
             Hand = new List<Card>();
             properties = new List<Card>();
             Actions = GetComponent<LocalPlayerController>();
+            SetCountdowns();
         }
 
         public override void OnStartClient()
         {
             propertyCards.Callback += OnPropertiesUpdated;
+            SetCountdowns();
+        }
+
+        private void SetCountdowns()
+        {
+            CountdownController[] countdowns = GetComponents<CountdownController>();
+            turnController = countdowns[0];
+            responseController = countdowns[1];
         }
 
         public bool BelongsToTeam(Team team)
@@ -1319,36 +1329,6 @@ namespace PimPamPum
 
         protected virtual void OnSetLocalPlayer() { }
 
-        public void EnableTurn(bool value)
-        {
-            PlayerView?.EnableTurn(value);
-        }
-
-        public void UpdateTurnTimeSpent(float time)
-        {
-            PlayerView?.SetTurnTimeSpent(time);
-        }
-
-        public void UpdateTurnMaxTime(float time)
-        {
-            PlayerView?.SetTurnCountdown(time);
-        }
-
-        public void EnableResponse(bool value)
-        {
-            PlayerView?.EnableResponse(value);
-        }
-
-        public void UpdateResponseTimeSpent(float time)
-        {
-            PlayerView?.SetResponseTimeSpent(time);
-        }
-
-        public void UpdateResponseMaxTime(float time)
-        {
-            PlayerView?.SetResponseCountdown(time);
-        }
-
         public void UpdateCardsHost()
         {
             PlayerView.UpdateCards(Hand.Count);
@@ -1575,6 +1555,9 @@ namespace PimPamPum
         private void TargetSetup(NetworkConnection conn, int playerNumber)
         {
             PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
+            turnController.CountdownView = PlayerView.TurnView;
+            responseController.CountdownView = PlayerView.ResponseView;
+
             //TODO Remove when issue #1278 is fixed on Mirror
             if (isServer)
             {
@@ -1584,12 +1567,8 @@ namespace PimPamPum
                 EquipWeaponCard(weaponCard);
                 UpdateHP(hp);
                 SetRole(showRole);
-                UpdateResponseMaxTime(ResponseMaxTime);
-                EnableResponse(ResponseEnable);
-                UpdateResponseTimeSpent(ResponseTime);
-                UpdateTurnMaxTime(TurnMaxTime);
-                EnableTurn(TurnEnable);
-                UpdateTurnTimeSpent(TurnTime);
+                turnController.UpdateOnHost();
+                responseController.UpdateOnHost();
             }
         }
 

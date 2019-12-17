@@ -25,7 +25,6 @@ namespace PimPamPum
         private ICardView weaponCard;
         private ISkillView skill;
         private ICardListView handCards, propertyCards;
-        private ICountdownView turnCountdown, responseCountdown;
         private EndGamePanelView endGamePanel;
         private TakeHitButton takeHitButton;
         private EndTurnButton endTurnButton;
@@ -34,6 +33,9 @@ namespace PimPamPum
         private SkipButton passButton;
         private CancelButton cancelButton;
         private ConfirmButton confirmButton;
+
+        public ICountdownView TurnView { get; private set; }
+        public ICountdownView ResponseView { get; private set; }
 
         public override int PlayerNumber => PlayerIndex;
 
@@ -57,8 +59,8 @@ namespace PimPamPum
             handCards = handCardsGO.GetComponent<ICardListView>();
             propertyCards = propertyCardsGO.GetComponent<ICardListView>();
             skill = skillGO.GetComponent<ISkillView>();
-            turnCountdown = turnCountdownGO.GetComponent<ICountdownView>();
-            responseCountdown = responseCountdownGO.GetComponent<ICountdownView>();
+            TurnView = turnCountdownGO.GetComponent<ICountdownView>();
+            ResponseView = responseCountdownGO.GetComponent<ICountdownView>();
             turnCountdownGO.SetActive(false);
             responseCountdownGO.SetActive(false);
             base.Awake();
@@ -249,36 +251,6 @@ namespace PimPamPum
         public void SetPlayerSkillStatus(bool value)
         {
             skill.SetStatus(value);
-        }
-
-        public void SetTurnCountdown(float time)
-        {
-            turnCountdown.SetCountdown(time);
-        }
-
-        public void SetTurnTimeSpent(float time)
-        {
-            turnCountdown.SetTimeSpent(time);
-        }
-
-        public void EnableTurn(bool value)
-        {
-            turnCountdown.Enable(value);
-        }
-
-        public void SetResponseCountdown(float time)
-        {
-            responseCountdown.SetCountdown(time);
-        }
-
-        public void SetResponseTimeSpent(float time)
-        {
-            responseCountdown.SetTimeSpent(time);
-        }
-
-        public void EnableResponse(bool value)
-        {
-            responseCountdown.Enable(value);
         }
 
         public void SetStatus(PlayerViewStatus status)
