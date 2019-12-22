@@ -101,7 +101,7 @@ using Mirror;
                 random = Random.Range(0, temp.Count);
                 c = temp[random];
                 temp.RemoveAt(random);
-                deck.Add(c);
+                AddCardToDeck(c);
             }
             discardTopCard = CardValues.Null;
         }

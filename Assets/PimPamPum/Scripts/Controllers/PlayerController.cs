@@ -481,10 +481,13 @@ namespace PimPamPum
 
         public IEnumerator TurnTimeUp()
         {
-            int cardLimit = CardLimit();
-            while (Hand.Count > cardLimit)
+            if (GameController.Instance.CurrentPlayer == PlayerNumber)
             {
-                yield return DiscardRandomCardEndTurn();
+                int cardLimit = CardLimit();
+                while (Hand.Count > cardLimit)
+                {
+                    yield return DiscardRandomCardEndTurn();
+                }
             }
             ForceEndTurn();
         }

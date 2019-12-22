@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PimPamPum/Scenes/PimPamPumMatch.unity
     guid: e0c068f9a36bc0043ab74911312d2e3b
+  - enabled: 1
+    path: Assets/PimPamPum/Scenes/PimPamPumTest.unity
+    guid: 9e3e795a43a253941a085d229b24ca0e
   m_configObjects: {}
