@@ -38,11 +38,7 @@ namespace PimPamPum
         [field: SyncVar] public int PlayerNumber { get; set; }
 
         public float TurnTime { set => turnController.TimeSpent = value; }
-        public float TurnMaxTime { set => turnController.MaxTime = value; }
-        public bool TurnEnable { set => turnController.Enable = value; }
         public float ResponseTime { set => responseController.TimeSpent = value; }
-        public float ResponseMaxTime { set => responseController.MaxTime = value; }
-        public bool ResponseEnable { set => responseController.Enable = value; }
         public int WeaponRange => Weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
@@ -1380,6 +1376,26 @@ namespace PimPamPum
                     PlayerView.RemoveProperty(index);
                     break;
             }
+        }
+
+        public void ResponseCountdown(float time)
+        {
+            responseController.SetCountdown(time);
+        }
+
+        public void ResponseEnd()
+        {
+            responseController.Disable();
+        }
+
+        public void TurnCountdown(float time)
+        {
+            turnController.SetCountdown(time);
+        }
+
+        public void TurnEnd()
+        {
+            turnController.Disable();
         }
 
         [Client]
