@@ -14,7 +14,7 @@ namespace PimPamPum
         [SerializeField] private Character character = Character.AnnieVersary;
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
-        
+
 #pragma warning disable CS0414
         [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
         [SyncVar(hook = nameof(SetTurn))] private bool turn;
@@ -481,7 +481,7 @@ namespace PimPamPum
 
         public IEnumerator TurnTimeUp()
         {
-            if (GameController.Instance.CurrentPlayer == PlayerNumber)
+            if (ActivePlayer)
             {
                 int cardLimit = CardLimit();
                 while (Hand.Count > cardLimit)
@@ -1058,8 +1058,14 @@ namespace PimPamPum
                 return;
             }
             CheckNoCards();
-            if (ActivePlayer)
+            if (IsDying)
+            {
+                EnableCardsDying();
+            }
+            else if (ActivePlayer)
+            {
                 Phase2();
+            }
         }
 
         public void DiscardCardFromHand(int index)
