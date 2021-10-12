@@ -7,13 +7,13 @@ namespace PimPamPum
 
         protected override IEnumerator OnStartTurn()
         {
-            GameController.Instance.EnableOthersProperties(PlayerNumber,false);
+            GameController.EnableOthersProperties(PlayerNumber,false);
             yield return base.OnStartTurn();
         }
 
         public override void ForceEndTurn()
         {
-            GameController.Instance.EnableOthersProperties(PlayerNumber, true);
+            GameController.EnableOthersProperties(PlayerNumber, true);
             base.ForceEndTurn();
         }
 

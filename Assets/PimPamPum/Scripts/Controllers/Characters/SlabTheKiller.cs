@@ -6,9 +6,9 @@ namespace PimPamPum
 
         private const int missesToDodge = 2;
 
-        public override void OnStartServer()
+        protected override void Awake()
         {
-            base.OnStartServer();
+            base.Awake();
             MissesToDodge = missesToDodge;
         }
 

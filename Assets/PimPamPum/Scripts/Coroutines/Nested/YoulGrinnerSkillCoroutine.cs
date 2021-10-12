@@ -14,7 +14,7 @@ namespace PimPamPum
                 playerControllers[currentPlayer].UnequipHandCard(cardSelection.Choice);
                 playerControllers[startingPlayer].AddCard(cardSelection.ChosenCard);
             }
-            currentPlayer = GameController.Instance.NextPlayerAlive(currentPlayer);
+            currentPlayer = GameController.NextPlayerAlive(currentPlayer);
             PlayerController currentPc = playerControllers[currentPlayer];
             if(startingPlayer != currentPlayer && currentPc.Hand.Count > minimumCards)
             {

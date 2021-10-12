@@ -17,8 +17,8 @@ namespace PimPamPum
             if (generalStoreTimer != null)
             {
                 CardChoices = generalStoreTimer.NotChosenCards;
-                Current = GameController.Instance.GetCardGeneralStore(nextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
-                nextPlayer = GameController.Instance.NextPlayerAlive(nextPlayer);
+                Current = GameController.GetCardGeneralStore(nextPlayer, generalStoreTimer.Choice, generalStoreTimer.ChosenCard);
+                nextPlayer = GameController.NextPlayerAlive(nextPlayer);
                 pendingPlayers--;
                 return true;
             }
@@ -31,8 +31,8 @@ namespace PimPamPum
             if (!res && !lastCard)
             {
                 lastCard = true;
-                Current = GameController.Instance.GetCardGeneralStore(nextPlayer, 0, LastCard);
-                GameController.Instance.DisableSelectableCards();
+                Current = GameController.GetCardGeneralStore(nextPlayer, 0, LastCard);
+                GameController.DisableSelectableCards();
                 return true;
             }
             return res;

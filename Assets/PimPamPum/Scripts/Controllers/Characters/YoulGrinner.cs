@@ -6,7 +6,7 @@ namespace PimPamPum
     {
         protected override IEnumerator DrawPhase1()
         {
-            yield return GameController.Instance.YoulGrinnerSkill(PlayerNumber);
+            yield return GameController.YoulGrinnerSkill(PlayerNumber);
             yield return base.DrawPhase1();
         }
     }

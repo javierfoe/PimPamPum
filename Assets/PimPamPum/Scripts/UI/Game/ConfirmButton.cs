@@ -4,7 +4,7 @@
     {
         protected override void Click()
         {
-            PlayerController.LocalPlayer.MakeDecisionClient(Decision.Confirm);
+            PlayerController.CurrentPlayableCharacter.MakeDecision(Decision.Confirm);
         }
     }
 }

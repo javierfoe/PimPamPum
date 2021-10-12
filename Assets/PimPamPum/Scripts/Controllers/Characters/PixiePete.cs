@@ -4,9 +4,9 @@ namespace PimPamPum
     public class PixiePete : PlayerController
     {
 
-        public override void OnStartServer()
+        protected override void Awake()
         {
-            base.OnStartServer();
+            base.Awake();
             Phase1CardsDrawn = 3;
         }
 

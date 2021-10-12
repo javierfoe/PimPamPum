@@ -1,10 +1,7 @@
-﻿using Mirror;
-
-namespace PimPamPum
+﻿namespace PimPamPum
 {
-    public class WaitForController : NetworkBehaviour
+    public class WaitForController
     {
-        private static WaitForController instance;
         private static WaitFor mainCorutine, turnCorutine, dyingCorutine;
 
         public static WaitFor TurnCorutine { get { return turnCorutine; } set { turnCorutine = value; value.Response = false; } }
@@ -48,11 +45,6 @@ namespace PimPamPum
         public static void StopMainCorutine()
         {
             if (MainCorutine != null && MainCorutine != DyingCorutine) MainCorutine.StopCorutine();
-        }
-
-        private void Awake()
-        {
-            instance = this;
         }
     }
 }

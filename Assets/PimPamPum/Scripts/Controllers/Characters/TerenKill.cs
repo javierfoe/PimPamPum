@@ -13,7 +13,7 @@ namespace PimPamPum
             if (drawEffectCard.Suit != Suit.Spades)
             {
                 yield return PimPamPumEvent(this + " draws! to stay alive: " + drawEffectCard);
-                hp = 1;
+                HP = 1;
                 Draw(1);
             }
             else

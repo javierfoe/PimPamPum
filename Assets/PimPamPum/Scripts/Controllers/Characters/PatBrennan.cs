@@ -6,7 +6,7 @@ namespace PimPamPum
     {
         protected override IEnumerator DrawPhase1()
         {
-            if (GameController.Instance.SetPhaseOnePlayerPropertiesClickable(PlayerNumber))
+            if (GameController.SetPhaseOnePlayerPropertiesClickable(PlayerNumber))
             {
                 WaitForClickChoice waitForPhaseOneChoice = new WaitForClickChoice(this);
                 yield return waitForPhaseOneChoice;
@@ -20,10 +20,10 @@ namespace PimPamPum
                         switch (waitForPhaseOneChoice.Drop)
                         {
                             case Drop.Properties:
-                                GameController.Instance.StealProperty(PlayerNumber, targetPlayer, waitForPhaseOneChoice.CardIndex);
+                                GameController.StealProperty(PlayerNumber, targetPlayer, waitForPhaseOneChoice.CardIndex);
                                 break;
                             case Drop.Weapon:
-                                GameController.Instance.StealWeapon(PlayerNumber, targetPlayer);
+                                GameController.StealWeapon(PlayerNumber, targetPlayer);
                                 break;
                         }
                         break;

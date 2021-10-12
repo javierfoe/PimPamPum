@@ -49,9 +49,9 @@ namespace PimPamPum
         public override void Click()
         {
             if (selectable)
-                PlayerController.LocalPlayer.ChooseCard(index);
+                PlayerController.CurrentPlayableCharacter.ChooseCard(index);
             else
-                PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerNumber, DropEnum, DropIndex);
+                PlayerController.CurrentPlayableCharacter.PhaseOneDecision(Decision.Player, PlayerNumber, DropEnum, DropIndex);
         }
 
         public virtual void Playable(bool value)
@@ -122,7 +122,7 @@ namespace PimPamPum
         {
             if (!Draggable) return;
             CurrentCardView = this;
-            PlayerController.LocalPlayer.BeginCardDrag(index);
+            PlayerController.CurrentPlayableCharacter.BeginCardDrag(index);
             PlayableColor(false);
             CreateGhostCard(eventData);
             SetVisibility(false);
@@ -204,7 +204,7 @@ namespace PimPamPum
 
             PlayableColor(true);
 
-            PlayerController.LocalPlayer.UseCard(index, player, drop, targetIndex);
+            PlayerController.CurrentPlayableCharacter.UseCard(index, player, drop, targetIndex);
             currentDropView = null;
 
             SetVisibility(true);

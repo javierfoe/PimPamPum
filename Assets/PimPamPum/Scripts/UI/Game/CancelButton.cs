@@ -4,7 +4,7 @@
     {
         protected override void Click()
         {
-            PlayerController.LocalPlayer.MakeDecisionClient(Decision.Cancel);
+            PlayerController.CurrentPlayableCharacter.MakeDecision(Decision.Cancel);
         }
     }
 }

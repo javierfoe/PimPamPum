@@ -7,7 +7,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Stagecoach>(pc);
+            yield return GameController.UsedCard<Stagecoach>(pc);
         }
 
         public override string ToString()

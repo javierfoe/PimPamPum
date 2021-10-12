@@ -6,7 +6,7 @@ namespace PimPamPum
     {
         protected override GameObject GetPrefab()
         {
-            return GameController.Instance.PropertyPrefab;
+            return GameController.PropertyPrefab;
         }
     }
 }

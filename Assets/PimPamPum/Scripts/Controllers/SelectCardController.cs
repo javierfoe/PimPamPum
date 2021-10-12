@@ -1,26 +1,20 @@
-﻿using Mirror;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace PimPamPum
 {
-    public class SelectCardController : NetworkBehaviour
+    public class SelectCardController : MonoBehaviour
     {
         [SerializeField] private GameObject selectCardGO = null;
 
         private ISelectCardListView selectCardList;
 
-        public override void OnStartClient()
+        public void EnableCards(bool value)
         {
-            selectCardList = selectCardGO.GetComponent<ISelectCardListView>();
+            selectCardList.EnableCards(value);
         }
 
-        public void EnableCards(NetworkConnection conn, bool value)
-        {
-            TargetEnableCards(conn, value);
-        }
-
-        public void SetCards(List<Card> cards, NetworkConnection conn = null)
+        public void SetCards(List<Card> cards)
         {
             int length = cards.Count;
             CardValues[] cardStructs = new CardValues[length];
@@ -29,41 +23,17 @@ namespace PimPamPum
                 cardStructs[i] = cards[i].Struct;
             }
 
-            AddCards(cardStructs, conn);
-
-            if (conn != null)
-            {
-                TargetEnableCards(conn, true);
-            }
+            AddCards(cardStructs);
         }
 
-        private void AddCards(CardValues[] cards, NetworkConnection conn)
+        public void Disable()
         {
-            if(conn == null)
-            {
-                RpcAddCards(cards);
-            }
-            else
-            {
-                TargetAddCards(conn, cards);
-            }
-        }
-
-        public void Disable(NetworkConnection conn = null)
-        {
-            if (conn == null)
-            {
-                RpcEnable(false);
-            }
-            else
-            {
-                TargetDisable(conn);
-            }
+            selectCardList.Enable(false);
         }
 
         public void RemoveCard(int index)
         {
-            RpcRemoveCard(index);
+            selectCardList.RemoveCard(index);
         }
 
         private void AddCards(CardValues[] cards)
@@ -73,42 +43,6 @@ namespace PimPamPum
                 selectCardList.AddCard(i, cards[i]);
             }
             selectCardList.Enable(true);
-        }
-
-        [TargetRpc]
-        private void TargetEnableCards(NetworkConnection conn, bool value)
-        {
-            selectCardList.EnableCards(value);
-        }
-
-        [TargetRpc]
-        private void TargetAddCards(NetworkConnection conn, CardValues[] cards)
-        {
-            AddCards(cards);
-        }
-
-        [TargetRpc]
-        private void TargetDisable(NetworkConnection conn)
-        {
-            selectCardList.Enable(false);
-        }
-
-        [ClientRpc]
-        private void RpcEnable(bool value)
-        {
-            selectCardList.Enable(value);
-        }
-
-        [ClientRpc]
-        private void RpcAddCards(CardValues[] cards)
-        {
-            AddCards(cards);
-        }
-
-        [ClientRpc]
-        private void RpcRemoveCard(int index)
-        {
-            selectCardList.RemoveCard(index);
         }
     }
 }

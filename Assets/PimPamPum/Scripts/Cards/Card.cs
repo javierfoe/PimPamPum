@@ -63,7 +63,7 @@ namespace PimPamPum
 
         protected virtual IEnumerator CardEvent(PlayerController pc, int player, Drop drop, int cardIndex)
         {
-            yield return GameController.Instance.PimPamPumEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
+            yield return GameController.PimPamPumEventPlayedCard(pc.PlayerNumber, player, this, drop, cardIndex);
         }
 
         public abstract IEnumerator CardUsed(PlayerController pc);

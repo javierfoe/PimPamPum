@@ -21,7 +21,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Deck);
+            PlayerController.CurrentPlayableCharacter.PhaseOneDecision(Decision.Deck);
         }
     }
 }

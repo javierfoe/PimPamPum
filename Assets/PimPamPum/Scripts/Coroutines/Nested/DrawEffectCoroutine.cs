@@ -28,7 +28,7 @@ namespace PimPamPum
             }
             if (drawEffectStarted && currentCard < maxCards)
             {
-                Current = GameController.Instance.DrawEffect(player, drawnCards[currentCard++]);
+                Current = GameController.DrawEffect(player, drawnCards[currentCard++]);
                 return true;
             }
             if (maxCards > 0 && currentCard == maxCards) return false;
@@ -40,7 +40,7 @@ namespace PimPamPum
             player = pc.PlayerNumber;
             if (pc.DrawEffectCards < 2)
             {
-                DrawEffectCard = GameController.Instance.DrawCard();
+                DrawEffectCard = GameController.DrawCard();
                 drawnCards = new List<Card>();
                 drawnCards.Add(DrawEffectCard);
             }

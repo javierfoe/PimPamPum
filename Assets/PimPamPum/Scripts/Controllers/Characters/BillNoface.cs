@@ -7,7 +7,7 @@ namespace PimPamPum
 
         protected override IEnumerator DrawPhase1()
         {
-            int drawncards = 1 + MaxHP - hp;
+            int drawncards = 1 + MaxHP - HP;
             yield return PimPamPumEvent(this + " draws a total of " + drawncards + " cards.");
             Draw(drawncards);
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public class WellsFargo : Draw
     {
@@ -7,7 +8,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<WellsFargo>(pc);
+            yield return GameController.UsedCard<WellsFargo>(pc);
         }
 
         public override string ToString()

@@ -8,8 +8,8 @@ namespace PimPamPum
         protected override void EnableConfirmOptions(Card one, Card two)
         {
             DoubleCard doubleCard = new DoubleCard(one, two);
-            List<int> availablePlayers = GameController.Instance.PlayersInWeaponRange(PlayerNumber, doubleCard);
-            GameController.Instance.SetClickablePlayers(PlayerNumber, availablePlayers);
+            List<int> availablePlayers = GameController.PlayersInWeaponRange(PlayerNumber, doubleCard);
+            GameController.SetClickablePlayers(availablePlayers);
         }
 
         protected override IEnumerator OnStartTurn()

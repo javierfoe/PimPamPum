@@ -43,7 +43,7 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 48f5ac768f20b7041be1e6fc9c75e465,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +119,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -128,6 +131,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -145,6 +153,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
+        type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
@@ -157,16 +170,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1833351235529255764, guid: 7ce3ab6bd259dd348b9131b203ce0f09,
         type: 3}
@@ -203,7 +206,11 @@ PrefabInstance:
       propertyPath: m_SceneId
       value: 2107879281
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1833351235699569789, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
+    - {fileID: -6688237211500959972, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
+    - {fileID: 5830613294722646006, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
+    - {fileID: 4673147212543824800, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 7ce3ab6bd259dd348b9131b203ce0f09, type: 3}
 --- !u!1 &927327809
 GameObject:
@@ -216,7 +223,6 @@ GameObject:
   - component: {fileID: 927327813}
   - component: {fileID: 927327812}
   - component: {fileID: 927327811}
-  - component: {fileID: 927327810}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -224,14 +230,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &927327810
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 927327809}
-  m_Enabled: 1
 --- !u!124 &927327811
 Behaviour:
   m_ObjectHideFlags: 0

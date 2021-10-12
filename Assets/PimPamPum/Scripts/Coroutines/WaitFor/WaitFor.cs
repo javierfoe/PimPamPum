@@ -4,12 +4,10 @@ namespace PimPamPum
 {
     public class WaitFor : Enumerator
     {
-        private float time, maxTime;
         private bool response;
-        private int frame;
 
         public PlayerController PlayerController { get; private set; }
-        public bool Response { get { return response; } set { response = value; SetCountdown(); } }
+        public bool Response { get { return response; } set { response = value;} }
         public bool TimeUp { get; private set; }
 
         public static WaitFor StartTurnCorutine(PlayerController player)
@@ -21,24 +19,14 @@ namespace PimPamPum
 
         public override bool MoveNext()
         {
-            int currentFrame = Time.frameCount;
-            if (frame != currentFrame)
-            {
-                frame = currentFrame;
-                time += Time.deltaTime;
-            }
-            bool timer = time < maxTime;
-            TimeUp = !timer;
-            SetTimeSpent();
-            Finished(timer);
-            return timer;
+            Finished(false);
+            return true;
         }
 
         protected void Finished(bool value)
         {
             if (finished || value) return;
             Finished();
-            MaxTimeSpent();
             finished = true;
         }
 
@@ -49,54 +37,12 @@ namespace PimPamPum
         protected WaitFor(PlayerController player, float maxTime, bool turn = false)
         {
             PlayerController = player;
-            frame = -1;
-            this.maxTime = maxTime;
             if (!turn) WaitForController.MainCorutine = this;
-            time = 0;
         }
 
         public void StopCorutine()
         {
-            time = maxTime;
             Finished(false);
-        }
-
-        public void SetCountdown()
-        {
-            if (Response)
-            {
-                PlayerController.ResponseCountdown(maxTime);
-            }
-            else
-            {
-                PlayerController.TurnCountdown(maxTime);
-            }
-        }
-
-        private void MaxTimeSpent()
-        {
-            time = maxTime;
-            SetTimeSpent();
-            if (Response)
-            {
-                PlayerController.ResponseEnd();
-            }
-            else
-            {
-                PlayerController.TurnEnd();
-            }
-        }
-
-        public void SetTimeSpent()
-        {
-            if (Response)
-            {
-                PlayerController.ResponseTime = time;
-            }
-            else
-            {
-                PlayerController.TurnTime = time;
-            }
         }
 
         public virtual void MakeDecisionCardIndex(int card) { }

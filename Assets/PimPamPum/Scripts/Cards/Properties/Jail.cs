@@ -31,7 +31,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Jail>(pc);
+            yield return GameController.UsedCard<Jail>(pc);
         }
 
         public override string ToString()

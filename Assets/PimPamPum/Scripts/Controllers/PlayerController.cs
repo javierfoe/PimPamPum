@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
 namespace PimPamPum
 {
-    public abstract class PlayerController : NetworkBehaviour
+    public abstract class PlayerController : MonoBehaviour
     {
-        public static PlayerController LocalPlayer { get; private set; }
+        public static PlayerController CurrentPlayableCharacter { get; private set; }
 
         private static Colt45 colt45 = new Colt45();
 
@@ -15,19 +14,13 @@ namespace PimPamPum
         [SerializeField] private string characterName = "";
         [SerializeField] private int characterHP = 4;
 
-#pragma warning disable CS0414
-        [SyncVar(hook = nameof(UpdateCards))] private int cardAmount;
-        [SyncVar(hook = nameof(SetTurn))] private bool turn;
-        [SyncVar(hook = nameof(EquipWeaponCard))] private CardValues weaponCard;
-        [SyncVar(hook = nameof(SetRole))] private Role showRole;
-        [SyncVar(hook = nameof(SetPlayerName))] private string showPlayerName;
-        [SyncVar(hook = nameof(SetCharacter))] private string showCharacterName;
-        [SyncVar(hook = nameof(UpdateHP))] protected int hp;
-#pragma warning restore
 
-        private readonly SyncListCard propertyCards = new SyncListCard();
+        private int cardAmount;
+        private CardValues weaponCard;
+        protected int hp;
 
-        private CountdownController turnController, responseController;
+        private readonly List<CardValues> propertyCards = new List<CardValues>();
+
         private Weapon weapon;
         private List<Card> properties;
         private IPlayerView playerView;
@@ -35,17 +28,14 @@ namespace PimPamPum
         protected Card draggedCard;
         protected int pimPamPumsUsed;
 
-        [field: SyncVar] public int PlayerNumber { get; set; }
-
-        public float TurnTime { set => turnController.TimeSpent = value; }
-        public float ResponseTime { set => responseController.TimeSpent = value; }
+        public int PlayerNumber { get; set; }
         public int WeaponRange => Weapon.Range + Scope;
         public bool Stealable => HasCards || HasProperties || !HasColt45;
         public bool HasCards => Hand.Count > 0;
         public bool HasProperties => properties.Count > 0;
         public bool HasColt45 => Weapon == colt45;
-        public bool IsDying => hp < 1;
-        protected bool ActivePlayer => GameController.Instance.CurrentPlayer == PlayerNumber;
+        public bool IsDying => HP < 1;
+        protected bool ActivePlayer => GameController.CurrentPlayer == PlayerNumber;
         protected bool CanShoot => PimPamPum();
 
         public List<Card> Hand
@@ -89,6 +79,16 @@ namespace PimPamPum
         public bool IsDead
         {
             get; private set;
+        }
+
+        protected int HP
+        {
+            get { return hp; }
+            set
+            {
+                hp = value;
+                PlayerView.UpdateHP(value);
+            }
         }
 
         protected int MaxHP
@@ -143,15 +143,16 @@ namespace PimPamPum
             {
                 weapon = value;
                 weaponCard = weapon.Struct;
+                EquipWeaponCard(weaponCard);
             }
         }
 
-        public LocalPlayerController Actions
+        public Actions Actions
         {
             get; private set;
         }
 
-        public override void OnStartServer()
+        protected virtual void Awake()
         {
             State = State.OutOfTurn;
             BeerHeal = 1;
@@ -161,21 +162,7 @@ namespace PimPamPum
             MaxHP = characterHP;
             Hand = new List<Card>();
             properties = new List<Card>();
-            Actions = GetComponent<LocalPlayerController>();
-            SetCountdowns();
-        }
-
-        public override void OnStartClient()
-        {
-            propertyCards.Callback += OnPropertiesUpdated;
-            SetCountdowns();
-        }
-
-        private void SetCountdowns()
-        {
-            CountdownController[] countdowns = GetComponents<CountdownController>();
-            turnController = countdowns[0];
-            responseController = countdowns[1];
+            Actions = GetComponent<Actions>();
         }
 
         public bool BelongsToTeam(Team team)
@@ -190,15 +177,13 @@ namespace PimPamPum
             if (Role == Role.Sheriff)
             {
                 MaxHP++;
-                showRole = Role;
             }
             else
             {
-                TargetSetRole(connectionToClient, Role);
+                PlayerView.SetRole(Role);
             }
-            hp = MaxHP;
-            showCharacterName = characterName;
-            showPlayerName = PlayerName;
+            HP = MaxHP;
+            PlayerView.SetCharacter(characterName);
             Weapon = colt45;
             DrawInitialCards();
         }
@@ -211,7 +196,7 @@ namespace PimPamPum
 
         public void Draw(int amount = 1)
         {
-            List<Card> cards = GameController.Instance.DrawCards(amount);
+            List<Card> cards = GameController.DrawCards(amount);
             foreach (Card card in cards)
             {
                 AddCard(card);
@@ -232,14 +217,14 @@ namespace PimPamPum
 
         protected virtual void DrawInitialCards()
         {
-            Draw(hp);
+            Draw(HP);
         }
 
         public void AddCard(Card c)
         {
             Hand.Add(c);
             Actions.AddCard(c.Struct);
-            cardAmount++;
+            UpdateCards(cardAmount + 1);
         }
 
         public void AddHandCard(int index, CardValues card)
@@ -279,7 +264,7 @@ namespace PimPamPum
             Card card = Hand[index];
             Hand.RemoveAt(index);
             Actions.RemoveCard(index);
-            cardAmount--;
+            UpdateCards(cardAmount - 1);
             return card;
         }
 
@@ -300,7 +285,7 @@ namespace PimPamPum
                 p.EquipProperty(this);
                 return;
             }
-            GameController.Instance.EquipPropertyTo(target, p);
+            GameController.EquipPropertyTo(target, p);
         }
 
         public IEnumerator DiscardCopiesOf<T>(Property p) where T : Property, new()
@@ -386,7 +371,7 @@ namespace PimPamPum
         public void StartTurn()
         {
             endTurn = false;
-            turn = true;
+            SetTurn(true);
             StartCoroutine(OnStartTurn());
         }
 
@@ -441,13 +426,13 @@ namespace PimPamPum
             if (Card.CheckCondition<Dynamite>(drawEffectCoroutine.DrawEffectCard))
             {
                 yield return PimPamPumEvent(this + ": Dynamite exploded. 3 damage inflicted");
-                GameController.Instance.DiscardCard(d);
+                GameController.DiscardCard(d);
                 yield return GetHitBy(PimPamPumConstants.NoOne, 3);
             }
             else
             {
                 yield return PimPamPumEvent(this + ": Avoids the dynamite and passes it to the next player");
-                GameController.Instance.PassDynamite(PlayerNumber, d);
+                GameController.PassDynamite(PlayerNumber, d);
             }
         }
 
@@ -460,7 +445,7 @@ namespace PimPamPum
             endTurn = !Card.CheckCondition<Jail>(drawEffectCoroutine.DrawEffectCard);
             UnequipProperty(index);
             yield return PimPamPumEvent(this + (endTurn ? " stays in prison." : " has escaped the prison. "));
-            GameController.Instance.DiscardCard(j);
+            GameController.DiscardCard(j);
         }
 
         private T FindProperty<T>(out int index) where T : Card, new()
@@ -497,8 +482,8 @@ namespace PimPamPum
             State = State.OutOfTurn;
             OriginalHand();
             DisableCards();
-            turn = false;
-            GameController.Instance.EndTurn(PlayerNumber);
+            SetTurn(false);
+            GameController.EndTurn(PlayerNumber);
         }
 
         protected void ConvertHandTo<T>() where T : Card, new()
@@ -729,7 +714,7 @@ namespace PimPamPum
         private IEnumerator ResponseSub(int index)
         {
             yield return Hand[index].CardUsed(this);
-            MakeDecisionServer(Decision.Avoid, index);
+            MakeDecision(Decision.Avoid, index);
         }
 
         public IEnumerator DiscardRandomCardEndTurn()
@@ -748,12 +733,12 @@ namespace PimPamPum
         {
             DisableCards();
             Card c = UnequipHandCard(index);
-            yield return GameController.Instance.DiscardEffect(PlayerNumber, c);
+            yield return GameController.DiscardEffect(PlayerNumber, c);
         }
 
         public IEnumerator Saloon()
         {
-            GameController.Instance.Saloon();
+            GameController.Saloon();
             yield return null;
         }
 
@@ -764,7 +749,7 @@ namespace PimPamPum
 
         public void TradeTwoForOne(int player)
         {
-            GameController.Instance.TradeTwoForOne(PlayerNumber, DraggedCardIndex, player);
+            GameController.TradeTwoForOne(PlayerNumber, DraggedCardIndex, player);
         }
 
         public IEnumerator ShootPimPamPum(int target)
@@ -774,17 +759,17 @@ namespace PimPamPum
 
         protected virtual IEnumerator ShootPimPamPumTrigger(int target)
         {
-            yield return GameController.Instance.PimPamPum(PlayerNumber, target, MissesToDodge);
+            yield return GameController.PimPamPum(PlayerNumber, target, MissesToDodge);
         }
 
         public IEnumerator Indians()
         {
-            yield return GameController.Instance.Indians(PlayerNumber, draggedCard);
+            yield return GameController.Indians(PlayerNumber, draggedCard);
         }
 
         public IEnumerator Gatling()
         {
-            yield return GameController.Instance.Gatling(PlayerNumber, draggedCard);
+            yield return GameController.Gatling(PlayerNumber, draggedCard);
         }
 
         public IEnumerator GetHitBy(int player, int amount = 1)
@@ -808,7 +793,7 @@ namespace PimPamPum
         {
             if (!HasColt45)
             {
-                GameController.Instance.DiscardCard(Weapon);
+                GameController.DiscardCard(Weapon);
             }
             Weapon = weapon;
         }
@@ -834,10 +819,10 @@ namespace PimPamPum
             return res;
         }
 
-        public void SetStealable(NetworkConnection conn, bool value)
+        public void SetStealable(bool value)
         {
             if (value && !Stealable) return;
-            SetStealable(conn, value, HasCards, !HasColt45);
+            PlayerView.SetStealable(value, HasCards, !HasColt45);
         }
 
         public virtual void BeginCardDrag(Card c)
@@ -848,48 +833,47 @@ namespace PimPamPum
 
         public void PimPamPumBeginCardDrag()
         {
-            GameController.Instance.TargetPlayersRange(PlayerNumber, Weapon.Range + Scope, draggedCard);
+            GameController.TargetPlayersRange(PlayerNumber, Weapon.Range + Scope, draggedCard);
         }
 
         public void JailBeginCardDrag()
         {
-            GameController.Instance.TargetPrison(PlayerNumber, draggedCard);
+            GameController.TargetPrison(PlayerNumber, draggedCard);
         }
 
         public void CatBalouBeginCardDrag()
         {
-            GameController.Instance.TargetAllCards(PlayerNumber, draggedCard);
+            GameController.TargetAllCards(PlayerNumber, draggedCard);
         }
 
         public void PanicBeginCardDrag()
         {
-            GameController.Instance.TargetAllRangeCards(PlayerNumber, 1 + Scope, draggedCard);
+            GameController.TargetAllRangeCards(PlayerNumber, 1 + Scope, draggedCard);
         }
 
         public void TargetOthers()
         {
-            GameController.Instance.TargetOthers(PlayerNumber, draggedCard);
+            GameController.TargetOthers(PlayerNumber, draggedCard);
         }
 
         public void TargetOthersWithHand()
         {
-            GameController.Instance.TargetOthersWithHand(PlayerNumber, draggedCard);
+            GameController.TargetOthersWithHand(PlayerNumber, draggedCard);
         }
 
         public void SelfTargetCard()
         {
-            GameController.Instance.TargetSelf(PlayerNumber);
+            GameController.TargetSelf(PlayerNumber);
         }
 
         public void SelfTargetPropertyCard<T>() where T : Property, new()
         {
-            GameController.Instance.TargetSelfProperty<T>(PlayerNumber);
+            GameController.TargetSelfProperty<T>(PlayerNumber);
         }
 
-        public void StopTargeting(NetworkConnection conn)
+        public void StopTargeting()
         {
-            TargetSetTargetable(conn, false);
-            SetStealable(conn, false);
+            SetStealable(false);
         }
 
         public virtual bool Immune(Card c)
@@ -939,13 +923,13 @@ namespace PimPamPum
         {
             if (attacker != PimPamPumConstants.NoOne && attacker != PlayerNumber)
             {
-                yield return GameController.Instance.PimPamPumEventHitBy(attacker, PlayerNumber);
+                yield return GameController.PimPamPumEventHitBy(attacker, PlayerNumber);
             }
             else
             {
                 yield return PimPamPumEvent(this + " loses " + amount + " hit points.");
             }
-            hp -= amount;
+            HP -= amount;
             EnableTakeHitButton(false);
         }
 
@@ -982,7 +966,7 @@ namespace PimPamPum
         {
             yield return PimPamPumEvent(this + " has died.");
             ResetDraggableCard();
-            if (Role != Role.Sheriff) showRole = Role;
+            if (Role != Role.Sheriff) PlayerView.SetRole(Role);
             List<Card> deadCards = new List<Card>();
             for (int i = Hand.Count - 1; i > -1; i--)
             {
@@ -995,8 +979,8 @@ namespace PimPamPum
             Card weapon = UnequipWeapon();
             if (weapon != null) deadCards.Add(weapon);
 
-            GameController.Instance.CheckDeath(deadCards);
-            GameController.Instance.CheckMurder(killer, PlayerNumber);
+            GameController.CheckDeath(deadCards);
+            GameController.CheckMurder(killer, PlayerNumber);
         }
 
         public void DiscardAll()
@@ -1041,8 +1025,8 @@ namespace PimPamPum
 
         public void Heal(int amount = 1)
         {
-            if (hp + amount < MaxHP) hp += amount;
-            else hp = MaxHP;
+            if (HP + amount < MaxHP) HP += amount;
+            else HP = MaxHP;
         }
 
         public void DiscardCardUsed()
@@ -1071,28 +1055,28 @@ namespace PimPamPum
         public void DiscardCardFromHand(int index)
         {
             Card card = UnequipHandCard(index);
-            GameController.Instance.DiscardCard(card);
+            GameController.DiscardCard(card);
         }
 
         public IEnumerator GeneralStore()
         {
-            yield return GameController.Instance.GeneralStore(PlayerNumber);
+            yield return GameController.GeneralStore(PlayerNumber);
         }
 
         public IEnumerator Duel(int player)
         {
-            yield return GameController.Instance.StartDuel(PlayerNumber, player);
+            yield return GameController.StartDuel(PlayerNumber, player);
             State = State.Play;
         }
 
         public IEnumerator CatBalou(int target, Drop drop, int cardIndex)
         {
-            yield return GameController.Instance.CatBalou(PlayerNumber, target, drop, cardIndex);
+            yield return GameController.CatBalou(PlayerNumber, target, drop, cardIndex);
         }
 
         public IEnumerator Panic(int target, Drop drop, int cardIndex)
         {
-            yield return GameController.Instance.Panic(PlayerNumber, target, drop, cardIndex);
+            yield return GameController.Panic(PlayerNumber, target, drop, cardIndex);
         }
 
         public virtual IEnumerator StolenBy(int thief)
@@ -1104,7 +1088,7 @@ namespace PimPamPum
         {
             if (HasColt45) return;
             Weapon weapon = UnequipWeapon();
-            GameController.Instance.DiscardCard(weapon);
+            GameController.DiscardCard(weapon);
         }
 
         public Weapon UnequipWeapon()
@@ -1157,7 +1141,7 @@ namespace PimPamPum
 
         public void DiscardProperty(Card card)
         {
-            GameController.Instance.DiscardCard(card);
+            GameController.DiscardCard(card);
         }
 
         public void EnableTakeHitButton(bool value)
@@ -1180,51 +1164,31 @@ namespace PimPamPum
             Actions.Pass = value;
         }
 
-        public void EnableClick(NetworkConnection conn, bool value)
+        public void EnableClick(bool value)
         {
-            TargetClickable(conn, value);
+            PlayerView.EnableClick(value);
         }
 
-        public void EnableClickHand(NetworkConnection conn, bool value)
+        public void EnableClickHand(bool value)
         {
-            TargetClickableHand(conn, value);
+            PlayerView.EnableClickHand(value);
         }
 
-        public void EnableClickProperties(NetworkConnection conn, bool value)
+        public void EnableClickProperties(bool value)
         {
-            TargetClickableProperties(conn, value, !HasColt45);
+            PlayerView.EnableClickProperties(value, !HasColt45);
         }
 
-        protected void MakeDecisionServer(Decision decision, int index = -1)
+        public void MakeDecision(Decision decision, int index = -1)
         {
             DisableCards();
             Card card = index > -1 ? Hand[index] : null;
             WaitForController.MakeDecision(decision, card);
         }
 
-        public void MakeDecisionClient(Decision decision)
-        {
-            CmdMakeDecision(decision);
-        }
-
-        public void Win()
-        {
-            TargetWin(connectionToClient);
-        }
-
-        public void Lose()
-        {
-            TargetLose(connectionToClient);
-        }
-
-        private void SetStealable(NetworkConnection conn, bool value, bool hand = true, bool weapon = true)
-        {
-            TargetSetStealable(conn, value, hand, weapon);
-        }
-
         protected virtual int CardLimit()
         {
-            return hp;
+            return HP;
         }
 
         private void EndTurn()
@@ -1244,19 +1208,14 @@ namespace PimPamPum
             ForceEndTurn();
         }
 
-        public void SetTargetable(NetworkConnection conn, bool value)
+        public void SetTargetable(bool value)
         {
-            TargetSetTargetable(conn, value);
-        }
-
-        public void Setup(NetworkConnection conn, int playerIndex)
-        {
-            TargetSetup(conn, playerIndex);
+            PlayerView.Droppable = value;
         }
 
         public IEnumerator PimPamPumEvent(string pimPamPumEvent)
         {
-            yield return GameController.Instance.PimPamPumEvent(pimPamPumEvent);
+            yield return GameController.PimPamPumEvent(pimPamPumEvent);
         }
 
         public override string ToString()
@@ -1329,7 +1288,7 @@ namespace PimPamPum
 
         private void ResetDraggableCard()
         {
-            TargetResetDraggableCard(connectionToClient);
+            CardView.CurrentCardView?.OnEndDrag();
         }
 
         protected virtual void OnSetLocalPlayer() { }
@@ -1341,160 +1300,43 @@ namespace PimPamPum
 
         private void UpdateCards(int cards)
         {
-            PlayerView?.UpdateCards(cards);
+            cardAmount = cards;
+            PlayerView.UpdateCards(cards);
         }
 
         private void SetTurn(bool value)
         {
-            PlayerView?.SetTurn(value);
+            PlayerView.SetTurn(value);
         }
 
         private void EquipWeaponCard(CardValues cs)
         {
-            PlayerView?.EquipWeapon(cs);
+            PlayerView.EquipWeapon(cs);
         }
 
-        private void UpdateHP(int hp)
-        {
-            PlayerView?.UpdateHP(hp);
-        }
-
-        private void SetRole(Role role)
-        {
-            PlayerView?.SetRole(role);
-        }
-
-        private void SetCharacter(string character)
-        {
-            PlayerView?.SetCharacter(character);
-        }
-
-        private void SetPlayerName(string playerName)
-        {
-            PlayerView?.SetPlayerName(playerName);
-        }
-
-        private void OnPropertiesUpdated(SyncListCard.Operation op, int index, CardValues oldValue, CardValues newValue)
-        {
-            switch (op)
-            {
-                case SyncListCard.Operation.OP_ADD:
-                    PlayerView.EquipProperty(index, newValue);
-                    break;
-                case SyncListCard.Operation.OP_REMOVEAT:
-                    PlayerView.RemoveProperty(index);
-                    break;
-            }
-        }
-
-        public void ResponseCountdown(float time)
-        {
-            responseController.SetCountdown(time);
-        }
-
-        public void ResponseEnd()
-        {
-            responseController.Disable();
-        }
-
-        public void TurnCountdown(float time)
-        {
-            turnController.SetCountdown(time);
-        }
-
-        public void TurnEnd()
-        {
-            turnController.Disable();
-        }
-
-        [Client]
-        public void UseSkillClient()
-        {
-            CmdUseSkill();
-        }
-
-        [Client]
         public void PhaseOneDecision(Decision option, int index = -1, Drop dropEnum = Drop.Nothing, int property = -1)
         {
-            CmdPhaseOneOption(option, index, dropEnum, property);
+            WaitForController.MakeDecision(option, index, dropEnum, property);
         }
 
-        [Client]
         public void ChooseCard(int index)
         {
-            CmdChooseCard(index);
+            WaitForController.MakeDecision(index);
         }
 
-        [Client]
         public void WillinglyDie()
         {
             PlayerView.EnableDieButton(false);
-            CmdMakeDecision(Decision.Die);
+            MakeDecision(Decision.Die);
         }
 
-        [Client]
         public void TakeHit()
         {
             PimPamPumResponseButton();
-            CmdMakeDecision(Decision.TakeHit);
+            MakeDecision(Decision.TakeHit);
         }
 
-        [Client]
         public void BeginCardDrag(int index)
-        {
-            CmdBeginCardDrag(index);
-        }
-
-        [Client]
-        public void UseCard(int index, int player, Drop drop, int cardIndex)
-        {
-            CmdUseCard(index, player, drop, cardIndex);
-        }
-
-        [Client]
-        public void UseBarrel()
-        {
-            PimPamPumResponseButton();
-            CmdMakeDecision(Decision.Barrel);
-        }
-
-        [Client]
-        public void EndTurnButton()
-        {
-            PlayerView.EnableEndTurnButton(false);
-            CmdEndTurn();
-        }
-
-        [Client]
-        public void PassButton()
-        {
-            PlayerView.EnablePassButton(false);
-            CmdMakeDecision(Decision.Skip);
-        }
-
-        [Server]
-        protected virtual void UseSkill() { }
-
-        [Command]
-        private void CmdChooseCard(int choice)
-        {
-            WaitForController.MakeDecision(choice);
-        }
-
-        [Command]
-        private void CmdMakeDecision(Decision decision)
-        {
-            MakeDecisionServer(decision);
-        }
-
-        [Command]
-        private void CmdPhaseOneOption(Decision option, int player, Drop dropEnum, int card)
-        {
-            WaitForController.MakeDecision(option, player, dropEnum, card);
-        }
-
-        [Command]
-        private void CmdBeginCardDrag(int index)
         {
             DraggedCardIndex = index;
             switch (State)
@@ -1509,110 +1351,30 @@ namespace PimPamPum
             }
         }
 
-        [Command]
-        private void CmdEndTurn()
+        public void UseCard(int index, int player, Drop drop, int cardIndex)
         {
+            UseCardState(index, player, drop, cardIndex);
+            GameController.StopTargeting(PlayerNumber);
+        }
+
+        public void UseBarrel()
+        {
+            PimPamPumResponseButton();
+            MakeDecision(Decision.Barrel);
+        }
+
+        public void EndTurnButton()
+        {
+            PlayerView.EnableEndTurnButton(false);
             EndTurn();
         }
 
-        [Command]
-        private void CmdUseCard(int index, int player, Drop drop, int cardIndex)
+        public void PassButton()
         {
-            UseCardState(index, player, drop, cardIndex);
-            GameController.Instance.StopTargeting(PlayerNumber);
+            PlayerView.EnablePassButton(false);
+            MakeDecision(Decision.Skip);
         }
 
-        [Command]
-        private void CmdUseSkill()
-        {
-            UseSkill();
-        }
-
-        [TargetRpc]
-        public void TargetSetLocalPlayer(NetworkConnection conn, int maxPlayers)
-        {
-            LocalPlayer = this;
-            GameController.Instance.MaxPlayers = maxPlayers;
-            GameController.Instance.SetPlayerViews();
-            PlayerView = GameController.Instance.GetPlayerView(0);
-            PlayerView.SetLocalPlayer();
-            PlayerView.SetPlayerName(NetworkManagerButton.PlayerName);
-            OnSetLocalPlayer();
-        }
-
-        [TargetRpc]
-        private void TargetSetTargetable(NetworkConnection conn, bool value)
-        {
-            PlayerView.Droppable = value;
-        }
-
-        [TargetRpc]
-        private void TargetSetStealable(NetworkConnection conn, bool value, bool hand, bool weapon)
-        {
-            PlayerView.SetStealable(value, hand, weapon);
-        }
-
-        [TargetRpc]
-        private void TargetClickable(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableClick(value);
-        }
-
-        [TargetRpc]
-        private void TargetClickableHand(NetworkConnection conn, bool value)
-        {
-            PlayerView.EnableClickHand(value);
-        }
-
-        [TargetRpc]
-        private void TargetClickableProperties(NetworkConnection conn, bool value, bool weapon)
-        {
-            PlayerView.EnableClickProperties(value, weapon);
-        }
-
-        [TargetRpc]
-        private void TargetSetRole(NetworkConnection conn, Role role)
-        {
-            PlayerView.SetRole(role);
-        }
-
-        [TargetRpc]
-        private void TargetSetup(NetworkConnection conn, int playerNumber)
-        {
-            PlayerView = GameController.Instance.GetPlayerView(playerNumber, PlayerNumber);
-            turnController.CountdownView = PlayerView.TurnView;
-            responseController.CountdownView = PlayerView.ResponseView;
-
-            //TODO Remove when issue #1278 is fixed on Mirror
-            if (isServer)
-            {
-                SetPlayerName(PlayerName);
-                SetCharacter(showCharacterName);
-                UpdateCards(Hand.Count);
-                EquipWeaponCard(weaponCard);
-                UpdateHP(hp);
-                SetRole(showRole);
-                turnController.UpdateOnHost();
-                responseController.UpdateOnHost();
-            }
-        }
-
-        [TargetRpc]
-        private void TargetWin(NetworkConnection conn)
-        {
-            PlayerView.Win();
-        }
-
-        [TargetRpc]
-        private void TargetLose(NetworkConnection conn)
-        {
-            PlayerView.Lose();
-        }
-
-        [TargetRpc]
-        private void TargetResetDraggableCard(NetworkConnection conn)
-        {
-            CardView.CurrentCardView?.OnEndDrag();
-        }
+        public virtual void UseSkill() { }
     }
 }

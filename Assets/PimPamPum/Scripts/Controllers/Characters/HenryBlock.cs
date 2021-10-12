@@ -9,7 +9,7 @@ namespace PimPamPum
         {
             if (thief != PlayerNumber && thief != PimPamPumConstants.NoOne)
             {
-                yield return GameController.Instance.PimPamPum(PimPamPumConstants.NoOne, thief);
+                yield return GameController.PimPamPum(PimPamPumConstants.NoOne, thief);
             }
         }
 

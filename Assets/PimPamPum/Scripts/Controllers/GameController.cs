@@ -1,22 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
-using System;
 
 namespace PimPamPum
 {
-    public class GameController : NetworkBehaviour
+    public class GameController : MonoBehaviour
     {
-        public static GameController Instance
-        {
-            get; private set;
-        }
+        private static GameController instance;
 
-        public static float TurnTime => Instance.turnTime;
-        public static float ReactionTime => Instance.reactionTime;
-        public static bool HasDiscardStackCards => Instance.boardController.DiscardStackSize > 0;
-        public static bool FinalDuel => Instance.PlayersAlive < 3;
+        public static float TurnTime => instance.turnTime;
+        public static float ReactionTime => instance.reactionTime;
+        public static float EventTime => instance.pimPamPumEventTime;
+        public static bool HasDiscardStackCards => boardController.DiscardStackSize > 0;
+        public static bool FinalDuel => PlayersAlive < 3;
+        public static GameObject CardPrefab => instance.cardPrefab.gameObject;
+        public static GameObject PropertyPrefab => instance.propertyPrefab.gameObject;
+        private static SelectCardController selectCardController => instance._selectCardController;
+        private static BoardController boardController => instance._boardController;
 
         private static WaitFor turnTimerCorutine;
 
@@ -29,25 +29,23 @@ namespace PimPamPum
         [SerializeField] private CardView cardPrefab = null;
         [SerializeField] private PropertyView propertyPrefab = null;
         [Header("Controllers")]
-        [SerializeField] private SelectCardController selectCardController = null;
-        [SerializeField] private BoardController boardController = null;
+        [SerializeField] private SelectCardController _selectCardController = null;
+        [SerializeField] private BoardController _boardController = null;
 
-        private IPlayerView[] playerViews;
-        private PlayerController[] playerControllers;
-        public GameObject CardPrefab => cardPrefab.gameObject;
-        public GameObject PropertyPrefab => propertyPrefab.gameObject;
+        private static IPlayerView[] playerViews;
+        private static PlayerController[] playerControllers;
 
-        public int MaxPlayers
+        public static int MaxPlayers
         {
             get; set;
         }
 
-        public int CurrentPlayer
+        public static int CurrentPlayer
         {
             get; private set;
         }
 
-        public int PlayersAlive
+        public static int PlayersAlive
         {
             get
             {
@@ -60,7 +58,7 @@ namespace PimPamPum
             }
         }
 
-        public int PlayerStandingAlone
+        public static int PlayerStandingAlone
         {
             get
             {
@@ -73,7 +71,7 @@ namespace PimPamPum
             }
         }
 
-        public bool SheriffFoesAlive
+        public static bool SheriffFoesAlive
         {
             get
             {
@@ -88,7 +86,7 @@ namespace PimPamPum
             }
         }
 
-        public int NextPlayerAlive(int player)
+        public static int NextPlayerAlive(int player)
         {
             PlayerController pc;
             int res = player;
@@ -101,7 +99,7 @@ namespace PimPamPum
             return res;
         }
 
-        private int PreviousPlayerAlive(int player)
+        private static int PreviousPlayerAlive(int player)
         {
             PlayerController pc;
             int res = player;
@@ -114,7 +112,7 @@ namespace PimPamPum
             return res;
         }
 
-        public void EnableOthersProperties(int player, bool value)
+        public static void EnableOthersProperties(int player, bool value)
         {
             for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
@@ -122,7 +120,7 @@ namespace PimPamPum
             }
         }
 
-        public void CheckDeath(List<Card> list)
+        public static void CheckDeath(List<Card> list)
         {
             bool listTaken = false;
             for (int i = 0; i < MaxPlayers && !listTaken; i++)
@@ -138,7 +136,7 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator UsedCard<T>(PlayerController pc) where T : Card
+        public static IEnumerator UsedCard<T>(PlayerController pc) where T : Card
         {
             int player = pc.PlayerNumber;
             PlayerController aux;
@@ -150,7 +148,7 @@ namespace PimPamPum
             }
         }
 
-        public void CheckMurder(int murderer, int killed)
+        public static void CheckMurder(int murderer, int killed)
         {
             Role killedRole = playerControllers[killed].Role;
             if (killedRole == Role.Sheriff)
@@ -159,16 +157,16 @@ namespace PimPamPum
                 PlayerController alonePc = playerControllers[alone];
                 if (PlayersAlive == 1 && alonePc.Role == Role.Renegade)
                 {
-                    Win(alone);
+                    Lose();
                 }
                 else
                 {
-                    Win(Team.Outlaw);
+                    Lose();
                 }
             }
             else if (!SheriffFoesAlive)
             {
-                Win(Team.Law);
+                Win();
             }
             else if (murderer != PimPamPumConstants.NoOne)
             {
@@ -184,61 +182,42 @@ namespace PimPamPum
             }
         }
 
-        private void Win(int player)
+        private static void Win()
         {
-            playerControllers[player].Win();
-            for (int i = 0; i < MaxPlayers; i++)
-            {
-                if (player != i) playerControllers[i].Lose();
-            }
+            //TODO
         }
 
-        private void Win(Team team)
+        private static void Lose()
         {
-            PlayerController pc;
-            for (int i = 0; i < MaxPlayers; i++)
-            {
-                pc = playerControllers[i];
-                if (pc.BelongsToTeam(team))
-                {
-                    pc.Win();
-                }
-                else
-                {
-                    pc.Lose();
-                }
-            }
+            //TODO
         }
 
-        public Card GetDiscardTopCard()
+        public static Card GetDiscardTopCard()
         {
             return boardController.GetDiscardTopCard();
         }
 
-        public void SetPhaseOneDiscardClickable(int player)
+        public static void SetPhaseOneDiscardClickable(int player)
         {
-            boardController.EnableClickableDiscard(playerControllers[player].connectionToClient, true);
+            boardController.EnableClickableDiscard(true);
         }
 
-        public void SetClickablePlayers(int player, List<int> targets)
+        public static void SetClickablePlayers(List<int> targets)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
             foreach (int i in targets)
             {
-                playerControllers[i].EnableClick(conn, true);
+                playerControllers[i].EnableClick(true);
             }
         }
 
-        public void SetPhaseOnePlayerClickable(int player, List<int> targets)
+        public static void SetPhaseOnePlayerClickable(List<int> targets)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            SetClickablePlayers(player, targets);
-            boardController.EnableClickableDeck(conn, true);
+            SetClickablePlayers(targets);
+            boardController.EnableClickableDeck(true);
         }
 
-        public bool SetPhaseOnePlayerHandsClickable(int player)
+        public static bool SetPhaseOnePlayerHandsClickable(int player)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
             PlayerController pc;
             bool cards = false;
             for (int i = 0; i < playerControllers.Length; i++)
@@ -247,17 +226,16 @@ namespace PimPamPum
                 if (i != player && pc.HasCards)
                 {
                     cards = true;
-                    pc.EnableClickHand(conn, true);
+                    pc.EnableClickHand(true);
                 }
             }
             if (cards)
-                boardController.EnableClickableDeck(conn, true);
+                boardController.EnableClickableDeck(true);
             return cards;
         }
 
-        public bool SetPhaseOnePlayerPropertiesClickable(int player)
+        public static bool SetPhaseOnePlayerPropertiesClickable(int player)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
             PlayerController pc;
             bool cards = false;
             for (int i = 0; i < playerControllers.Length; i++)
@@ -266,59 +244,58 @@ namespace PimPamPum
                 if (i != player && (pc.HasProperties || !pc.HasColt45))
                 {
                     cards = true;
-                    pc.EnableClickProperties(conn, true);
+                    pc.EnableClickProperties(true);
                 }
             }
             if (cards)
-                boardController.EnableClickableDeck(conn, true);
+                boardController.EnableClickableDeck(true);
             return cards;
         }
 
-        public void DisablePhaseOneClickable(int player)
+        public static void DisablePhaseOneClickable(int player)
         {
-            NetworkConnection conn = playerControllers[player].connectionToClient;
-            boardController.EnableClickableDiscard(conn, false);
+            boardController.EnableClickableDiscard(false);
             foreach (PlayerController pc in playerControllers)
             {
                 if (pc.PlayerNumber != player)
                 {
-                    pc.EnableClick(conn, false);
-                    pc.EnableClickProperties(conn, false);
+                    pc.EnableClick(false);
+                    pc.EnableClickProperties(false);
                 }
             }
         }
 
-        public void SetSelectableCards(List<Card> cards, NetworkConnection conn = null)
+        public static void SetSelectableCards(List<Card> cards)
         {
-            selectCardController.SetCards(cards, conn);
+            selectCardController.SetCards(cards);
         }
 
-        public void DisableSelectableCards()
+        public static void DisableSelectableCards()
         {
             selectCardController.Disable();
         }
 
-        public void EnableGeneralStoreCards(NetworkConnection conn, bool value)
+        public static void EnableGeneralStoreCards(bool value)
         {
-            selectCardController.EnableCards(conn, value);
+            selectCardController.EnableCards(value);
         }
 
-        public void RemoveSelectableCardsAndDisable(NetworkConnection conn)
+        public static void RemoveSelectableCardsAndDisable()
         {
-            selectCardController.Disable(conn);
+            selectCardController.Disable();
         }
 
-        public IEnumerator DiscardEffect(int player, Card c)
+        public static IEnumerator DiscardEffect(int player, Card c)
         {
             yield return DiscardDrawEffect(player, c, true);
         }
 
-        public IEnumerator DrawEffect(int player, Card c)
+        public static IEnumerator DrawEffect(int player, Card c)
         {
             yield return DiscardDrawEffect(player, c, false);
         }
 
-        private IEnumerator DiscardDrawEffect(int player, Card c, bool discardDrawEffect)
+        private static IEnumerator DiscardDrawEffect(int player, Card c, bool discardDrawEffect)
         {
             PlayerController pc;
             if (DiscardDrawEffectTriggers(player, c, discardDrawEffect, out pc))
@@ -335,7 +312,7 @@ namespace PimPamPum
             }
         }
 
-        private bool DiscardDrawEffectTriggers(int player, Card c, bool discardDrawEffect, out PlayerController pc)
+        private static bool DiscardDrawEffectTriggers(int player, Card c, bool discardDrawEffect, out PlayerController pc)
         {
             pc = null;
             bool res = false;
@@ -349,32 +326,32 @@ namespace PimPamPum
             return res;
         }
 
-        public Card DrawCard()
+        public static Card DrawCard()
         {
             return boardController.DrawCard();
         }
 
-        public List<Card> DrawCards(int cards)
+        public static List<Card> DrawCards(int cards)
         {
             return boardController.DrawCards(cards);
         }
 
-        public void DiscardCard(Card card)
+        public static void DiscardCard(Card card)
         {
             boardController.DiscardCard(card);
         }
 
-        public void EquipPropertyTo(int target, Property p)
+        public static void EquipPropertyTo(int target, Property p)
         {
             p.EquipProperty(playerControllers[target]);
         }
 
-        public IEnumerator YoulGrinnerSkill(int player)
+        public static IEnumerator YoulGrinnerSkill(int player)
         {
             yield return new YoulGrinnerSkillCoroutine(player, playerControllers);
         }
 
-        public IEnumerator CatBalou(int player, int target, Drop drop, int cardIndex)
+        public static IEnumerator CatBalou(int player, int target, Drop drop, int cardIndex)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -397,7 +374,7 @@ namespace PimPamPum
             yield return targetPc.StolenBy(player);
         }
 
-        public IEnumerator Panic(int player, int target, Drop drop, int cardIndex)
+        public static IEnumerator Panic(int player, int target, Drop drop, int cardIndex)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -426,7 +403,7 @@ namespace PimPamPum
             yield return targetPc.StolenBy(player);
         }
 
-        public IEnumerator GeneralStore(int player)
+        public static IEnumerator GeneralStore(int player)
         {
             int players = PlayersAlive;
             List<Card> cardChoices = boardController.DrawCards(players);
@@ -434,19 +411,19 @@ namespace PimPamPum
             yield return new GeneralStoreCoroutine(playerControllers, player, cardChoices);
         }
 
-        public IEnumerator GetCardGeneralStore(int player, int choice, Card card)
+        public static IEnumerator GetCardGeneralStore(int player, int choice, Card card)
         {
             yield return PimPamPumEvent(playerControllers[player] + " has chosen the card: " + card);
             selectCardController.RemoveCard(choice);
             playerControllers[player].AddCard(card);
         }
 
-        public IEnumerator StartDuel(int player, int target)
+        public static IEnumerator StartDuel(int player, int target)
         {
             yield return new DuelCoroutine(playerControllers[player], playerControllers[target]);
         }
 
-        public void TradeTwoForOne(int player, int cardIndex, int target)
+        public static void TradeTwoForOne(int player, int cardIndex, int target)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -459,7 +436,7 @@ namespace PimPamPum
             targetPc.AddCard(c);
         }
 
-        public void StealProperty(int player, int target, int index)
+        public static void StealProperty(int player, int target, int index)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -468,7 +445,7 @@ namespace PimPamPum
             targetPc.StolenBy(player);
         }
 
-        public void StealWeapon(int player, int target)
+        public static void StealWeapon(int player, int target)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -477,13 +454,13 @@ namespace PimPamPum
             targetPc.StolenBy(player);
         }
 
-        public void StealCard(int player, int target)
+        public static void StealCard(int player, int target)
         {
             StealIfHandNotEmpty(player, target);
             playerControllers[target].StolenBy(player);
         }
 
-        public void StealIfHandNotEmpty(int player, int target)
+        public static void StealIfHandNotEmpty(int player, int target)
         {
             PlayerController pc = playerControllers[player];
             PlayerController targetPc = playerControllers[target];
@@ -494,7 +471,7 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator PimPamPum(int player, int target, int misses = 1)
+        public static IEnumerator PimPamPum(int player, int target, int misses = 1)
         {
             PlayerController targetPc = playerControllers[target];
             PimPamPumCoroutine pimPamPumCoroutine = new PimPamPumCoroutine(targetPc, misses);
@@ -505,48 +482,48 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator HitPlayer(int player, PlayerController target)
+        public static IEnumerator HitPlayer(int player, PlayerController target)
         {
             yield return target.GetHitBy(player);
         }
 
-        public IEnumerator HitPlayer(int player, int target)
+        public static IEnumerator HitPlayer(int player, int target)
         {
             yield return HitPlayer(player, playerControllers[target]);
         }
 
-        public IEnumerator BarrelEffect(int target, Card c, bool dodge)
+        public static IEnumerator BarrelEffect(int target, Card c, bool dodge)
         {
             yield return DrawEffect(target, c);
             yield return PimPamPumEvent(playerControllers[target] + (dodge ? " barrel succesfully used as a Missed!" : " the barrel didn't help.") + " Card: " + c);
         }
 
-        public IEnumerator PimPamPumEvent(string pimPamPumEvent)
+        public static IEnumerator PimPamPumEvent(string pimPamPumEvent)
         {
-            yield return new WaitForSeconds(pimPamPumEventTime);
+            yield return new WaitForSeconds(EventTime);
             Debug.Log(pimPamPumEvent);
         }
 
-        public IEnumerator PimPamPumEventPlayedCard(int player, int target, Card card, Drop drop, int cardIndex)
+        public static IEnumerator PimPamPumEventPlayedCard(int player, int target, Card card, Drop drop, int cardIndex)
         {
             PlayerController pc = playerControllers[player];
             PlayerController pcTarget = playerControllers[target];
             yield return PimPamPumEvent(pc + " Card: " + card + " Target: " + pcTarget + " Drop: " + drop + " CardIndex: " + cardIndex);
         }
 
-        public IEnumerator PimPamPumEventHitBy(int player, int target)
+        public static IEnumerator PimPamPumEventHitBy(int player, int target)
         {
             PlayerController pc = playerControllers[player];
             PlayerController pcTarget = playerControllers[target];
             yield return PimPamPumEvent(pcTarget + " has been hit by " + pc);
         }
 
-        public IEnumerator Indians(int player, Card c)
+        public static IEnumerator Indians(int player, Card c)
         {
             yield return new MultiTargetingCoroutine<IndianCoroutine>(playerControllers, player, c);
         }
 
-        public IEnumerator CardResponse(int player, Card card)
+        public static IEnumerator CardResponse(int player, Card card)
         {
             PlayerController pc = playerControllers[player];
             yield return PimPamPumEvent(pc + " has avoided the hit with: " + card);
@@ -554,12 +531,12 @@ namespace PimPamPum
             DiscardCard(card);
         }
 
-        public IEnumerator Gatling(int player, Card c)
+        public static IEnumerator Gatling(int player, Card c)
         {
             yield return new MultiTargetingCoroutine<PimPamPumCoroutine>(playerControllers, player, c);
         }
 
-        public void Saloon()
+        public static void Saloon()
         {
             for (int i = 0; i < MaxPlayers; i++)
             {
@@ -567,26 +544,14 @@ namespace PimPamPum
             }
         }
 
-        public void SetMatch(PlayerController[] players)
+        public static void SetMatch(PlayerController[] players)
         {
             boardController.ConstructorBoard();
             playerControllers = players;
             MaxPlayers = players.Length;
 
-            int length = players.Length;
-            GameObject[] gameObjects = new GameObject[length];
-            for(int i = 0; i < length; i++)
-            {
-                gameObjects[i] = players[i].gameObject;
-            }
-            RpcPlayerControllers(gameObjects);
-
             foreach (PlayerController pc in playerControllers)
             {
-                foreach (PlayerController pc2 in playerControllers)
-                {
-                    pc.Setup(pc2.connectionToClient, pc2.PlayerNumber);
-                }
                 pc.Setup();
                 pc.Actions.SetPlayerStatusArray(MaxPlayers);
             }
@@ -594,58 +559,17 @@ namespace PimPamPum
             StartGame();
         }
 
-        public void SetPlayerViews()
-        {
-            playerViews = new IPlayerView[MaxPlayers];
-            int j = 0;
-            int i = 0;
-            foreach (Transform player in players)
-            {
-                if (ValidPlayer(i))
-                {
-                    playerViews[j++] = player.GetComponent<IPlayerView>();
-                }
-                else
-                {
-                    player.gameObject.SetActive(false);
-                }
-                i++;
-            }
-        }
-
-        public void SetPlayerView(int index, PlayerViewStatus playerView)
+        public static void SetPlayerView(int index, PlayerViewStatus playerView)
         {
             playerControllers[index].PlayerView.SetStatus(playerView);
         }
 
-        private bool ValidPlayer(int player)
-        {
-            bool res = true;
-            switch (player)
-            {
-                case 1:
-                    goto case 7;
-                case 3:
-                    goto case 5;
-                case 4:
-                    res = MaxPlayers % 2 == 0;
-                    break;
-                case 5:
-                    res = MaxPlayers > 4;
-                    break;
-                case 7:
-                    res = MaxPlayers > 6;
-                    break;
-            }
-            return res;
-        }
-
-        public void AddPlayerController(int i, PlayerController pc)
+        public static void AddPlayerController(int i, PlayerController pc)
         {
             playerControllers[i] = pc;
         }
 
-        public IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property, new()
+        public static IEnumerator DiscardCopiesOf<T>(int player, Property p) where T : Property, new()
         {
             for (int i = player == MaxPlayers - 1 ? 0 : player + 1; i != player; i = i == MaxPlayers - 1 ? 0 : i + 1)
             {
@@ -653,7 +577,7 @@ namespace PimPamPum
             }
         }
 
-        public IEnumerator ChooseCardToPutOnDeckTop(int player)
+        public static IEnumerator ChooseCardToPutOnDeckTop(int player)
         {
             PlayerController pc = playerControllers[player];
 
@@ -664,7 +588,7 @@ namespace PimPamPum
             boardController.AddCardToDeck(chooseCardTimer.ChosenCard);
         }
 
-        public void PassDynamite(int player, Dynamite d)
+        public static void PassDynamite(int player, Dynamite d)
         {
             int playerAux = player;
             PlayerController pc;
@@ -674,23 +598,6 @@ namespace PimPamPum
                 pc = playerControllers[playerAux];
             } while (pc.HasProperty<Dynamite>());
             d.EquipProperty(pc);
-        }
-
-        public override void OnStartServer()
-        {
-            base.OnStartServer();
-            Initialize();
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            Initialize();
-        }
-
-        private void Initialize()
-        {
-            Instance = this;
         }
 
         public IPlayerView GetPlayerView(int index)
@@ -705,7 +612,7 @@ namespace PimPamPum
             return GetPlayerView(index);
         }
 
-        public void StartGame()
+        public static void StartGame()
         {
             int sheriff = -1;
             for (int i = 0; sheriff < 0 && i < playerControllers.Length; i++)
@@ -715,7 +622,7 @@ namespace PimPamPum
             StartTurn(sheriff);
         }
 
-        public void EndTurn(int player)
+        public static void EndTurn(int player)
         {
             if (CurrentPlayer != player) return;
             WaitForController.StopTurnCorutine();
@@ -723,22 +630,22 @@ namespace PimPamPum
             StartTurn(nextPlayer);
         }
 
-        private void StartTurn(int player)
+        private static void StartTurn(int player)
         {
             if (turnTimerCorutine != null) turnTimerCorutine.StopCorutine();
             CurrentPlayer = player;
             PlayerController current = playerControllers[player];
             turnTimerCorutine = WaitFor.StartTurnCorutine(current);
-            StartCoroutine(current.TurnTimer(turnTimerCorutine));
+            instance.StartCoroutine(current.TurnTimer(turnTimerCorutine));
             current.StartTurn();
         }
 
-        public List<int> PlayersInWeaponRange(int player, Card c = null)
+        public static List<int> PlayersInWeaponRange(int player, Card c = null)
         {
             return PlayersInRange(player, playerControllers[player].WeaponRange, false, c);
         }
 
-        public List<int> PlayersInRange(int player, int range, bool includeItself, Card c = null)
+        public static List<int> PlayersInRange(int player, int range, bool includeItself, Card c = null)
         {
             List<int> res = new List<int>();
 
@@ -748,7 +655,7 @@ namespace PimPamPum
             return res;
         }
 
-        private void TraversePlayers(List<int> players, int player, int range, bool forward, bool includeItself, Card c = null)
+        private static void TraversePlayers(List<int> players, int player, int range, bool forward, bool includeItself, Card c = null)
         {
             int auxRange = 0;
             int next = player;
@@ -764,7 +671,7 @@ namespace PimPamPum
             } while (next != player);
         }
 
-        public void TargetPrison(int player, Card c)
+        public static void TargetPrison(int player, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             PlayerController pc;
@@ -782,7 +689,7 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetAllCards(int player, Card c)
+        public static void TargetAllCards(int player, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             PlayerController pc;
@@ -803,14 +710,14 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetSelf(int player)
+        public static void TargetSelf(int player)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             players[player].droppable = true;
             SetPlayersStatus(player, players);
         }
 
-        public void TargetSelfProperty<T>(int player) where T : Property, new()
+        public static void TargetSelfProperty<T>(int player) where T : Property, new()
         {
             PlayerController pc = playerControllers[player];
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
@@ -818,7 +725,7 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetOthers(int player, Card c)
+        public static void TargetOthers(int player, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             PlayerController pc;
@@ -834,7 +741,7 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetOthersWithHand(int player, Card c)
+        public static void TargetOthersWithHand(int player, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             PlayerController pc;
@@ -852,7 +759,7 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetAllRangeCards(int player, int range, Card c)
+        public static void TargetAllRangeCards(int player, int range, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             List<int> playersInRange = PlayersInRange(player, range, true);
@@ -874,7 +781,7 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void TargetPlayersRange(int player, int range, Card c)
+        public static void TargetPlayersRange(int player, int range, Card c)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             List<int> playersInRange = PlayersInRange(player, range, false);
@@ -891,32 +798,26 @@ namespace PimPamPum
             SetPlayersStatus(player, players);
         }
 
-        public void StopTargeting(int player)
+        public static void StopTargeting(int player)
         {
             PlayerViewStatus[] players = new PlayerViewStatus[playerViews.Length];
             SetPlayersStatus(player, players);
             playerControllers[player].Actions.Thrash = false;
         }
 
-        private void SetPlayersStatus(int player, PlayerViewStatus[] status)
+        private static void SetPlayersStatus(int player, PlayerViewStatus[] status)
         {
             playerControllers[player].Actions.SetPlayersStatus(status);
         }
 
-        public void SetTargetableThrash(bool value)
+        public static void SetTargetableThrash(bool value)
         {
             boardController.SetTargetable(value);
         }
 
-        [ClientRpc]
-        private void RpcPlayerControllers(GameObject[] gameObjects)
+        private void Awake()
         {
-            int length = gameObjects.Length;
-            playerControllers = new PlayerController[length];
-            for(int i = 0; i < length; i++)
-            {
-                playerControllers[i] = gameObjects[i].GetComponent<PlayerController>();
-            }
+            instance = this;
         }
     }
 }

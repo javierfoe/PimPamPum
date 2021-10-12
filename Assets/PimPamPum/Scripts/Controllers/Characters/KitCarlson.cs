@@ -8,7 +8,7 @@ namespace PimPamPum
 
         protected override IEnumerator DrawPhase1()
         {
-            yield return GameController.Instance.ChooseCardToPutOnDeckTop(PlayerNumber);
+            yield return GameController.ChooseCardToPutOnDeckTop(PlayerNumber);
         }
 
     }

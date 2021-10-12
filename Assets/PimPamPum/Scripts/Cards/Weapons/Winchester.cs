@@ -12,7 +12,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Winchester>(pc);
+            yield return GameController.UsedCard<Winchester>(pc);
         }
 
         public override string ToString()

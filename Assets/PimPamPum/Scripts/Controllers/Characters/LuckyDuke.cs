@@ -5,9 +5,9 @@ namespace PimPamPum
     public class LuckyDuke : PlayerController
     {
 
-        public override void OnStartServer()
+        protected override void Awake()
         {
-            base.OnStartServer();
+            base.Awake();
             DrawEffectCards = 2;
         }
 

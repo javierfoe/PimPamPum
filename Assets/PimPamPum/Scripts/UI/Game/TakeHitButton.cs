@@ -13,7 +13,7 @@ namespace PimPamPum
 
         protected override void Click()
         {
-            PlayerController.LocalPlayer.TakeHit();
+            PlayerController.CurrentPlayableCharacter.TakeHit();
         }
 
     }

@@ -6,9 +6,9 @@ namespace PimPamPum
 
         private const int scopeModifier = 1;
 
-        public override void OnStartServer()
+        protected override void Awake()
         {
-            base.OnStartServer();
+            base.Awake();
             Scope = scopeModifier;
         }
 

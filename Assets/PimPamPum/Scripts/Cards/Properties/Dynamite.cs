@@ -31,7 +31,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Dynamite>(pc);
+            yield return GameController.UsedCard<Dynamite>(pc);
         }
 
         public override string ToString()

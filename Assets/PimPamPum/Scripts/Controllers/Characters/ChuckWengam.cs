@@ -12,12 +12,12 @@ namespace PimPamPum
 
         private void EnableSkill()
         {
-            bool value = hp > 1;
+            bool value = HP > 1;
             EnableSkill(value);
             SetSkill(value);
         }
 
-        protected override void UseSkill()
+        public override void UseSkill()
         {
             StartCoroutine(ChuckWenganCoroutine());
         }
@@ -31,7 +31,7 @@ namespace PimPamPum
             yield return decision;
             if (decision.Decision == Decision.Confirm)
             {
-                hp--;
+                HP--;
                 Draw(2);
             }
             EnableCancelButton(false);

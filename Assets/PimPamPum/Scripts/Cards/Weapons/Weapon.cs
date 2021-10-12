@@ -31,7 +31,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Weapon>(pc);
+            yield return GameController.UsedCard<Weapon>(pc);
         }
     }
 }

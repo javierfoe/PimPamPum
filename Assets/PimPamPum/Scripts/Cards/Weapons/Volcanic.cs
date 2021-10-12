@@ -14,7 +14,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Volcanic>(pc);
+            yield return GameController.UsedCard<Volcanic>(pc);
         }
 
         public override string ToString()

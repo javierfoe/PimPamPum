@@ -6,7 +6,7 @@ namespace PimPamPum
     {
         protected override GameObject GetPrefab()
         {
-            return GameController.Instance.CardPrefab;
+            return GameController.CardPrefab;
         }
     }
 }

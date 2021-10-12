@@ -6,7 +6,7 @@
 
         protected override void Click()
         {
-            PlayerController.LocalPlayer.UseBarrel();
+            PlayerController.CurrentPlayableCharacter.UseBarrel();
         }
 
     }

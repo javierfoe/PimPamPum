@@ -6,7 +6,7 @@ namespace PimPamPum
     {
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Discard);
+            PlayerController.CurrentPlayableCharacter.PhaseOneDecision(Decision.Discard);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace PimPamPum
         {
             if (GameController.HasDiscardStackCards)
             {
-                GameController.Instance.SetPhaseOneDiscardClickable(PlayerNumber);
+                GameController.SetPhaseOneDiscardClickable(PlayerNumber);
                 WaitForClickChoice phaseOneChoice = new WaitForClickChoice(this);
                 yield return phaseOneChoice;
                 switch (phaseOneChoice.Decision)
@@ -17,7 +17,7 @@ namespace PimPamPum
                         yield return base.DrawPhase1();
                         break;
                     case Decision.Discard:
-                        Card discard = GameController.Instance.GetDiscardTopCard();
+                        Card discard = GameController.GetDiscardTopCard();
                         AddCard(discard);
                         Draw();
                         break;

@@ -21,7 +21,7 @@ namespace PimPamPum
             PlayerController pc;
             do
             {
-                next = GameController.Instance.NextPlayerAlive(next);
+                next = GameController.NextPlayerAlive(next);
                 pc = playerControllers[next];
             } while (pc.IsDead || pc.Immune(card));
             if (next != player)

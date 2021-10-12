@@ -15,7 +15,7 @@
                 decision = responseCoroutine.Decision;
                 if (decision == Decision.Avoid)
                 {
-                    Current = GameController.Instance.PimPamPumEvent(next + " keeps dueling.");
+                    Current = GameController.PimPamPumEvent(next + " keeps dueling.");
                     if (next == target)
                     {
                         pimPamPumsTarget++;
@@ -24,7 +24,7 @@
                 }
                 else
                 {
-                    Current = GameController.Instance.PimPamPumEvent(next + " loses the duel.");
+                    Current = GameController.PimPamPumEvent(next + " loses the duel.");
                     return true;
                 }
             }
@@ -38,7 +38,7 @@
             else
             {
                 target.FinishResponse(pimPamPumsTarget);
-                Current = GameController.Instance.HitPlayer(player.PlayerNumber, next);
+                Current = GameController.HitPlayer(player.PlayerNumber, next);
                 finished = true;
                 return true;
             }

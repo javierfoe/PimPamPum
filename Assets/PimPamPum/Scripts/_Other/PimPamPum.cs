@@ -1,5 +1,4 @@
-﻿using Mirror;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PimPamPum
 {
@@ -95,10 +94,6 @@ namespace PimPamPum
             return res;
         }
     }
-
-    public class SyncListPlayer : SyncList<PlayerViewStatus> { }
-
-    public class SyncListCard : SyncList<CardValues> { }
 
     public struct CardValues
     {

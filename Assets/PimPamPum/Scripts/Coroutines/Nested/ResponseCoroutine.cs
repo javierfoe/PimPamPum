@@ -11,7 +11,7 @@
 
         protected void SetCardResponse(int player, WaitForCardResponse timer)
         {
-            Current = GameController.Instance.CardResponse(player, timer.ResponseCard);
+            Current = GameController.CardResponse(player, timer.ResponseCard);
         }
 
         public ResponseCoroutine() { }

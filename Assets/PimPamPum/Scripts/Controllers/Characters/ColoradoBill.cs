@@ -13,7 +13,7 @@ namespace PimPamPum
             if (drawEffectCard.Suit == Suit.Spades)
             {
                 yield return PimPamPumEvent(this + " has shot an undodgeable PimPamPum! " + drawEffectCard);
-                yield return GameController.Instance.HitPlayer(PlayerNumber, target);
+                yield return GameController.HitPlayer(PlayerNumber, target);
             }
             else
             {

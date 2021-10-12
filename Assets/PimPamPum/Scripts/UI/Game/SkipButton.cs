@@ -7,7 +7,7 @@ namespace PimPamPum
 
         protected override void Click()
         {
-            PlayerController.LocalPlayer.PassButton();
+            PlayerController.CurrentPlayableCharacter.PassButton();
         }
 
     }

@@ -34,7 +34,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, IPlayerView.PlayerIndex);
+            PlayerController.CurrentPlayableCharacter.PhaseOneDecision(Decision.Player, IPlayerView.PlayerIndex);
         }
     }
 }

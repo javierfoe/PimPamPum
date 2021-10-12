@@ -35,7 +35,7 @@ namespace PimPamPum
                 {
                     DiscardCardFromHand(index);
                     Heal();
-                    MakeDecisionServer(Decision.Heal);
+                    MakeDecision(Decision.Heal);
                 }
             }
             else

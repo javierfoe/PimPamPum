@@ -7,7 +7,7 @@ namespace PimPamPum
         protected override void HitTrigger(int attacker)
         {
             if (attacker == PlayerNumber || attacker == PimPamPumConstants.NoOne) return;
-            GameController.Instance.StealIfHandNotEmpty(PlayerNumber, attacker);
+            GameController.StealIfHandNotEmpty(PlayerNumber, attacker);
         }
 
     }

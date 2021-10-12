@@ -34,7 +34,7 @@ namespace PimPamPum
             {
                 cardsDiscarded = 0;
                 secondCard = index;
-                MakeDecisionServer(Decision.Confirm);
+                MakeDecision(Decision.Confirm);
             }
             base.UseCardState(index, player, drop, cardIndex);
         }
@@ -108,7 +108,7 @@ namespace PimPamPum
             WaitForClickChoice clickChoice = new WaitForClickChoice(this, Decision.Cancel);
             yield return clickChoice;
             EnableCancelButton(false);
-            GameController.Instance.DisablePhaseOneClickable(PlayerNumber);
+            GameController.DisablePhaseOneClickable(PlayerNumber);
             if (clickChoice.Decision != Decision.Cancel)
             {
                 DiscardCardFromHand(firstCard);

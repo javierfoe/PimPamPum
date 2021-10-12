@@ -23,7 +23,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<PimPamPum>(pc);
+            yield return GameController.UsedCard<PimPamPum>(pc);
         }
 
         public override string ToString()

@@ -22,13 +22,13 @@ namespace PimPamPum
                     case Decision.Player:
                         int targetPlayer = waitForPhaseOne.Player;
                         availablePlayers.Remove(targetPlayer);
-                        Current = GameController.Instance.PimPamPum(playerNumber, targetPlayer);
+                        Current = GameController.PimPamPum(playerNumber, targetPlayer);
                         return true;
                 }
             }
             if(availablePlayers.Count > 0 && cards > 0)
             {
-                GameController.Instance.SetPhaseOnePlayerClickable(playerNumber, availablePlayers);
+                GameController.SetPhaseOnePlayerClickable(availablePlayers);
                 Current = new WaitForClickChoice(player);
                 return true;
             }
@@ -41,7 +41,7 @@ namespace PimPamPum
             this.player = player;
             playerNumber = player.PlayerNumber;
             this.cards = cards;
-            availablePlayers = GameController.Instance.PlayersInWeaponRange(playerNumber);
+            availablePlayers = GameController.PlayersInWeaponRange(playerNumber);
         }
     }
 }

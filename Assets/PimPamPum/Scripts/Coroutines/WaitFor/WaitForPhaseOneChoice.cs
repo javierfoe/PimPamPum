@@ -28,7 +28,7 @@
 
         protected override void Finished()
         {
-            GameController.Instance.DisablePhaseOneClickable(player);
+            GameController.DisablePhaseOneClickable(player);
         }
 
         public WaitForClickChoice(PlayerController player, Decision decision) : base(player, decision)

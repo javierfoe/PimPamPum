@@ -1,5 +1,4 @@
-﻿using Mirror;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace PimPamPum
 {
@@ -7,7 +6,6 @@ namespace PimPamPum
     {
 
         private int cardAmount;
-        protected NetworkConnection conn;
 
         public int Choice { get; private set; }
         public Card ChosenCard { get; private set; }
@@ -28,7 +26,6 @@ namespace PimPamPum
 
         protected WaitForGeneralStoreSelection(PlayerController player, int cards) : base(player)
         {
-            conn = player.connectionToClient;
             Choice = -1;
             cardAmount = cards;
         }
@@ -36,7 +33,7 @@ namespace PimPamPum
         public WaitForGeneralStoreSelection(PlayerController player, List<Card> cards) : this(player, cards.Count)
         {
             Cards = cards;
-            GameController.Instance.EnableGeneralStoreCards(conn, true);
+            GameController.EnableGeneralStoreCards(true);
         }
 
         public override void MakeDecisionCardIndex(int card)
@@ -49,7 +46,7 @@ namespace PimPamPum
 
         protected override void Finished()
         {
-            GameController.Instance.EnableGeneralStoreCards(conn, false);
+            GameController.EnableGeneralStoreCards(false);
         }
     }
 }

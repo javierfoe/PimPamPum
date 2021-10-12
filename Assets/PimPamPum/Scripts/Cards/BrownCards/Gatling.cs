@@ -18,7 +18,7 @@ namespace PimPamPum
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Gatling>(pc);
+            yield return GameController.UsedCard<Gatling>(pc);
         }
 
         public override string ToString()

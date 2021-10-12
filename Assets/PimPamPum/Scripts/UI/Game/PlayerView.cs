@@ -230,7 +230,7 @@ namespace PimPamPum
 
         public override void Click()
         {
-            PlayerController.LocalPlayer.PhaseOneDecision(Decision.Player, PlayerIndex);
+            PlayerController.CurrentPlayableCharacter.PhaseOneDecision(Decision.Player, PlayerIndex);
         }
 
         public void EnableCancelButton(bool enable)

@@ -19,7 +19,7 @@ namespace PimPamPum
             SetSkill(skill);
         }
 
-        protected override void UseSkill()
+        public override void UseSkill()
         {
             SetSkill(activeSkill);
             if (activeSkill)

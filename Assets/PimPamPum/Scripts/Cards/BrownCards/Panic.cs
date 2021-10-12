@@ -1,5 +1,6 @@
 ﻿using System.Collections;
-namespace PimPamPum
+
+namespace PimPamPum
 {
     public class Panic : CatBalou
     {
@@ -15,7 +16,7 @@
 
         public override IEnumerator CardUsed(PlayerController pc)
         {
-            yield return GameController.Instance.UsedCard<Panic>(pc);
+            yield return GameController.UsedCard<Panic>(pc);
         }
 
         public override string ToString()

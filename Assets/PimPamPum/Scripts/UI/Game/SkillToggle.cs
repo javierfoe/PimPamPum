@@ -29,7 +29,7 @@ namespace PimPamPum
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            PlayerController.LocalPlayer.UseSkillClient();
+            PlayerController.CurrentPlayableCharacter.UseSkill();
         }
     }
 }
